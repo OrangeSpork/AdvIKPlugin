@@ -3,23 +3,43 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30517.126
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvIKPlugin", "AdvIKPlugin.csproj", "{BC53B810-EDF4-4F67-8D5B-8088B382475E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HS2_AdvIKPlugin", "HS2_AdvIKPlugin\HS2_AdvIKPlugin.csproj", "{3589C113-F6EA-4CB1-A596-DA81152204E3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KK_AdvIKPlugin", "KK_AdvIKPlugin\KK_AdvIKPlugin.csproj", "{ACAE99EE-8A51-426A-9760-FFD7971C7BC9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AI_AdvIKPlugin", "AI_AdvIKPlugin\AI_AdvIKPlugin.csproj", "{DF02420F-FD24-47AA-945E-D3FDCD2979B2}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "AdvIKPlugin", "AdvIKPlugin\AdvIKPlugin.shproj", "{BAD3984D-C8B8-4B87-A57D-EC935611554A}"
 EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		AdvIKPlugin\AdvIKPlugin.projitems*{3589c113-f6ea-4cb1-a596-da81152204e3}*SharedItemsImports = 4
+		AdvIKPlugin\AdvIKPlugin.projitems*{acae99ee-8a51-426a-9760-ffd7971c7bc9}*SharedItemsImports = 4
+		AdvIKPlugin\AdvIKPlugin.projitems*{bad3984d-c8b8-4b87-a57d-ec935611554a}*SharedItemsImports = 13
+		AdvIKPlugin\AdvIKPlugin.projitems*{df02420f-fd24-47aa-945e-d3fdcd2979b2}*SharedItemsImports = 4
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{BC53B810-EDF4-4F67-8D5B-8088B382475E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BC53B810-EDF4-4F67-8D5B-8088B382475E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BC53B810-EDF4-4F67-8D5B-8088B382475E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BC53B810-EDF4-4F67-8D5B-8088B382475E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3589C113-F6EA-4CB1-A596-DA81152204E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3589C113-F6EA-4CB1-A596-DA81152204E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3589C113-F6EA-4CB1-A596-DA81152204E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3589C113-F6EA-4CB1-A596-DA81152204E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ACAE99EE-8A51-426A-9760-FFD7971C7BC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ACAE99EE-8A51-426A-9760-FFD7971C7BC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ACAE99EE-8A51-426A-9760-FFD7971C7BC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ACAE99EE-8A51-426A-9760-FFD7971C7BC9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF02420F-FD24-47AA-945E-D3FDCD2979B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF02420F-FD24-47AA-945E-D3FDCD2979B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF02420F-FD24-47AA-945E-D3FDCD2979B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF02420F-FD24-47AA-945E-D3FDCD2979B2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {11568ACE-F3C8-4808-8346-60D6C3551EF5}
+		SolutionGuid = {1A471B27-0434-4BF0-9210-DC400883951C}
 	EndGlobalSection
 EndGlobal

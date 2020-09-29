@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 using KKAPI.Studio;
 using Studio;
@@ -71,14 +70,14 @@ namespace AdvIKPlugin
                         selectedChar.charInfo.gameObject.GetComponent<AdvIKCharaController>().ShoulderRotationEnabled = value;
                     }
                 });
-               
+
                 var sldSize = GetPanelObject<Slider>("Slider Size");
 
                 weightSliderText = SetupText("WeightSlider", -90, "Shoulder Weight");
                 weightSliderText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 200);
                 weightSliderText.fontSize = 20;
                 Weight = Instantiate(sldSize, AdvIKPanel.transform);
-                Weight.name = "WeightOffset";               
+                Weight.name = "WeightOffset";
                 Weight.transform.SetLocalScale(1.5f, 1.0f, 1.0f);
                 Weight.transform.SetLocalPosition(20, -120, 0);
                 Weight.minValue = 0;
@@ -88,7 +87,7 @@ namespace AdvIKPlugin
                 offsetSliderText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 200);
                 offsetSliderText.fontSize = 20;
                 Offset = Instantiate(sldSize, AdvIKPanel.transform);
-                Offset.name = "ShoulderOffset";                
+                Offset.name = "ShoulderOffset";
                 Offset.transform.SetLocalScale(1.5f, 1.0f, 1.0f);
                 Offset.transform.SetLocalPosition(20, -180, 0);
                 Offset.minValue = 0;
@@ -98,7 +97,7 @@ namespace AdvIKPlugin
                 spineSliderText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 200);
                 spineSliderText.fontSize = 20;
                 SpineStiffness = Instantiate(sldSize, AdvIKPanel.transform);
-                SpineStiffness.name = "SpineStiffness";                
+                SpineStiffness.name = "SpineStiffness";
                 SpineStiffness.transform.SetLocalScale(1.5f, 1.0f, 1.0f);
                 SpineStiffness.transform.SetLocalPosition(20, -250, 0);
                 SpineStiffness.minValue = 0;
@@ -166,7 +165,7 @@ namespace AdvIKPlugin
                 tgl.transform.localPosition = new Vector3(tgl.transform.localPosition.x + 70, pos, tgl.transform.localPosition.z);
                 tgl.onValueChanged.RemoveAllListeners();
                 return tgl;
-  
+
             }
 
             public static void CreatePanel()
@@ -234,7 +233,7 @@ namespace AdvIKPlugin
                         button.image.color = Color.white;
                     }
                     AdvIKPanel.SetActive(true);
-                    fkikSelectButton.image.color = Color.green;                   
+                    fkikSelectButton.image.color = Color.green;
                 });
             }
         }

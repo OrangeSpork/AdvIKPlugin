@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 using KKAPI.Chara;
 using KKAPI;
@@ -21,7 +20,7 @@ namespace AdvIKPlugin
 
         private ShoulderRotator _shoulderRotator;
         private IKSolverFullBodyBiped _ikSolver;
-        
+
 
         public bool ShoulderRotationEnabled
         {
@@ -40,7 +39,7 @@ namespace AdvIKPlugin
                     RemoveShoulderRotator();
                     _shoulderRotator = null;
                 }
-                
+
             }
         }
 
@@ -50,7 +49,7 @@ namespace AdvIKPlugin
             set
             {
                 _shoulderWeight = value;
-                if (_shoulderRotator!= null)
+                if (_shoulderRotator != null)
                 {
                     _shoulderRotator.weight = _shoulderWeight;
                 }
