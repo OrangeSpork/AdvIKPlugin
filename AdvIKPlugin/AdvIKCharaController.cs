@@ -116,7 +116,7 @@ namespace AdvIKPlugin
 
         private GameObject FindAnimator()
         {
-            return this.gameObject.transform.Find("BodyTop/p_cf_anim")?.gameObject;
+            return ChaControl.objAnim;
         }
 
         private void AddShoulderRotator()
