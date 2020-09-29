@@ -45,16 +45,18 @@ namespace AdvIKPlugin
             harmony.Patch(typeof(MPCharCtrl).GetNestedType("IKInfo", AccessTools.all).GetMethod("Init"), null, new HarmonyMethod(typeof(AdvIKGUI).GetMethod(nameof(AdvIKGUI.InitUI), AccessTools.all)));
             harmony.Patch(typeof(MPCharCtrl).GetNestedType("IKInfo", AccessTools.all).GetMethod("UpdateInfo"), null, new HarmonyMethod(typeof(AdvIKGUI).GetMethod(nameof(AdvIKGUI.UpdateUI), AccessTools.all)));
 
+#if DEBUG
             Log.LogInfo("AdvIKPlugin Loaded");
-
+#endif
         }
 
         private void Start()
         {
             CharacterApi.RegisterExtraBehaviour<AdvIKCharaController>(GUID);
 
+#if DEBUG
             Log.LogInfo("AdvIKPlugin Started");
-
+#endif
         }
 
         private bool StudioIsLoaded()

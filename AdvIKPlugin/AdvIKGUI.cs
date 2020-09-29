@@ -45,7 +45,9 @@ namespace AdvIKPlugin
             internal static void UpdateUI(OCIChar _char)
             {
                 selectedChar = _char;
+#if DEBUG
                 AdvIKPlugin.Instance.Log.LogInfo(string.Format("Selected Char: {0}", selectedChar?.charInfo.name));
+#endif
                 if (selectedChar != null)
                 {
                     AdvIKCharaController advIKController = selectedChar.charInfo.gameObject.GetComponent<AdvIKCharaController>();
