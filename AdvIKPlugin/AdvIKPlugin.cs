@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 using BepInEx;
 using KKAPI;
@@ -22,6 +21,7 @@ namespace AdvIKPlugin
     [BepInDependency(KoikatuAPI.GUID, KoikatuAPI.VersionConst)]
     [BepInDependency(ExtensibleSaveFormat.ExtendedSave.GUID)]
     [BepInProcess("StudioNEOV2")]
+    [BepInProcess("CharaStudio")]
     public partial class AdvIKPlugin : BaseUnityPlugin
     {
         public const string GUID = "orange.spork.advikplugin";
@@ -45,16 +45,18 @@ namespace AdvIKPlugin
             harmony.Patch(typeof(MPCharCtrl).GetNestedType("IKInfo", AccessTools.all).GetMethod("Init"), null, new HarmonyMethod(typeof(AdvIKGUI).GetMethod(nameof(AdvIKGUI.InitUI), AccessTools.all)));
             harmony.Patch(typeof(MPCharCtrl).GetNestedType("IKInfo", AccessTools.all).GetMethod("UpdateInfo"), null, new HarmonyMethod(typeof(AdvIKGUI).GetMethod(nameof(AdvIKGUI.UpdateUI), AccessTools.all)));
 
+#if DEBUG
             Log.LogInfo("AdvIKPlugin Loaded");
-
+#endif
         }
 
         private void Start()
         {
             CharacterApi.RegisterExtraBehaviour<AdvIKCharaController>(GUID);
 
+#if DEBUG
             Log.LogInfo("AdvIKPlugin Started");
-
+#endif
         }
 
         private bool StudioIsLoaded()

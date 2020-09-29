@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>bad3984d-c8b8-4b87-a57d-ec935611554a</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>AdvIKPlugin</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)AdvIKCharaController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AdvIKGUI.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AdvIKHooks.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AdvIKPlugin.cs" />
+  </ItemGroup>
+</Project>
