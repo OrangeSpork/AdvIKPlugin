@@ -13,5 +13,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)AdvIKGUI.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AdvIKHooks.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AdvIKPlugin.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AdvIKShoulderRotator.cs" />
   </ItemGroup>
 </Project>

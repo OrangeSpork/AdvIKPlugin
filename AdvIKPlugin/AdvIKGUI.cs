@@ -23,11 +23,16 @@ namespace AdvIKPlugin
         {
             private static GameObject AdvIKPanel;
             private static Toggle ShoulderRotatorToggle;
+            private static Toggle IndependentShoulderToggle;
             private static Slider Weight;
+            private static Slider WeightRight;
             private static Slider Offset;
+            private static Slider OffsetRight;
             private static Slider SpineStiffness;
             private static Text weightSliderText;
+            private static Text weightRightSliderText;
             private static Text offsetSliderText;
+            private static Text offsetRightSliderText;
             private static Text spineSliderText;
 
             private static OCIChar selectedChar;
@@ -52,8 +57,11 @@ namespace AdvIKPlugin
                 {
                     AdvIKCharaController advIKController = selectedChar.charInfo.gameObject.GetComponent<AdvIKCharaController>();
                     ShoulderRotatorToggle.isOn = advIKController.ShoulderRotationEnabled;
+                    IndependentShoulderToggle.isOn = advIKController.IndependentShoulders;
                     Weight.value = advIKController.ShoulderWeight;
+                    WeightRight.value = advIKController.ShoulderRightWeight;
                     Offset.value = advIKController.ShoulderOffset;
+                    OffsetRight.value = advIKController.ShoulderRightOffset;
                     SpineStiffness.value = advIKController.SpineStiffness;
                 }
             }
@@ -73,40 +81,77 @@ namespace AdvIKPlugin
                     }
                 });
 
+                Text independentShoulderText = SetupText("IndependentShoulders", -80, "Independent Shoulders");
+                independentShoulderText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 150);
+                independentShoulderText.fontSize = 16;
+                IndependentShoulderToggle = SetupToggle("IndependentShoulderToggle", -80);
+
+                IndependentShoulderToggle.onValueChanged.AddListener(delegate (bool value)
+                {
+                    if (selectedChar != null)
+                    {
+                        selectedChar.charInfo.gameObject.GetComponent<AdvIKCharaController>().IndependentShoulders = value;
+                    }
+                });
+
+
+
                 var sldSize = GetPanelObject<Slider>("Slider Size");
 
-                weightSliderText = SetupText("WeightSlider", -90, "Shoulder Weight");
+                weightSliderText = SetupText("WeightSlider", -115, "Shoulder Weight");
                 weightSliderText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 200);
                 weightSliderText.fontSize = 20;
                 Weight = Instantiate(sldSize, AdvIKPanel.transform);
                 Weight.name = "WeightOffset";
                 Weight.transform.SetLocalScale(1.5f, 1.0f, 1.0f);
-                Weight.transform.SetLocalPosition(20, -120, 0);
+                Weight.transform.SetLocalPosition(20, -145, 0);
                 Weight.minValue = 0;
                 Weight.maxValue = 5;
 
-                offsetSliderText = SetupText("OffsetSlider", -150, "Shoulder Offset");
+                offsetSliderText = SetupText("OffsetSlider", -175, "Shoulder Offset");
                 offsetSliderText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 200);
                 offsetSliderText.fontSize = 20;
                 Offset = Instantiate(sldSize, AdvIKPanel.transform);
                 Offset.name = "ShoulderOffset";
                 Offset.transform.SetLocalScale(1.5f, 1.0f, 1.0f);
-                Offset.transform.SetLocalPosition(20, -180, 0);
+                Offset.transform.SetLocalPosition(20, -205, 0);
                 Offset.minValue = 0;
                 Offset.maxValue = 1;
 
-                spineSliderText = SetupText("SpineSlider", -220, "Spine Stiffness");
+                weightRightSliderText = SetupText("WeightRightSlider", -235, "R Shoulder Weight");
+                weightRightSliderText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 200);
+                weightRightSliderText.fontSize = 20;
+                WeightRight = Instantiate(sldSize, AdvIKPanel.transform);
+                WeightRight.name = "WeightOffsetRight";
+                WeightRight.transform.SetLocalScale(1.5f, 1.0f, 1.0f);
+                WeightRight.transform.SetLocalPosition(20, -265, 0);
+                WeightRight.minValue = 0;
+                WeightRight.maxValue = 5;
+
+                offsetRightSliderText = SetupText("OffsetRightSlider", -295, "R Shoulder Offset");
+                offsetRightSliderText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 200);
+                offsetRightSliderText.fontSize = 20;
+                OffsetRight = Instantiate(sldSize, AdvIKPanel.transform);
+                OffsetRight.name = "ShoulderOffsetRight";
+                OffsetRight.transform.SetLocalScale(1.5f, 1.0f, 1.0f);
+                OffsetRight.transform.SetLocalPosition(20, -325, 0);
+                OffsetRight.minValue = 0;
+                OffsetRight.maxValue = 1;
+
+                spineSliderText = SetupText("SpineSlider", -345, "Spine Stiffness");
                 spineSliderText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 200);
                 spineSliderText.fontSize = 20;
                 SpineStiffness = Instantiate(sldSize, AdvIKPanel.transform);
                 SpineStiffness.name = "SpineStiffness";
                 SpineStiffness.transform.SetLocalScale(1.5f, 1.0f, 1.0f);
-                SpineStiffness.transform.SetLocalPosition(20, -250, 0);
+                SpineStiffness.transform.SetLocalPosition(20, -375, 0);
                 SpineStiffness.minValue = 0;
                 SpineStiffness.maxValue = 1;
 
                 Weight.onValueChanged.RemoveAllListeners();
+                WeightRight.onValueChanged.RemoveAllListeners();
                 Offset.onValueChanged.RemoveAllListeners();
+                OffsetRight.onValueChanged.RemoveAllListeners();
                 SpineStiffness.onValueChanged.RemoveAllListeners();
 
                 Weight.onValueChanged.AddListener(delegate (float value)
@@ -126,6 +171,23 @@ namespace AdvIKPlugin
                         offsetSliderText.text = string.Format("Shoulder Offset ({0:0.000})", Offset.value);
                     }
                 });
+                WeightRight.onValueChanged.AddListener(delegate (float value)
+                {
+                    if (selectedChar != null)
+                    {
+                        selectedChar.charInfo.gameObject.GetComponent<AdvIKCharaController>().ShoulderRightWeight = value;
+                        weightRightSliderText.text = string.Format("R Shoulder Weight ({0:0.000})", WeightRight.value);
+                    }
+                });
+
+                OffsetRight.onValueChanged.AddListener(delegate (float value)
+                {
+                    if (selectedChar != null)
+                    {
+                        selectedChar.charInfo.gameObject.GetComponent<AdvIKCharaController>().ShoulderRightOffset = value;
+                        offsetRightSliderText.text = string.Format("R Shoulder Offset ({0:0.000})", OffsetRight.value);
+                    }
+                });
 
                 SpineStiffness.onValueChanged.AddListener(delegate (float value)
                 {
@@ -141,7 +203,10 @@ namespace AdvIKPlugin
                 {
                     if (child.gameObject != shoulderToggleText.gameObject && child.gameObject != ShoulderRotatorToggle.gameObject
                         && child.gameObject != Weight.gameObject && child.gameObject != Offset.gameObject && child.gameObject != SpineStiffness.gameObject
-                        && child.gameObject != weightSliderText.gameObject && child.gameObject != offsetSliderText.gameObject && child.gameObject != spineSliderText.gameObject)
+                        && child.gameObject != weightSliderText.gameObject && child.gameObject != offsetSliderText.gameObject && child.gameObject != spineSliderText.gameObject
+                        && child.gameObject != independentShoulderText.gameObject && child.gameObject != IndependentShoulderToggle.gameObject
+                        && child.gameObject != weightRightSliderText.gameObject && child.gameObject != WeightRight.gameObject
+                        && child.gameObject != offsetRightSliderText.gameObject && child.gameObject != OffsetRight.gameObject)
                     {
                         Destroy(child.gameObject);
                     }
