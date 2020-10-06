@@ -8,6 +8,8 @@ using KKAPI;
 using RootMotion.FinalIK;
 using UnityEngine;
 using ExtensibleSaveFormat;
+using System.Collections;
+using UnityEngine.SceneManagement;
 
 namespace AdvIKPlugin
 {
@@ -24,7 +26,6 @@ namespace AdvIKPlugin
         private float _spineStiffness = 0;
 
         private AdvIKShoulderRotator _shoulderRotator;
-        private IKSolverFullBodyBiped _ikSolver;
 
 
         public bool ShoulderRotationEnabled
@@ -147,9 +148,9 @@ namespace AdvIKPlugin
             set
             {
                 _spineStiffness = value;
-                if (_ikSolver != null)
+                if (FindSolver() != null)
                 {
-                    _ikSolver.spineStiffness = _spineStiffness;
+                    FindSolver().spineStiffness = _spineStiffness;
                 }
             }
         }
@@ -174,8 +175,6 @@ namespace AdvIKPlugin
         {
             if (maintainState) return;
 
-            _ikSolver = FindSolver();
-
             var data = GetExtendedData();
 
             if (data != null)
@@ -186,10 +185,19 @@ namespace AdvIKPlugin
                 if (data.data.TryGetValue("ShoulderWeight", out var val2)) ShoulderWeight = (float)val2;
                 if (data.data.TryGetValue("ShoulderRightWeight", out var val2r)) ShoulderRightWeight = (float)val2r;
                 if (data.data.TryGetValue("ShoulderOffset", out var val3)) ShoulderOffset = (float)val3;
-                if (data.data.TryGetValue("ShoulderRightOffset", out var val3r)) ShoulderRightOffset = (float)val3r;
-                if (data.data.TryGetValue("SpineStiffness", out var val4)) SpineStiffness = (float)val4;
+                if (data.data.TryGetValue("ShoulderRightOffset", out var val3r)) ShoulderRightOffset = (float)val3r;                
+                if (data.data.TryGetValue("SpineStiffness", out var val4)) StartCoroutine("setSpineStiffness", (float)val4);
             }
 
+        }
+
+        private IEnumerator setSpineStiffness(float spineStiffnessValue)
+        {
+            SpineStiffness = spineStiffnessValue;
+
+            yield return new WaitForSeconds(1);     // This is a horrible hack, but something after load is resetting this and I need to get to make sure this runs afterwards and can't find a better hook point...       
+
+            SpineStiffness = spineStiffnessValue;
         }
 
         private GameObject FindAnimator()
