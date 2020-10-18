@@ -52,20 +52,20 @@ Set Enable Breathing to active
 
 Settings available:
 
-Breath Size %: A quick slider to scale up or down the size of the chest expansion. Larger number exagerates the motion, smaller makes it...smaller.
-Intake Pause %: Percentage of intake time spent holding at minimum inhalation. Basically how long the char waits with empty breath before starting the inhale.
-Hold Pause %: Percentage of exhale time spent holding at maximum inhalation. How long the char holds the breath at the 'top' of the breathing cycle.
-Inhale %: Percentage of breath time spent inhaling vs. exhaling. For example 0.6 means that 60% of breath time is inhale, 40% exhale.
-Breath Per Min: Number of breaths taken per minute. Normal human respiration is 12-18 BPM at rest, increasing to 30-40 when exercising. 50+ is hyperventilation territory.
-Shldr Damp %: Shoulder dampening percentage. Reduces the shoulder movement caused by the chest movement. At 1 the shoulders do not move at all (and thus arm position doesn't fluctuate). At 0 the shoulders move naturally with the chest. Values in the middle split the difference.
+Breath Size %: A quick slider to scale up or down the size of the chest expansion. Larger number exagerates the motion, smaller makes it...smaller.\
+Intake Pause %: Percentage of intake time spent holding at minimum inhalation. Basically how long the char waits with empty breath before starting the inhale.\
+Hold Pause %: Percentage of exhale time spent holding at maximum inhalation. How long the char holds the breath at the 'top' of the breathing cycle.\
+Inhale %: Percentage of breath time spent inhaling vs. exhaling. For example 0.6 means that 60% of breath time is inhale, 40% exhale.\
+Breath Per Min: Number of breaths taken per minute. Normal human respiration is 12-18 BPM at rest, increasing to 30-40 when exercising. 50+ is hyperventilation territory.\
+Shldr Damp %: Shoulder dampening percentage. Reduces the shoulder movement caused by the chest movement. At 1 the shoulders do not move at all (and thus arm position doesn't fluctuate). At 0 the shoulders move naturally with the chest. Values in the middle split the difference.\
 
 Restore Default: Sets everything back to factory shine.
 
 Advanced Shape Options:
 
-Overall Breath Scale:  Allows quick scaling of all three components (Upper Chest, Lower Chest, Abdomen) in both X, Y and Z scales.
-Upper Chest Scale: Upper chest scaling applied at maximum inhalation.
-Lower Chest Scale: Lower chest scaling applied at maximum inhalation.
-Abdomen Scaling: Abdomen scaling applied at maximum inhalation. Note, use a negative number for diaphragm breathing, positive for belly breathing.
+Overall Breath Scale:  Allows quick scaling of all three components (Upper Chest, Lower Chest, Abdomen) in both X, Y and Z scales.\
+Upper Chest Scale: Upper chest scaling applied at maximum inhalation.\
+Lower Chest Scale: Lower chest scaling applied at maximum inhalation.\
+Abdomen Scaling: Abdomen scaling applied at maximum inhalation. Note, use a negative number for diaphragm breathing, positive for belly breathing.\
 
 Note: The individual component scaling is multiplied by the Overall Breath Scale and then by the Breath Size %...so watch the multiplicative effects :)
