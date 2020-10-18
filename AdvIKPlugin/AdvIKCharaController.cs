@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+
 
 using KKAPI.Chara;
 using KKAPI;
@@ -9,13 +7,19 @@ using RootMotion.FinalIK;
 using UnityEngine;
 using ExtensibleSaveFormat;
 using System.Collections;
-using UnityEngine.SceneManagement;
+
+using KKAPI.Studio;
+using Studio;
+using AdvIKPlugin.Algos;
 
 namespace AdvIKPlugin
 {
     public class AdvIKCharaController : CharaCustomFunctionController
     {
+        private Breathing _breathing;
+
         private bool _shoulderRotationEnabled = false;
+        private bool _enableSpineFKHints = false;
         private float _shoulderWeight = 1.5f;
         private float _shoulderOffset = .2f;
 
@@ -27,6 +31,11 @@ namespace AdvIKPlugin
 
         private AdvIKShoulderRotator _shoulderRotator;
 
+
+        public Breathing BreathingController
+        {
+            get => _breathing;
+        }
 
         public bool ShoulderRotationEnabled
         {
@@ -57,6 +66,15 @@ namespace AdvIKPlugin
                     _shoulderRotator = null;
                 }
 
+            }
+        }
+
+        public bool EnableSpineFKHints
+        {
+            get => _enableSpineFKHints;
+            set
+            {
+                _enableSpineFKHints = value;
             }
         }
 
@@ -159,13 +177,16 @@ namespace AdvIKPlugin
         {
             var data = new PluginData();
 
-            data.data["ShoulderRotatorEnabled"] = _shoulderRotationEnabled;
+            data.data["ShoulderRotatorEnabled"] = _shoulderRotationEnabled;            
             data.data["IndependentShoulders"] = _independentShoulders;
             data.data["ShoulderWeight"] = _shoulderWeight;
             data.data["ShoulderRightWeight"] = _shoulderRightWeight;
             data.data["ShoulderOffset"] = _shoulderOffset;
             data.data["ShoulderRightOffset"] = _shoulderRightOffset;
             data.data["SpineStiffness"] = _spineStiffness;
+            data.data["EnableSpineFKHints"] = _enableSpineFKHints;
+
+            if (BreathingController != null) BreathingController.SaveConfig(data);
 
             SetExtendedData(data);
 
@@ -173,22 +194,59 @@ namespace AdvIKPlugin
 
         protected override void OnReload(GameMode currentGameMode, bool maintainState)
         {
-            if (maintainState) return;
+            if (maintainState)
+            {
+                ResetBreathing();
+                return;
+            }
 
             var data = GetExtendedData();
 
             if (data != null)
             {
 
-                if (data.data.TryGetValue("ShoulderRotatorEnabled", out var val1)) ShoulderRotationEnabled = (bool)val1;
+                if (data.data.TryGetValue("ShoulderRotatorEnabled", out var val1)) ShoulderRotationEnabled = (bool)val1;                
                 if (data.data.TryGetValue("IndependentShoulders", out var val1a)) IndependentShoulders = (bool)val1a;
                 if (data.data.TryGetValue("ShoulderWeight", out var val2)) ShoulderWeight = (float)val2;
                 if (data.data.TryGetValue("ShoulderRightWeight", out var val2r)) ShoulderRightWeight = (float)val2r;
                 if (data.data.TryGetValue("ShoulderOffset", out var val3)) ShoulderOffset = (float)val3;
                 if (data.data.TryGetValue("ShoulderRightOffset", out var val3r)) ShoulderRightOffset = (float)val3r;                
                 if (data.data.TryGetValue("SpineStiffness", out var val4)) StartCoroutine("setSpineStiffness", (float)val4);
+                if (data.data.TryGetValue("EnableSpineFKHints", out var val5)) EnableSpineFKHints = (bool)val5;
+                _breathing = null;
+                StartCoroutine("StartBreathing", data);
+            }
+            else
+            {
+                ResetBreathing();
+            } 
+        }
+
+        private IEnumerator StartBreathing(PluginData data)
+        {
+            yield return new WaitForSeconds(1);
+
+            if (_breathing != null)
+            {
+                _breathing.RestoreOriginalSnapshot();
             }
 
+            _breathing = new Breathing(FindUpperChestBone(), FindLowerChestBone(), FindAbdomenBone(), FindBreastBone(), FindLSBone(), FindRSBone());
+            if (data != null)
+            {
+                _breathing.LoadConfig(data);
+            }
+        }
+
+        private void ResetBreathing()
+        {
+            PluginData tempData = new PluginData();
+            if (_breathing != null)
+            {
+                _breathing.SaveConfig(tempData);
+                _breathing = null;
+            }
+            StartCoroutine("StartBreathing", tempData);
         }
 
         private IEnumerator setSpineStiffness(float spineStiffnessValue)
@@ -200,10 +258,57 @@ namespace AdvIKPlugin
             SpineStiffness = spineStiffnessValue;
         }
 
-        private GameObject FindAnimator()
+
+        protected override void Update()
         {
-            return ChaControl.objAnim;
+            if (_breathing != null && _breathing.Enabled)
+            {
+                _breathing.RestorePriorSnapshot();
+            }
         }
+
+        protected void LateUpdate()
+        {
+            if (_breathing != null && _breathing.Enabled)
+            {
+                _breathing.Perform();
+            }
+
+            if (FindSolver().OnPreSolve == null)
+            {
+
+                FindSolver().OnPreSolve = (IKSolver.UpdateDelegate)Delegate.Combine(FindSolver().OnPreSolve, new IKSolver.UpdateDelegate(() => {
+                    if (EnableSpineFKHints)
+                    {
+                        Vector3 spine2targetRotation = FindFKRotation(FindSpine2());
+                        Vector3 spine1targetRotation = FindFKRotation(FindSpine());
+                        FindSolver().GetSpineMapping().spineBones[2].Rotate(spine2targetRotation, Space.Self);
+                        FindSolver().GetSpineMapping().spineBones[1].Rotate(spine1targetRotation, Space.Self);
+                        FindSolver().GetSpineMapping().ReadPose();
+                    }
+                }));              
+            }
+        }
+
+        private Vector3 FindFKRotation(Transform t)
+        {
+            foreach (OCIChar.BoneInfo bone in this.ChaControl.GetOCIChar().listBones)
+            {
+                if (bone.guideObject.transformTarget.name.Equals(t.name))
+                {
+                    return bone.guideObject.changeAmount.rot;
+                }
+            }
+            return Vector3.zero;
+        }
+
+   
+
+        protected override void OnEnable()
+        {
+            StartCoroutine("StartBreathing", new PluginData());
+        }
+
 
         private void AddShoulderRotator()
         {
@@ -252,5 +357,147 @@ namespace AdvIKPlugin
             return null;
         }
 
+
+        private GameObject FindAnimator()
+        {
+            return ChaControl.objAnim;
+        }
+
+        private Transform FindHips()
+        {
+            if (FindAnimator())
+            {
+                return FindDescendant(FindAnimator().transform, "cf_J_Hips");
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        private Transform FindSpine()
+        {
+
+            if (FindAnimator())
+            {
+                return FindDescendant(FindAnimator().transform, "cf_J_Spine01");
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        private Transform FindSpine2()
+        {
+
+            if (FindAnimator())
+            {
+                return FindDescendant(FindAnimator().transform, "cf_J_Spine02");
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        private Transform FindAbdomenBone()
+        {
+            if (FindAnimator())
+            {
+                return FindDescendant(FindAnimator().transform, "cf_J_Spine01_s");
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        private Transform FindLowerChestBone()
+        {
+            if (FindAnimator())
+            {
+                return FindDescendant(FindAnimator().transform, "cf_J_Spine02_s");
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        private Transform FindUpperChestBone()
+        {
+            if (FindAnimator())
+            {
+                return FindDescendant(FindAnimator().transform, "cf_J_Spine03_s");
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        private Transform FindBreastBone()
+        {
+            if (FindAnimator())
+            {
+                return FindDescendant(FindAnimator().transform, "cf_J_Mune00");
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        private Transform FindLSBone()
+        {
+            if (FindAnimator())
+            {
+                return FindDescendant(FindAnimator().transform, "cf_J_ShoulderIK_L");
+            }
+            else
+            {
+                return null;
+            }
+        }
+        private Transform FindRSBone()
+        {
+            if (FindAnimator())
+            {
+                return FindDescendant(FindAnimator().transform, "cf_J_ShoulderIK_R");
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public Transform FindDescendant(Transform start, string name)
+        {
+            if (start == null)
+            {
+                return null;
+            }
+
+            if (start.name.Equals(name))
+                return start;
+            foreach (Transform t in start)
+            {
+                Transform res = FindDescendant(t, name);
+                if (res != null)
+                    return res;
+            }
+            return null;
+        }
+
+        System.Random rand = new System.Random();
+        private double randomGaussian(double mean, double stdDev)
+        {
+            double u1 = rand.NextDouble();
+            double u2 = rand.NextDouble();
+            double randStdNormal = Math.Sqrt(-2.0d * Math.Log(u1)) * Math.Sin(2.0d * Math.PI * u2);
+            double randNormal = mean + stdDev * randStdNormal;
+            return randNormal;
+        }
     }
 }
