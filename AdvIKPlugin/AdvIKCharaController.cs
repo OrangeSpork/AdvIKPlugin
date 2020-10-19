@@ -367,7 +367,11 @@ namespace AdvIKPlugin
         {
             if (FindAnimator())
             {
+#if KOIKATSU
+                return FindDescendant(FindAnimator().transform, "cf_j_hips");
+#else
                 return FindDescendant(FindAnimator().transform, "cf_J_Hips");
+#endif
             }
             else
             {
@@ -380,7 +384,11 @@ namespace AdvIKPlugin
 
             if (FindAnimator())
             {
+#if KOIKATSU
+                return FindDescendant(FindAnimator().transform, "cf_j_spine01");
+#else
                 return FindDescendant(FindAnimator().transform, "cf_J_Spine01");
+#endif
             }
             else
             {
@@ -393,7 +401,11 @@ namespace AdvIKPlugin
 
             if (FindAnimator())
             {
+#if KOIKATSU
+                return FindDescendant(FindAnimator().transform, "cf_j_spine02");
+#else
                 return FindDescendant(FindAnimator().transform, "cf_J_Spine02");
+#endif
             }
             else
             {
@@ -405,7 +417,11 @@ namespace AdvIKPlugin
         {
             if (FindAnimator())
             {
+#if KOIKATSU
+                return FindDescendant(FindAnimator().transform, "cf_s_spine01");
+#else
                 return FindDescendant(FindAnimator().transform, "cf_J_Spine01_s");
+#endif
             }
             else
             {
@@ -417,7 +433,11 @@ namespace AdvIKPlugin
         {
             if (FindAnimator())
             {
+#if KOIKATSU
+                return FindDescendant(FindAnimator().transform, "cf_s_spine02");
+#else
                 return FindDescendant(FindAnimator().transform, "cf_J_Spine02_s");
+#endif
             }
             else
             {
@@ -429,7 +449,11 @@ namespace AdvIKPlugin
         {
             if (FindAnimator())
             {
+#if KOIKATSU
+                return FindDescendant(FindAnimator().transform, "cf_s_spine03");
+#else
                 return FindDescendant(FindAnimator().transform, "cf_J_Spine03_s");
+#endif
             }
             else
             {
@@ -441,7 +465,11 @@ namespace AdvIKPlugin
         {
             if (FindAnimator())
             {
+#if KOIKATSU
+                return FindDescendant(FindAnimator().transform, "cf_d_bust00");
+#else
                 return FindDescendant(FindAnimator().transform, "cf_J_Mune00");
+#endif
             }
             else
             {
@@ -453,7 +481,11 @@ namespace AdvIKPlugin
         {
             if (FindAnimator())
             {
+#if KOIKATSU
+                return FindDescendant(FindAnimator().transform, "cf_j_shoulder_L");
+#else
                 return FindDescendant(FindAnimator().transform, "cf_J_ShoulderIK_L");
+#endif
             }
             else
             {
@@ -464,7 +496,11 @@ namespace AdvIKPlugin
         {
             if (FindAnimator())
             {
+#if KOIKATSU
+                return FindDescendant(FindAnimator().transform, "cf_j_shoulder_R");
+#else
                 return FindDescendant(FindAnimator().transform, "cf_J_ShoulderIK_R");
+#endif
             }
             else
             {

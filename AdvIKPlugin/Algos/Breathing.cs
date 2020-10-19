@@ -37,6 +37,9 @@ namespace AdvIKPlugin.Algos
 
         public void Perform()
         {
+#if KOIKATSU
+            Enabled = false;
+#endif
 
             if (!Enabled)
             {
@@ -96,13 +99,13 @@ namespace AdvIKPlugin.Algos
             newLowerChestScale.Scale(appliedLowerBreathScale);
 
             Vector3 newAbdomenScale = Abdomen.PriorScale;
-            newAbdomenScale.Scale(appliedAbsScale);            
+            newAbdomenScale.Scale(appliedAbsScale);
 
             // Apply
             UpperChest.Transform.localScale = newUpperChestScale;
             LowerChest.Transform.localScale = newLowerChestScale;
             Abdomen.Transform.localScale = newAbdomenScale;
-
+            
             // Handle Translations
 
             // Upper Chest slides forward and up to keep back and bottom in the prior position
