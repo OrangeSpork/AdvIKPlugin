@@ -27,12 +27,12 @@ Passes the current FK rotation of the Spine01 and Spine02 bones into the IK solv
 
 To use:
 
-Click on character.
-Click Anim->Kinematics->FK and enable Body FK
-Rotate Spine1 and Spine2 to achieve the desired spine curvature
-Turn off Body FK
-Enable Body IK
-Click Anim->Kinematics->Adv IK
+Click on character.\
+Click Anim->Kinematics->FK and enable Body FK\
+Rotate Spine1 and Spine2 to achieve the desired spine curvature\
+Turn off Body FK\
+Enable Body IK\
+Click Anim->Kinematics->Adv IK\
 
 Enable Spine FK Hints
 
