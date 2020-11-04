@@ -27,6 +27,8 @@ namespace AdvIKPlugin
             private static GameObject BreathShapePanel;            
             private static Toggle ShoulderRotatorToggle;
             private static Toggle IndependentShoulderToggle;
+            private static Toggle ReverseShoulderLToggle;
+            private static Toggle ReverseShoulderRToggle;
             private static Slider Weight;
             private static Slider WeightRight;
             private static Slider Offset;
@@ -38,6 +40,7 @@ namespace AdvIKPlugin
             private static Text offsetRightSliderText;
             private static Text spineSliderText;
             private static Toggle spineFKHintsToggle;
+            private static Toggle shoulderFKHintsToggle;
 
             private static Toggle BreathingToggle;
 
@@ -124,12 +127,15 @@ namespace AdvIKPlugin
                     AdvIKCharaController advIKController = selectedChar.charInfo.gameObject.GetComponent<AdvIKCharaController>();
                     ShoulderRotatorToggle.isOn = advIKController.ShoulderRotationEnabled;
                     IndependentShoulderToggle.isOn = advIKController.IndependentShoulders;
+                    ReverseShoulderLToggle.isOn = advIKController.ReverseShoulderL;
+                    ReverseShoulderRToggle.isOn = advIKController.ReverseShoulderR;
                     Weight.value = advIKController.ShoulderWeight;
                     WeightRight.value = advIKController.ShoulderRightWeight;
                     Offset.value = advIKController.ShoulderOffset;
                     OffsetRight.value = advIKController.ShoulderRightOffset;
                     SpineStiffness.value = advIKController.SpineStiffness;
                     spineFKHintsToggle.isOn = advIKController.EnableSpineFKHints;
+                    shoulderFKHintsToggle.isOn = advIKController.EnableShoulderFKHints;
 
                     BreathingToggle.isOn = advIKController.BreathingController.Enabled;
                     intakeSlider.value = advIKController.BreathingController.IntakePause;
@@ -788,10 +794,10 @@ namespace AdvIKPlugin
 #endif
 
 
-                Text shoulderToggleText = SetupText("ShoulderRotationEnabled", -100, "Shoulder Rotation", AdvIKPanel);
+                Text shoulderToggleText = SetupText("ShoulderRotationEnabled", -80, "Shoulder Rotation", AdvIKPanel);
                 shoulderToggleText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 150);
                 shoulderToggleText.fontSize = 16;
-                ShoulderRotatorToggle = SetupToggle("ShoulderRotationEnabledToggle", -100, AdvIKPanel);
+                ShoulderRotatorToggle = SetupToggle("ShoulderRotationEnabledToggle", -80, AdvIKPanel);
 
                 ShoulderRotatorToggle.onValueChanged.AddListener(delegate (bool value)
                 {
@@ -801,16 +807,42 @@ namespace AdvIKPlugin
                     }
                 });
 
-                Text independentShoulderText = SetupText("IndependentShoulders", -130, "Independent Shoulders", AdvIKPanel);
+                Text independentShoulderText = SetupText("IndependentShoulders", -105, "Independent Shoulders", AdvIKPanel);
                 independentShoulderText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 150);
                 independentShoulderText.fontSize = 16;
-                IndependentShoulderToggle = SetupToggle("IndependentShoulderToggle", -130, AdvIKPanel);
+                IndependentShoulderToggle = SetupToggle("IndependentShoulderToggle", -105, AdvIKPanel);
 
                 IndependentShoulderToggle.onValueChanged.AddListener(delegate (bool value)
                 {
                     if (selectedChar != null)
                     {
                         selectedChar.charInfo.gameObject.GetComponent<AdvIKCharaController>().IndependentShoulders = value;
+                    }
+                });
+
+                Text reverseShoulderText = SetupText("ReverseShoulders", -130, "Rev Shlder Reach L", AdvIKPanel);
+                reverseShoulderText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 150);
+                reverseShoulderText.fontSize = 16;
+                ReverseShoulderLToggle = SetupToggle("ReverseShoulderLToggle", -130, AdvIKPanel);
+                ReverseShoulderLToggle.transform.Translate(-25, 0, 0, Space.Self);
+                ReverseShoulderLToggle.onValueChanged.AddListener(delegate (bool value)
+                {
+                    if (selectedChar != null)
+                    {
+                        selectedChar.charInfo.gameObject.GetComponent<AdvIKCharaController>().ReverseShoulderL = value;
+                    }
+                });
+                Text reverseShoulderRText = SetupText("ReverseShouldersR", -130, "R", AdvIKPanel);
+                reverseShoulderRText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 150);
+                reverseShoulderRText.transform.Translate(155, 0, 0, Space.Self);
+                reverseShoulderRText.fontSize = 16;
+                ReverseShoulderRToggle = SetupToggle("ReverseShoulderRToggle", -130, AdvIKPanel);
+                ReverseShoulderRToggle.transform.Translate(13, 0, 0, Space.Self);
+                ReverseShoulderRToggle.onValueChanged.AddListener(delegate (bool value)
+                {
+                    if (selectedChar != null)
+                    {
+                        selectedChar.charInfo.gameObject.GetComponent<AdvIKCharaController>().ReverseShoulderR = value;
                     }
                 });
 
@@ -871,13 +903,26 @@ namespace AdvIKPlugin
                 Text spineFKHintsText = SetupText("Enable Spine FK Hints", -455, "Enable Spine FK Hints", AdvIKPanel);
                 spineFKHintsText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 150);
                 spineFKHintsText.fontSize = 16;
-                spineFKHintsToggle = SetupToggle("SpineFKHints", -455, AdvIKPanel);
+                spineFKHintsToggle = SetupToggle("SpineFKHints", -455, AdvIKPanel); 
 
                 spineFKHintsToggle.onValueChanged.AddListener(delegate (bool value)
                 {
                     if (selectedChar != null)
                     {
                         selectedChar.charInfo.gameObject.GetComponent<AdvIKCharaController>().EnableSpineFKHints = value;
+                    }
+                });
+
+                Text shoulderFKHintsText = SetupText("Enable Shoulder FK Hints", -485, "Enable Shoulder FK Hints", AdvIKPanel);
+                shoulderFKHintsText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 150);
+                shoulderFKHintsText.fontSize = 16;
+                shoulderFKHintsToggle = SetupToggle("ShoulderFKHints", -485, AdvIKPanel); 
+
+                shoulderFKHintsToggle.onValueChanged.AddListener(delegate (bool value)
+                {
+                    if (selectedChar != null)
+                    {
+                        selectedChar.charInfo.gameObject.GetComponent<AdvIKCharaController>().EnableShoulderFKHints = value;
                     }
                 });
 
@@ -942,6 +987,8 @@ namespace AdvIKPlugin
                         && child.gameObject != weightRightSliderText.gameObject && child.gameObject != WeightRight.gameObject
                         && child.gameObject != offsetRightSliderText.gameObject && child.gameObject != OffsetRight.gameObject
                         && child.gameObject != spineFKHintsText.gameObject && child.gameObject != spineFKHintsToggle.gameObject
+                        && child.gameObject != shoulderFKHintsText.gameObject && child.gameObject != shoulderFKHintsToggle.gameObject
+                        && child.gameObject != reverseShoulderText.gameObject && child.gameObject != ReverseShoulderLToggle.gameObject && child.gameObject != ReverseShoulderRToggle.gameObject && child.gameObject != reverseShoulderRText.gameObject
                         && child.gameObject != ikOptsButtonGO && child.gameObject != breathOptsButtonGO
                         )
                     {
@@ -1011,7 +1058,7 @@ namespace AdvIKPlugin
                 BreathShapePanel = Instantiate(originalPanel, kineMenu.transform, true);
 
                 RectTransform rect = AdvIKPanel.GetComponent<RectTransform>();
-                rect.sizeDelta = new Vector2(202, 490);
+                rect.sizeDelta = new Vector2(202, 520);
 
                 rect = BreathPanel.GetComponent<RectTransform>();
                 rect.sizeDelta = new Vector2(202, 490);

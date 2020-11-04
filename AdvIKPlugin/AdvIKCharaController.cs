@@ -19,7 +19,10 @@ namespace AdvIKPlugin
         private Breathing _breathing;
 
         private bool _shoulderRotationEnabled = false;
+        private bool _reverseShoulderL = false;
+        private bool _reverseShoulderR = false;
         private bool _enableSpineFKHints = false;
+        private bool _enableShoulderFKHints = false;
         private float _shoulderWeight = 1.5f;
         private float _shoulderOffset = .2f;
 
@@ -69,12 +72,39 @@ namespace AdvIKPlugin
             }
         }
 
+        public bool ReverseShoulderL
+        {
+            get => _reverseShoulderL;
+            set
+            {
+                _reverseShoulderL = value;
+            }
+        }
+        public bool ReverseShoulderR
+        {
+            get => _reverseShoulderR;
+            set
+            {
+                _reverseShoulderR = value;
+            }
+        }
+
+
         public bool EnableSpineFKHints
         {
             get => _enableSpineFKHints;
             set
             {
                 _enableSpineFKHints = value;
+            }
+        }
+
+        public bool EnableShoulderFKHints
+        {
+            get => _enableShoulderFKHints;
+            set
+            {
+                _enableShoulderFKHints = value;
             }
         }
 
@@ -179,12 +209,15 @@ namespace AdvIKPlugin
 
             data.data["ShoulderRotatorEnabled"] = _shoulderRotationEnabled;            
             data.data["IndependentShoulders"] = _independentShoulders;
+            data.data["ReverseShoulderL"] = _reverseShoulderL;
+            data.data["ReverseShoulderR"] = _reverseShoulderR;
             data.data["ShoulderWeight"] = _shoulderWeight;
             data.data["ShoulderRightWeight"] = _shoulderRightWeight;
             data.data["ShoulderOffset"] = _shoulderOffset;
             data.data["ShoulderRightOffset"] = _shoulderRightOffset;
             data.data["SpineStiffness"] = _spineStiffness;
             data.data["EnableSpineFKHints"] = _enableSpineFKHints;
+            data.data["EnableShoulderFKHints"] = _enableShoulderFKHints;
 
             if (BreathingController != null) BreathingController.SaveConfig(data);
 
@@ -213,6 +246,9 @@ namespace AdvIKPlugin
                 if (data.data.TryGetValue("ShoulderRightOffset", out var val3r)) ShoulderRightOffset = (float)val3r;                
                 if (data.data.TryGetValue("SpineStiffness", out var val4)) StartCoroutine("setSpineStiffness", (float)val4);
                 if (data.data.TryGetValue("EnableSpineFKHints", out var val5)) EnableSpineFKHints = (bool)val5;
+                if (data.data.TryGetValue("EnableShoulderFKHints", out var val6)) EnableShoulderFKHints = (bool)val6;
+                if (data.data.TryGetValue("ReverseShoulderL", out var val7)) ReverseShoulderL = (bool)val7;
+                if (data.data.TryGetValue("ReverseShoulderR", out var val8)) ReverseShoulderR = (bool)val8;
                 _breathing = null;
                 StartCoroutine("StartBreathing", data);
             }
@@ -274,6 +310,7 @@ namespace AdvIKPlugin
                 _breathing.Perform();
             }
 
+
             if (FindSolver().OnPreSolve == null)
             {
 
@@ -282,6 +319,7 @@ namespace AdvIKPlugin
                     {
                         Vector3 spine2targetRotation = FindFKRotation(FindSpine2());
                         Vector3 spine1targetRotation = FindFKRotation(FindSpine());
+
                         FindSolver().GetSpineMapping().spineBones[2].Rotate(spine2targetRotation, Space.Self);
                         FindSolver().GetSpineMapping().spineBones[1].Rotate(spine1targetRotation, Space.Self);
                         FindSolver().GetSpineMapping().ReadPose();
@@ -290,11 +328,11 @@ namespace AdvIKPlugin
             }
         }
 
-        private Vector3 FindFKRotation(Transform t)
+        public Vector3 FindFKRotation(Transform t)
         {
             foreach (OCIChar.BoneInfo bone in this.ChaControl.GetOCIChar().listBones)
             {
-                if (bone.guideObject.transformTarget.name.Equals(t.name))
+                if (bone.guideObject.transformTarget.name.Equals(t.name, StringComparison.OrdinalIgnoreCase))
                 {
                     return bone.guideObject.changeAmount.rot;
                 }
@@ -319,6 +357,7 @@ namespace AdvIKPlugin
                 if (animator != null)
                 {
                     _shoulderRotator = animator.AddComponent(typeof(AdvIKShoulderRotator)) as AdvIKShoulderRotator;
+                    _shoulderRotator.advIKCharaController = this;
                 }
             }
         }
@@ -500,6 +539,37 @@ namespace AdvIKPlugin
                 return FindDescendant(FindAnimator().transform, "cf_j_shoulder_R");
 #else
                 return FindDescendant(FindAnimator().transform, "cf_J_ShoulderIK_R");
+#endif
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public Transform FindLSFKBone()
+        {
+            if (FindAnimator())
+            {
+#if KOIKATSU
+                return FindDescendant(FindAnimator().transform, "cf_j_shoulder_L");
+#else
+                return FindDescendant(FindAnimator().transform, "cf_J_Shoulder_L");
+#endif
+            }
+            else
+            {
+                return null;
+            }
+        }
+        public Transform FindRSFKBone()
+        {
+            if (FindAnimator())
+            {
+#if KOIKATSU
+                return FindDescendant(FindAnimator().transform, "cf_j_shoulder_R");
+#else
+                return FindDescendant(FindAnimator().transform, "cf_J_Shoulder_R");
 #endif
             }
             else
