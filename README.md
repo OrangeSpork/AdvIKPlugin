@@ -5,7 +5,7 @@ Requirement: ExtensibleSaveFormat -> https://github.com/IllusionMods/BepisPlugin
 
 This plugin adds additional advanced control over the IK solver and positioning of the final poses.
 
-Current Features: IK Shoulder Rotation Control, IK Spine Hints from FK, Procedural Breathing Animation Overlay
+Current Features: IK Shoulder Rotation Control, IK Spine Hints from FK, IK Shoulder Hints from FK, Procedural Breathing Animation Overlay
 
 Shoulder Rotation Control
 
@@ -17,6 +17,7 @@ Click on character.
 Click Anim->Kinematics->Adv IK
 
 Enable/Disable Shoulder Rotation Correction\
+Reverse Shoulder Reach inverts the effect of reach on shoulder rotation. Use to simulate weight pushing up the arm into the shoulder instead of the shoulder reaching towards the arm.\
 Shoulder Weight controls how strongly the shoulder rotates\
 Shoulder Offset controls how far the hands have to move before the rotation starts to kick in\
 Spine Stiffness (works regardless of Shoulder Rotation) Controls how much the IK solver bends the spine during shoulder/hips movement. Higher number means less spine movement.\
@@ -24,6 +25,10 @@ Spine Stiffness (works regardless of Shoulder Rotation) Controls how much the IK
 IK Spine Hints from FK
 
 Passes the current FK rotation of the Spine01 and Spine02 bones into the IK solver to weight it towards using that spine curvature.
+
+IK Shoulder Hints from FK
+
+Passes the current FK rotation of the Shoulders into the IK solver to weight it towards that configuration.
 
 To use:
 
