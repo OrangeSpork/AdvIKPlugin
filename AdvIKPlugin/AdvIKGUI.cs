@@ -789,11 +789,6 @@ namespace AdvIKPlugin
                     breathPanelShowBreathButton.image.color = Color.green;
                 });
 
-#if KOIKATSU
-                breathOptsButtonGO.SetActive(false);
-#endif
-
-
                 Text shoulderToggleText = SetupText("ShoulderRotationEnabled", -80, "Shoulder Rotation", AdvIKPanel);
                 shoulderToggleText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 150);
                 shoulderToggleText.fontSize = 16;

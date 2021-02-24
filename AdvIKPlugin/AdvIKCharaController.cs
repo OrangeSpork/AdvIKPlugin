@@ -11,12 +11,13 @@ using System.Collections;
 using KKAPI.Studio;
 using Studio;
 using AdvIKPlugin.Algos;
+using KKABMX.Core;
 
 namespace AdvIKPlugin
 {
     public class AdvIKCharaController : CharaCustomFunctionController
     {
-        private Breathing _breathing;
+        private BreathingBoneEffect _breathing;
 
         private bool _shoulderRotationEnabled = false;
         private bool _reverseShoulderL = false;
@@ -35,7 +36,7 @@ namespace AdvIKPlugin
         private AdvIKShoulderRotator _shoulderRotator;
 
 
-        public Breathing BreathingController
+        public BreathingBoneEffect BreathingController
         {
             get => _breathing;
         }
@@ -262,12 +263,13 @@ namespace AdvIKPlugin
         {
             yield return new WaitForSeconds(1);
 
-            if (_breathing != null)
+            BoneController boneController = ChaControl.GetComponent<BoneController>();
+            if (_breathing == null)
             {
-                _breathing.RestoreOriginalSnapshot();
+                _breathing = new BreathingBoneEffect(FindUpperChestBone().name, FindLowerChestBone().name, FindAbdomenBone().name, FindBreastBone()?.name, FindLSBone().name, FindRSBone().name, FindLeftBreastBone()?.name, FindRightBreastBone()?.name);
+                boneController.AddBoneEffect(_breathing);
             }
-
-            _breathing = new Breathing(FindUpperChestBone(), FindLowerChestBone(), FindAbdomenBone(), FindBreastBone(), FindLSBone(), FindRSBone());
+            
             if (data != null)
             {
                 _breathing.LoadConfig(data);
@@ -294,22 +296,8 @@ namespace AdvIKPlugin
             SpineStiffness = spineStiffnessValue;
         }
 
-
-        protected override void Update()
-        {
-            if (_breathing != null && _breathing.Enabled)
-            {
-                _breathing.RestorePriorSnapshot();
-            }
-        }
-
         protected void LateUpdate()
         {
-            if (_breathing != null && _breathing.Enabled)
-            {
-                _breathing.Perform();
-            }
-
 
             if (FindSolver().OnPreSolve == null)
             {
@@ -500,12 +488,44 @@ namespace AdvIKPlugin
             }
         }
 
+        private Transform FindLeftBreastBone()
+        {
+            if (FindAnimator())
+            {
+#if KOIKATSU
+                return FindDescendant(FindAnimator().transform, "cf_s_bust00_L");
+#else
+                return null;
+#endif
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        private Transform FindRightBreastBone()
+        {
+            if (FindAnimator())
+            {
+#if KOIKATSU
+                return FindDescendant(FindAnimator().transform, "cf_s_bust00_R");
+#else
+                return null;
+#endif
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         private Transform FindBreastBone()
         {
             if (FindAnimator())
             {
 #if KOIKATSU
-                return FindDescendant(FindAnimator().transform, "cf_d_bust00");
+                return null;
 #else
                 return FindDescendant(FindAnimator().transform, "cf_J_Mune00");
 #endif

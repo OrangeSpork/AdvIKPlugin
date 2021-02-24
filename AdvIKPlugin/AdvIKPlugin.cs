@@ -20,13 +20,14 @@ namespace AdvIKPlugin
     [BepInPlugin(GUID, PluginName, Version)]
     [BepInDependency(KoikatuAPI.GUID, KoikatuAPI.VersionConst)]
     [BepInDependency(ExtensibleSaveFormat.ExtendedSave.GUID)]
+    [BepInDependency(KKABMX.Core.KKABMX_Core.GUID, KKABMX.Core.KKABMX_Core.Version)]
     [BepInProcess("StudioNEOV2")]
     [BepInProcess("CharaStudio")]
     public partial class AdvIKPlugin : BaseUnityPlugin
     {
         public const string GUID = "orange.spork.advikplugin";
         public const string PluginName = "AdvIKPlugin";
-        public const string Version = "1.3.0";
+        public const string Version = "1.4.0";
 
         public static AdvIKPlugin Instance { get; set; }
 
