@@ -282,7 +282,6 @@ namespace AdvIKPlugin
             if (_breathing != null)
             {
                 _breathing.SaveConfig(tempData);
-                _breathing = null;
             }
             StartCoroutine("StartBreathing", tempData);
         }
