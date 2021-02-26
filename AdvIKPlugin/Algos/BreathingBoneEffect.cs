@@ -399,8 +399,8 @@ namespace AdvIKPlugin.Algos
         private Vector3 defaultAbdomenScale = new Vector3(-0.045f, 0f, -0.15f);
 #else
         private Vector3 defaultUpperBreathScale = new Vector3(.065f, 0.03f, .045f);
-        private Vector3 defaultLowerBreathScale = new Vector3(.06f, 0.13f, .085f);
-        private Vector3 defaultAbdomenScale = new Vector3(-0.045f, 0f, -0.15f);
+        private Vector3 defaultLowerBreathScale = new Vector3(.06f, 0.11f, .085f);
+        private Vector3 defaultAbdomenScale = new Vector3(-0.045f, 0f, -0.05f);
 #endif
         private float defaultShoulderDampeningFactor = .5f;
         private float defaultMagnitudeFactor = 1.0f;
