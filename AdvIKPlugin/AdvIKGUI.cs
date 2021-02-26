@@ -15,6 +15,7 @@ using HarmonyLib;
 using IllusionUtility.SetUtility;
 using Illusion.Extensions;
 using UniRx.Triggers;
+using System.Collections;
 
 namespace AdvIKPlugin
 {
@@ -508,7 +509,7 @@ namespace AdvIKPlugin
                 TextMeshProUGUI tmp = ikOptsButtonGO.transform.GetChild(0).GetComponentInChildren(typeof(TextMeshProUGUI)) as TextMeshProUGUI;
                 tmp.text = "IK Solver";
                 breathPanelShowIKOptsButton = ikOptsButtonGO.GetComponent<Button>();
-                breathPanelShowIKOptsButton.onClick.RemoveAllListeners();
+                ClearButtonOnClick(breathPanelShowIKOptsButton);
                 breathPanelShowIKOptsButton.image.color = Color.white;
 
                 var breathOptsButtonGO = Instantiate(fkButton, BreathPanel.transform);
@@ -518,7 +519,7 @@ namespace AdvIKPlugin
                 tmp = breathOptsButtonGO.transform.GetChild(0).GetComponentInChildren(typeof(TextMeshProUGUI)) as TextMeshProUGUI;
                 tmp.text = "Breath";
                 breathPanelShowBreathButton = breathOptsButtonGO.GetComponent<Button>();
-                breathPanelShowBreathButton.onClick.RemoveAllListeners();
+                ClearButtonOnClick(breathPanelShowBreathButton);
                 breathPanelShowBreathButton.image.color = Color.green;
 
                 breathPanelShowIKOptsButton.onClick.AddListener(() =>
@@ -686,7 +687,7 @@ namespace AdvIKPlugin
                 tmp = restoreBreathDefaults.transform.GetChild(0).GetComponentInChildren(typeof(TextMeshProUGUI)) as TextMeshProUGUI;
                 tmp.text = "Restore Default";
                 Button restoreBreathDefaultsButton = restoreBreathDefaults.GetComponent<Button>();
-                restoreBreathDefaultsButton.onClick.RemoveAllListeners();
+                ClearButtonOnClick(restoreBreathDefaultsButton);
                 restoreBreathDefaultsButton.image.color = Color.white;
 
                 restoreBreathDefaultsButton.onClick.AddListener(() =>
@@ -705,7 +706,7 @@ namespace AdvIKPlugin
                 tmp = openShapePanel.transform.GetChild(0).GetComponentInChildren(typeof(TextMeshProUGUI)) as TextMeshProUGUI;
                 tmp.text = "Adv Shape Opts >>";
                 openShapePanelButton = openShapePanel.GetComponent<Button>();
-                openShapePanelButton.onClick.RemoveAllListeners();
+                ClearButtonOnClick(openShapePanelButton);
                 openShapePanelButton.image.color = Color.white;
 
                 openShapePanelButton.onClick.AddListener(() =>
@@ -754,7 +755,7 @@ namespace AdvIKPlugin
                 TextMeshProUGUI tmp = ikOptsButtonGO.transform.GetChild(0).GetComponentInChildren(typeof(TextMeshProUGUI)) as TextMeshProUGUI;
                 tmp.text = "IK Solver";
                 advIKPanelShowIKOptsButton = ikOptsButtonGO.GetComponent<Button>();
-                advIKPanelShowIKOptsButton.onClick.RemoveAllListeners();
+                ClearButtonOnClick(advIKPanelShowIKOptsButton);
                 advIKPanelShowIKOptsButton.image.color = Color.green;
 
                 var breathOptsButtonGO = Instantiate(fkButton, AdvIKPanel.transform);
@@ -764,7 +765,7 @@ namespace AdvIKPlugin
                 tmp = breathOptsButtonGO.transform.GetChild(0).GetComponentInChildren(typeof(TextMeshProUGUI)) as TextMeshProUGUI;
                 tmp.text = "Breath";
                 advIKPanelShowBreathButton = breathOptsButtonGO.GetComponent<Button>();
-                advIKPanelShowBreathButton.onClick.RemoveAllListeners();
+                ClearButtonOnClick(advIKPanelShowBreathButton);
                 advIKPanelShowBreathButton.image.color = Color.white;
 
                 advIKPanelShowIKOptsButton.onClick.AddListener(() =>
@@ -1040,10 +1041,11 @@ namespace AdvIKPlugin
                 GameObject fkButton = GameObject.Find("StudioScene/Canvas Main Menu/02_Manipulate/00_Chara/02_Kinematic/Viewport/Content/FK");
                 var newSelect = Instantiate(fkButton, listmenu.transform, true);
                 newSelect.name = "Adv IK";
+
                 TextMeshProUGUI tmp = newSelect.transform.GetChild(0).GetComponentInChildren(typeof(TextMeshProUGUI)) as TextMeshProUGUI;
                 tmp.text = "Adv IK";
 
-                Button[] buttons = listmenu.GetComponentsInChildren<Button>();
+               
 
                 GameObject originalPanel = GameObject.Find("StudioScene/Canvas Main Menu/02_Manipulate/00_Chara/02_Kinematic/00_FK");
                 GameObject kineMenu = GameObject.Find("StudioScene/Canvas Main Menu/02_Manipulate/00_Chara/02_Kinematic");
@@ -1060,22 +1062,43 @@ namespace AdvIKPlugin
 
                 rect = BreathShapePanel.GetComponent<RectTransform>();
                 rect.sizeDelta = new Vector3(222, 340);
-
+             
                 Button fkikSelectButton = newSelect.GetComponent<Button>();
+                ClearButtonOnClick(fkikSelectButton);
 
-                foreach (Button button in buttons)
+                foreach (Button button in listmenu.GetComponentsInChildren<Button>())
                 {
-                    button.onClick.AddListener(delegate ()
+                    if (!button.Equals(fkikSelectButton))
                     {
-                        AdvIKPanel.SetActive(false);
-                        BreathPanel.SetActive(false);
-                        BreathShapePanel.SetActive(false);
-                        fkikSelectButton.image.color = Color.white;
-                        openShapePanelButton.image.color = Color.white;
-                    });
-                }
-
-                fkikSelectButton.onClick.RemoveAllListeners();
+                        button.onClick.AddListener(delegate ()
+                        {
+                            if (AdvIKPanel.activeSelf || BreathPanel.activeSelf || BreathShapePanel.activeSelf)
+                            {
+                                AdvIKPanel.SetActive(false);
+                                BreathPanel.SetActive(false);
+                                BreathShapePanel.SetActive(false);
+                                fkikSelectButton.image.color = Color.white;
+                                openShapePanelButton.image.color = Color.white;
+                                if (lastPanel != null && button.gameObject.Equals(lastButton))
+                                {
+                                    lastPanel.gameObject.SetActive(true);
+                                    button.image.color = Color.green;
+                                    return;
+                                }
+                            }
+                            foreach (Transform child in kineMenu.transform)
+                            {
+                                if (child.name != "Viewport" && child.name != "Scrollbar Vertical" && child.gameObject.activeSelf)
+                                {
+                                    lastPanel = child.gameObject;
+                                    lastButton = button.gameObject;
+                                    break;
+                                }
+                            }
+                        });
+                    }
+                } 
+                
                 fkikSelectButton.onClick.AddListener(delegate ()
                 {
                     foreach (Transform child in kineMenu.transform)
@@ -1085,7 +1108,7 @@ namespace AdvIKPlugin
                             child.gameObject.SetActive(false);
                         }
                     }
-                    foreach (Button button in buttons)
+                    foreach (Button button in listmenu.GetComponentsInChildren<Button>())
                     {
                         button.image.color = Color.white;
                     }
@@ -1098,8 +1121,24 @@ namespace AdvIKPlugin
                         BreathPanel.SetActive(true);
                     }
                     fkikSelectButton.image.color = Color.green;
-                });
+                }); 
             }
+        }
+
+        // Yeah, I give up, I have no idea what's going on in the Illusion permanent button handlers. For some reason the button -> advik -> first button refuses to enable
+        // the panel. I think there is some kind of active panel state I can't see to clear somewhere that thinks the panel is still active...have to fix the fun way.
+        private static GameObject lastPanel;
+        private static GameObject lastButton;
+
+        private static IEnumerator WaitAndClick(Button button)
+        {
+            yield return null;
+            button.onClick.Invoke();
+        }
+
+        private static void ClearButtonOnClick(Button clicky)
+        {
+            clicky.onClick = new Button.ButtonClickedEvent();
         }
     }
 }

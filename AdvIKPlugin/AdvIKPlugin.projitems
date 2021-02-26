@@ -15,6 +15,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)AdvIKPlugin.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AdvIKShoulderRotator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Algos\BreathingBoneEffect.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConfigurationManagerAttributes.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)OverriddenTransform.cs" />
   </ItemGroup>
 </Project>

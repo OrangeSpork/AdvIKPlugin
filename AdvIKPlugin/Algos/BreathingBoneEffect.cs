@@ -1,5 +1,6 @@
 ﻿using ExtensibleSaveFormat;
 using KKABMX.Core;
+using Manager;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -9,6 +10,8 @@ namespace AdvIKPlugin.Algos
 {
     public class BreathingBoneEffect : BoneEffect
     {
+
+        public AppliedEffects FrameEffects { get; set; }
 
         private List<string> affectedBones = new List<string>();
 
@@ -55,112 +58,183 @@ namespace AdvIKPlugin.Algos
         public override BoneModifierData GetEffect(string bone, BoneController origin, CoordinateType coordinate)
 #endif
         {
-            if (!Enabled)
+            if (!(KKAPI.Studio.StudioAPI.InsideStudio && Enabled) && !(KKAPI.Maker.MakerAPI.InsideAndLoaded && AdvIKPlugin.MakerBreathing.Value) 
+                && !(AdvIKPlugin.MainGameBreathing.Value && !KKAPI.Studio.StudioAPI.InsideStudio && !KKAPI.Maker.MakerAPI.InsideMaker))
             {
                 return null;
             }
 
-            // determine position in cycle
-            float seconds = Time.time % 60f;
-
-            // Calculate our actual breath length
-            float breathLength = 60f / BreathsPerMinute;
-
-            // Where are we in the cycle?
-            float timePosition = (seconds % breathLength) / breathLength;
-
-            // Inhale/Exhale length
-            float inhaleLength = (breathLength * InhalePercentage) - (breathLength * InhalePercentage * HoldPause);
-            float exhaleLength = (breathLength * (1 - InhalePercentage)) - (breathLength * (1 - InhalePercentage) * IntakePause);
-
-            // And finally compute our exact breathing cycle location in % of breathing to apply
-            float breathPosition = 0f;
-            if (timePosition < InhalePercentage)
+            if (FrameEffects == null)
             {
-                breathPosition = Math.Min(timePosition / (inhaleLength / breathLength), 1f);
+                // determine position in cycle
+                float seconds = Time.time % 60f;
 
+                // Calculate our actual breath length
+                float bpm = BreathsPerMinute;
+
+                if (KKAPI.Maker.MakerAPI.InsideAndLoaded)
+                {
+                    bpm = bpm * AdvIKPlugin.MakerBreathRateScale.Value;
+                }
+                else if (KKAPI.Studio.StudioAPI.InsideStudio)
+                {
+
+                }
+                else
+                {
+#if KOIKATSU
+                    if (KKAPI.MainGame.GameAPI.InsideHScene)
+#else
+                    if (HSceneManager.isHScene)
+#endif
+                    {
+                        bpm = bpm * AdvIKPlugin.MainGameBreathRateScale.Value * AdvIKPlugin.HSceneBreathRateAdjustment.Value;
+                    }
+                    else
+                    {
+                        bpm = bpm * AdvIKPlugin.MainGameBreathRateScale.Value;
+                    }
+                }
+
+                float breathLength = 60f / bpm;
+
+                // Where are we in the cycle?
+                float timePosition = (seconds % breathLength) / breathLength;
+
+                // Inhale/Exhale length
+                float inhaleLength = (breathLength * InhalePercentage) - (breathLength * InhalePercentage * HoldPause);
+                float exhaleLength = (breathLength * (1 - InhalePercentage)) - (breathLength * (1 - InhalePercentage) * IntakePause);
+
+                // And finally compute our exact breathing cycle location in % of breathing to apply
+                float breathPosition = 0f;
+                if (timePosition < InhalePercentage)
+                {
+                    breathPosition = Math.Min(timePosition / (inhaleLength / breathLength), 1f);
+
+                }
+                else
+                {
+                    breathPosition = 1f - Math.Min((timePosition - InhalePercentage) / (exhaleLength / breathLength), 1f);
+                }
+
+                // Create the adjusted scales (combining magnitude and the individual adjustment factor)
+                Vector3 appliedBreathMagnitude = BreathMagnitude;
+
+
+                if (KKAPI.Maker.MakerAPI.InsideAndLoaded)
+                {
+                    appliedBreathMagnitude = appliedBreathMagnitude * MagnitudeFactor * gameScale * AdvIKPlugin.MakerBreathScale.Value;
+                }
+                else if (KKAPI.Studio.StudioAPI.InsideStudio)
+                {
+                    appliedBreathMagnitude = appliedBreathMagnitude * MagnitudeFactor * gameScale;
+                }
+                else
+                {
+#if KOIKATSU
+                    if (KKAPI.MainGame.GameAPI.InsideHScene)
+#else
+                    if (HSceneManager.isHScene)
+#endif
+                    {
+                        appliedBreathMagnitude = appliedBreathMagnitude * MagnitudeFactor * gameScale * AdvIKPlugin.MainGameBreathScale.Value * AdvIKPlugin.HSceneBreathSizeAdjustment.Value;
+                    }
+                    else
+                    {
+                        appliedBreathMagnitude = appliedBreathMagnitude * MagnitudeFactor * gameScale * AdvIKPlugin.MainGameBreathScale.Value;
+                    }
+                }
+
+                Vector3 adjustedUpperBreathScale = UpperChestRelativeScaling;
+                adjustedUpperBreathScale.Scale(appliedBreathMagnitude);
+
+                Vector3 adjustedLowerBreathScale = LowerChestRelativeScaling;
+                adjustedLowerBreathScale.Scale(appliedBreathMagnitude);
+
+                Vector3 adjustedAbsBreathScale = AbdomenRelativeScaling;
+                adjustedAbsBreathScale.Scale(appliedBreathMagnitude);
+
+                // And apply breath cycle adjustment
+                Vector3 appliedUpperBreathScale = Vector3.one + (adjustedUpperBreathScale * breathPosition);
+                Vector3 appliedLowerBreathScale = Vector3.one + (adjustedLowerBreathScale * breathPosition);
+                Vector3 appliedAbsScale = Vector3.one + (adjustedAbsBreathScale * breathPosition);
+
+
+                // Handle Translations
+
+                // Upper Chest slides forward and up to keep back and bottom in the prior position
+                Vector3 newUpperChestPos = new Vector3(0, 0, 0);
+
+                newUpperChestPos.z = ((1 + newUpperChestPos.z) * appliedUpperBreathScale.z) - ((1 + newUpperChestPos.z));
+                newUpperChestPos.y = ((1 + newUpperChestPos.y) * appliedUpperBreathScale.y) - ((1 + newUpperChestPos.y));
+
+                // Same with lower chest
+                Vector3 newLowerChestPos = new Vector3(0, 0, 0);
+                newLowerChestPos.z = ((1 + newLowerChestPos.z) * appliedLowerBreathScale.z) - ((1 + newLowerChestPos.z));
+                newLowerChestPos.y = ((1 + newLowerChestPos.y) * appliedLowerBreathScale.y) - ((1 + newLowerChestPos.y));
+
+                // And abdomen
+                Vector3 newAbdomenPos = new Vector3(0, 0, 0);
+                newAbdomenPos.z = ((1 + newAbdomenPos.z) * appliedAbsScale.z) - ((1 + newAbdomenPos.z));
+                newAbdomenPos.y = ((1 + newAbdomenPos.y) * appliedAbsScale.y) - ((1 + newAbdomenPos.y));
+
+                // Breasts move forward on an average of the lower/upper movement
+#if KOIKATSU
+                Vector3 newBreastDelta = (newLowerChestPos / 2f);
+#else
+                Vector3 newBreastDelta = (newLowerChestPos + newUpperChestPos);
+#endif
+
+                // Left and Right Shoulders move on the X and Y, muted as desired by the Dampening Factor
+                Vector3 ucDelta = newUpperChestPos;
+                float UCXExpansion = (((1 + newUpperChestPos.x) * appliedUpperBreathScale.x) - (1 + newUpperChestPos.x));
+
+                Vector3 newLSPosition = new Vector3(0, 0, 0);
+                newLSPosition.y = (newLSPosition.y + ucDelta.y);
+                newLSPosition.z = (newLSPosition.z + ucDelta.z);
+                newLSPosition.x = UCXExpansion * -1f * (1f - ShoulderDampeningFactor);
+
+                Vector3 newRSPosition = new Vector3(0, 0, 0);
+                newRSPosition.y = (newRSPosition.y + ucDelta.y);
+                newRSPosition.z = (newRSPosition.z + ucDelta.z);
+                newRSPosition.x = (-1 * UCXExpansion) * -1f * (1f - ShoulderDampeningFactor);
+
+                FrameEffects = new AppliedEffects
+                {
+                    UpperChestScale = appliedUpperBreathScale,
+                    UpperChestPos = newUpperChestPos,
+                    LowerChestPos = newLowerChestPos,
+                    LowerChestScale = appliedLowerBreathScale,
+                    AbdomenPos = newAbdomenPos,
+                    AbdomenScale = appliedAbsScale,
+                    BreastAdj = newBreastDelta,
+                    LeftShoulderAdj = newLSPosition,
+                    RightShoulderAdj = newRSPosition
+                };
             }
-            else
-            {
-                breathPosition = 1f - Math.Min((timePosition - InhalePercentage) / (exhaleLength / breathLength), 1f);
-            }
-
-            // Create the adjusted scales (combining magnitude and the individual adjustment factor)
-            Vector3 appliedBreathMagnitude = BreathMagnitude;
-            appliedBreathMagnitude = appliedBreathMagnitude * MagnitudeFactor * gameScale;
-
-            Vector3 adjustedUpperBreathScale = UpperChestRelativeScaling;
-            adjustedUpperBreathScale.Scale(appliedBreathMagnitude);
-
-            Vector3 adjustedLowerBreathScale = LowerChestRelativeScaling;
-            adjustedLowerBreathScale.Scale(appliedBreathMagnitude);
-
-            Vector3 adjustedAbsBreathScale = AbdomenRelativeScaling;
-            adjustedAbsBreathScale.Scale(appliedBreathMagnitude);
-
-            // And apply breath cycle adjustment
-            Vector3 appliedUpperBreathScale = Vector3.one + (adjustedUpperBreathScale * breathPosition);
-            Vector3 appliedLowerBreathScale = Vector3.one + (adjustedLowerBreathScale * breathPosition);
-            Vector3 appliedAbsScale = Vector3.one + (adjustedAbsBreathScale * breathPosition);
-           
-
-            // Handle Translations
-
-            // Upper Chest slides forward and up to keep back and bottom in the prior position
-            Vector3 newUpperChestPos = new Vector3(0, 0, 0);
-
-            newUpperChestPos.z = ((1 + newUpperChestPos.z) * appliedUpperBreathScale.z) - ((1 + newUpperChestPos.z));
-            newUpperChestPos.y = ((1 + newUpperChestPos.y) * appliedUpperBreathScale.y) - ((1 + newUpperChestPos.y));
-
-            // Same with lower chest
-            Vector3 newLowerChestPos = new Vector3(0, 0, 0);
-            newLowerChestPos.z = ((1 + newLowerChestPos.z) * appliedLowerBreathScale.z) - ((1 + newLowerChestPos.z));
-            newLowerChestPos.y = ((1 + newLowerChestPos.y) * appliedLowerBreathScale.y) - ((1 + newLowerChestPos.y));
-
-            // And abdomen
-            Vector3 newAbdomenPos = new Vector3(0, 0, 0);
-            newAbdomenPos.z = ((1 + newAbdomenPos.z) * appliedAbsScale.z) - ((1 + newAbdomenPos.z));
-            newAbdomenPos.y = ((1 + newAbdomenPos.y) * appliedAbsScale.y) - ((1 + newAbdomenPos.y));
-
-            // Breasts move forward on an average of the lower/upper movement
-            Vector3 newBreastDelta = (newLowerChestPos + newUpperChestPos) / 2f;
-
-            // Left and Right Shoulders move on the X and Y, muted as desired by the Dampening Factor
-            Vector3 ucDelta = newUpperChestPos;
-            float UCXExpansion = (((1 + newUpperChestPos.x) * appliedUpperBreathScale.x) - (1 + newUpperChestPos.x)) / 2f;
-
-            Vector3 newLSPosition = new Vector3(0, 0, 0);
-            newLSPosition.y = (newLSPosition.y + ucDelta.y);
-            newLSPosition.z = (newLSPosition.z + ucDelta.z);
-            newLSPosition.x = UCXExpansion * -1f * (1f - ShoulderDampeningFactor);
-
-            Vector3 newRSPosition = new Vector3(0, 0, 0);
-            newRSPosition.y = (newRSPosition.y + ucDelta.y);
-            newRSPosition.z = (newRSPosition.z + ucDelta.z);
-            newRSPosition.x = (-1 * UCXExpansion) * -1f * (1f - ShoulderDampeningFactor);
 
             if (bone.Equals(UpperChest))
             {
 #if KOIKATSU
-                return new BoneModifierData(appliedUpperBreathScale, 1f, Vector3.zero, Vector3.zero);
+                return new BoneModifierData(FrameEffects.UpperChestScale, 1f, Vector3.zero, Vector3.zero);
 #else
-                return new BoneModifierData(appliedUpperBreathScale, 1f, newUpperChestPos, Vector3.zero);
+                return new BoneModifierData(FrameEffects.UpperChestScale, 1f, FrameEffects.UpperChestPos, Vector3.zero);
 #endif
             }
             else if (bone.Equals(LowerChest))
             {
 #if KOIKATSU
-                return new BoneModifierData(appliedLowerBreathScale, 1f, Vector3.zero, Vector3.zero);
+                return new BoneModifierData(FrameEffects.LowerChestScale, 1f, Vector3.zero, Vector3.zero);
 #else
-                return new BoneModifierData(appliedLowerBreathScale, 1f, newLowerChestPos, Vector3.zero);
+                return new BoneModifierData(FrameEffects.LowerChestScale, 1f, FrameEffects.LowerChestPos, Vector3.zero);
 #endif
             }
             else if (bone.Equals(Abdomen))
             {
 #if KOIKATSU
-                return new BoneModifierData(appliedAbsScale, 1f, Vector3.zero, Vector3.zero);
+                return new BoneModifierData(FrameEffects.AbdomenScale, 1f, Vector3.zero, Vector3.zero);
 #else
-                return new BoneModifierData(appliedAbsScale, 1f, newAbdomenPos, Vector3.zero);
+                return new BoneModifierData(FrameEffects.AbdomenScale, 1f, FrameEffects.AbdomenPos, Vector3.zero);
 #endif
             }
             else if (bone.Equals(Breasts))
@@ -168,26 +242,34 @@ namespace AdvIKPlugin.Algos
 #if KOIKATSU
                 return null;
 #else
-                return new BoneModifierData(Vector3.one, 1f, newBreastDelta, Vector3.zero);
+                return new BoneModifierData(Vector3.one, 1f, FrameEffects.BreastAdj, Vector3.zero);
 #endif
             }
 #if KOIKATSU
             else if (bone.Equals(LeftBreast))
             {
-                return new BoneModifierData(Vector3.one, 1f, newBreastDelta, Vector3.zero);
+                return new BoneModifierData(Vector3.one, 1f, FrameEffects.BreastAdj, Vector3.zero);
             }
             else if (bone.Equals(RightBreast))
             {
-                return new BoneModifierData(Vector3.one, 1f, newBreastDelta, Vector3.zero);
+                return new BoneModifierData(Vector3.one, 1f, FrameEffects.BreastAdj, Vector3.zero);
             }
 #endif
             else if (bone.Equals(LeftShoulder))
             {
-                return new BoneModifierData(Vector3.one, 1f, newLSPosition, Vector3.zero);
+#if KOIKATSU
+                return new BoneModifierData(Vector3.one, 1f, new Vector3(FrameEffects.LeftShoulderAdj.x / 2, 0, 0), Vector3.zero);
+#else
+                return new BoneModifierData(Vector3.one, 1f, FrameEffects.LeftShoulderAdj, Vector3.zero);
+#endif
             }
             else if (bone.Equals(RightShoulder))
             {
-                return new BoneModifierData(Vector3.one, 1f, newRSPosition, Vector3.zero);                
+#if KOIKATSU
+                return new BoneModifierData(Vector3.one, 1f, new Vector3(FrameEffects.RightShoulderAdj.x / 2, 0, 0), Vector3.zero);
+#else
+                return new BoneModifierData(Vector3.one, 1f, FrameEffects.RightShoulderAdj, Vector3.zero);                
+#endif
             }
             else
             {
@@ -312,15 +394,28 @@ namespace AdvIKPlugin.Algos
         private int defaultBreathsPerMinute = 15;
         private Vector3 defaultBreathMagnitude = new Vector3(1.0f, 1.0f, 1.0f);
 #if KOIKATSU
-        private Vector3 defaultUpperBreathScale = new Vector3(.04f, 0.035f, .025f);
-        private Vector3 defaultLowerBreathScale = new Vector3(.04f, 0.10f, .035f);
+        private Vector3 defaultUpperBreathScale = new Vector3(.04f, 0.200f, .025f);
+        private Vector3 defaultLowerBreathScale = new Vector3(.05f, 0.10f, .045f);
         private Vector3 defaultAbdomenScale = new Vector3(-0.045f, 0f, -0.15f);
 #else
         private Vector3 defaultUpperBreathScale = new Vector3(.065f, 0.03f, .045f);
         private Vector3 defaultLowerBreathScale = new Vector3(.06f, 0.13f, .085f);
-        private Vector3 defaultAbdomenScale = new Vector3(-0.045f, 0f, -0.045f);
+        private Vector3 defaultAbdomenScale = new Vector3(-0.045f, 0f, -0.15f);
 #endif
         private float defaultShoulderDampeningFactor = .5f;
         private float defaultMagnitudeFactor = 1.0f;
+    }
+
+    public class AppliedEffects
+    {
+        public Vector3 UpperChestScale;
+        public Vector3 UpperChestPos;
+        public Vector3 LowerChestScale;
+        public Vector3 LowerChestPos;
+        public Vector3 AbdomenScale;
+        public Vector3 AbdomenPos;
+        public Vector3 BreastAdj;
+        public Vector3 LeftShoulderAdj;
+        public Vector3 RightShoulderAdj;
     }
 }

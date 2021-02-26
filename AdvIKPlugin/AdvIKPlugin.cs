@@ -14,6 +14,7 @@ using System.Collections;
 
 using HarmonyLib;
 using Studio;
+using BepInEx.Configuration;
 
 namespace AdvIKPlugin
 {
@@ -21,15 +22,23 @@ namespace AdvIKPlugin
     [BepInDependency(KoikatuAPI.GUID, KoikatuAPI.VersionConst)]
     [BepInDependency(ExtensibleSaveFormat.ExtendedSave.GUID)]
     [BepInDependency(KKABMX.Core.KKABMX_Core.GUID, KKABMX.Core.KKABMX_Core.Version)]
-    [BepInProcess("StudioNEOV2")]
-    [BepInProcess("CharaStudio")]
     public partial class AdvIKPlugin : BaseUnityPlugin
     {
         public const string GUID = "orange.spork.advikplugin";
         public const string PluginName = "AdvIKPlugin";
-        public const string Version = "1.4.1";
+        public const string Version = "1.5.0";
 
         public static AdvIKPlugin Instance { get; set; }
+
+        // Config
+        public static ConfigEntry<bool> MainGameBreathing { get; set; }
+        public static ConfigEntry<float> MainGameBreathScale { get; set; }
+        public static ConfigEntry<float> MainGameBreathRateScale { get; set; }
+        public static ConfigEntry<float> HSceneBreathRateAdjustment { get; set; }
+        public static ConfigEntry<float> HSceneBreathSizeAdjustment { get; set; }
+        public static ConfigEntry<bool> MakerBreathing { get; set; }
+        public static ConfigEntry<float> MakerBreathScale { get; set; }
+        public static ConfigEntry<float> MakerBreathRateScale { get; set; }
 
         internal BepInEx.Logging.ManualLogSource Log => Logger;
 
@@ -41,6 +50,17 @@ namespace AdvIKPlugin
             }
 
             Instance = this;
+
+            MainGameBreathing = Config.Bind("Options", "Breathe in Main Game", false, new ConfigDescription("Characters in the Main Game will Breathe", null, new ConfigurationManagerAttributes { Order = 9 }));
+            MainGameBreathScale = Config.Bind("Options", "Main Game Breath Size Scale", 1.0f, new ConfigDescription("Multiplier applied to default breath sizing", new AcceptableValueRange<float>(.25f, 3f), new ConfigurationManagerAttributes { Order = 8 }));
+            MainGameBreathRateScale = Config.Bind("Options", "Main Game Breath Rate Scale", 1.0f, new ConfigDescription("Multiplier applied to default breath rate (BPM)", new AcceptableValueRange<float>(.25f, 3f), new ConfigurationManagerAttributes { Order = 7 }));
+
+            HSceneBreathSizeAdjustment = Config.Bind("Options", "HScene Size Adjustment", 0.75f, new ConfigDescription("Multiplier applied (on top of above option) in HScenes to breath size", new AcceptableValueRange<float>(.25f, 3f), new ConfigurationManagerAttributes { Order = 6 }));
+            HSceneBreathRateAdjustment = Config.Bind("Options", "HScene Rate Adjustment", 2.0f, new ConfigDescription("Multiplier applied (on top of above option) in HScenes to breath rate", new AcceptableValueRange<float>(.25f, 3f), new ConfigurationManagerAttributes { Order = 5 }));
+
+            MakerBreathing = Config.Bind("Options", "Breathe in Maker", false, new ConfigDescription("Characters in the Maker will Breathe", null, new ConfigurationManagerAttributes { Order = 4 }));
+            MakerBreathScale = Config.Bind("Options", "Maker Breath Scale", 1.0f, new ConfigDescription("Multiplier applied to default breath sizing", new AcceptableValueRange<float>(.25f, 3f), new ConfigurationManagerAttributes { Order = 3 }));
+            MakerBreathRateScale = Config.Bind("Options", "Maker Breath Rate Scale", 1.0f, new ConfigDescription("Multiplier applied to default breath rate (BPM)", new AcceptableValueRange<float>(.25f, 3f), new ConfigurationManagerAttributes { Order = 2 }));
 
             var harmony = Harmony.CreateAndPatchAll(typeof(Hooks));
             harmony.Patch(typeof(MPCharCtrl).GetNestedType("IKInfo", AccessTools.all).GetMethod("Init"), null, new HarmonyMethod(typeof(AdvIKGUI).GetMethod(nameof(AdvIKGUI.InitUI), AccessTools.all)));

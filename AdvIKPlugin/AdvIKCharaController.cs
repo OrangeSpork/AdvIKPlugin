@@ -295,6 +295,14 @@ namespace AdvIKPlugin
             SpineStiffness = spineStiffnessValue;
         }
 
+        protected void Update()
+        {
+            if (_breathing != null) 
+                _breathing.FrameEffects = null;
+
+            base.Update();
+        }
+
         protected void LateUpdate()
         {
 
@@ -492,7 +500,8 @@ namespace AdvIKPlugin
             if (FindAnimator())
             {
 #if KOIKATSU
-                return FindDescendant(FindAnimator().transform, "cf_s_bust00_L");
+                //  return FindDescendant(FindAnimator().transform, "cf_s_bust00_L");
+                return FindDescendant(FindAnimator().transform, "cf_j_bust01_L");
 #else
                 return null;
 #endif
@@ -508,7 +517,8 @@ namespace AdvIKPlugin
             if (FindAnimator())
             {
 #if KOIKATSU
-                return FindDescendant(FindAnimator().transform, "cf_s_bust00_R");
+                //return FindDescendant(FindAnimator().transform, "cf_s_bust00_R");
+                return FindDescendant(FindAnimator().transform, "cf_j_bust01_R");
 #else
                 return null;
 #endif
