@@ -261,7 +261,7 @@ namespace AdvIKPlugin
 
         private IEnumerator StartBreathing(PluginData data)
         {
-            yield return new WaitForSeconds(1);
+            yield return new WaitUntil(() => ChaControl != null && ChaControl.GetComponent<BoneController>() != null && ChaControl.objAnim != null);
 
             BoneController boneController = ChaControl.GetComponent<BoneController>();
             if (_breathing == null)
@@ -306,7 +306,7 @@ namespace AdvIKPlugin
         protected void LateUpdate()
         {
 
-            if (FindSolver().OnPreSolve == null)
+            if (FindSolver() != null && FindSolver().OnPreSolve == null)
             {
 
                 FindSolver().OnPreSolve = (IKSolver.UpdateDelegate)Delegate.Combine(FindSolver().OnPreSolve, new IKSolver.UpdateDelegate(() => {
