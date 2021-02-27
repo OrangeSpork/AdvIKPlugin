@@ -2,7 +2,7 @@
 
 Requirement: KKAPI 1.15(+) -> https://github.com/IllusionMods/IllusionModdingAPI \
 Requirement: ABMX 4.4.1+ -> https://github.com/ManlyMarco/ABMX \
-Requirement: ExtensibleSaveFormat -> https://github.com/IllusionMods/BepisPlugins \
+Requirement: ExtensibleSaveFormat -> https://github.com/IllusionMods/BepisPlugins 
 
 This plugin adds additional advanced control over the IK solver and positioning of the final poses.
 
