@@ -10,13 +10,15 @@ namespace AdvIKPlugin.Algos
 {
     public class BreathingBoneEffect : BoneEffect
     {
-
+        public float OverrideTime { get; set; }
         public AppliedEffects FrameEffects { get; set; }
 
         private List<string> affectedBones = new List<string>();
 
         public BreathingBoneEffect(string upperChest, string lowerChest, string abdomen, string breasts, string leftShoulder, string rightShoulder, string leftBreast, string rightBreast)
         {
+            OverrideTime = -1;
+
             UpperChest = upperChest;
             LowerChest = lowerChest;
             Abdomen = abdomen;
@@ -67,7 +69,7 @@ namespace AdvIKPlugin.Algos
             if (FrameEffects == null)
             {
                 // determine position in cycle
-                float seconds = Time.time % 60f;
+                float seconds = (OverrideTime == -1 ? Time.time : OverrideTime) % 60f;
 
                 // Calculate our actual breath length
                 float bpm = BreathsPerMinute;
