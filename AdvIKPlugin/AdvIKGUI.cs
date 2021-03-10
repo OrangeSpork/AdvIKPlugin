@@ -205,7 +205,10 @@ namespace AdvIKPlugin
                     if (selectedChar != null)
                     {
                         Vector3 currentBreathingMagnitude = selectedChar.charInfo.gameObject.GetComponent<AdvIKCharaController>().BreathingController.BreathMagnitude;
-                        selectedChar.charInfo.gameObject.GetComponent<AdvIKCharaController>().BreathingController.BreathMagnitude = new Vector3(value, currentBreathingMagnitude.y, currentBreathingMagnitude.z);
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.BreathingController.BreathMagnitude = new Vector3(value, currentBreathingMagnitude.y, currentBreathingMagnitude.z);
+                        }                        
                         breathShapeX.text = string.Format("X ({0:0.000})", value);
                     }
                 });
@@ -224,7 +227,10 @@ namespace AdvIKPlugin
                     if (selectedChar != null)
                     {
                         Vector3 currentBreathingMagnitude = selectedChar.charInfo.gameObject.GetComponent<AdvIKCharaController>().BreathingController.BreathMagnitude;
-                        selectedChar.charInfo.gameObject.GetComponent<AdvIKCharaController>().BreathingController.BreathMagnitude = new Vector3(currentBreathingMagnitude.x, value, currentBreathingMagnitude.z);
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.BreathingController.BreathMagnitude = new Vector3(currentBreathingMagnitude.x, value, currentBreathingMagnitude.z);
+                        }                        
                         breathShapeY.text = string.Format("Y ({0:0.000})", value);
                     }
                 });
@@ -243,7 +249,10 @@ namespace AdvIKPlugin
                     if (selectedChar != null)
                     {
                         Vector3 currentBreathingMagnitude = selectedChar.charInfo.gameObject.GetComponent<AdvIKCharaController>().BreathingController.BreathMagnitude;
-                        selectedChar.charInfo.gameObject.GetComponent<AdvIKCharaController>().BreathingController.BreathMagnitude = new Vector3(currentBreathingMagnitude.x, currentBreathingMagnitude.y, value);
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.BreathingController.BreathMagnitude = new Vector3(currentBreathingMagnitude.x, currentBreathingMagnitude.y, value);
+                        }
                         breathShapeZ.text = string.Format("Z ({0:0.000})", value);
                     }
                 });
@@ -281,7 +290,10 @@ namespace AdvIKPlugin
                     if (selectedChar != null)
                     {
                         Vector3 upperChestRelative = selectedChar.charInfo.gameObject.GetComponent<AdvIKCharaController>().BreathingController.UpperChestRelativeScaling;
-                        selectedChar.charInfo.gameObject.GetComponent<AdvIKCharaController>().BreathingController.UpperChestRelativeScaling = new Vector3(value, upperChestRelative.y, upperChestRelative.z);
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.BreathingController.UpperChestRelativeScaling = new Vector3(value, upperChestRelative.y, upperChestRelative.z);
+                        }
                         upperChestShapeX.text = string.Format("X ({0:0.000})", value);
                     }
                 });
@@ -300,7 +312,10 @@ namespace AdvIKPlugin
                     if (selectedChar != null)
                     {
                         Vector3 upperChestRelative = selectedChar.charInfo.gameObject.GetComponent<AdvIKCharaController>().BreathingController.UpperChestRelativeScaling;
-                        selectedChar.charInfo.gameObject.GetComponent<AdvIKCharaController>().BreathingController.UpperChestRelativeScaling = new Vector3(upperChestRelative.x, value, upperChestRelative.z);
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.BreathingController.UpperChestRelativeScaling = new Vector3(upperChestRelative.x, value, upperChestRelative.z);
+                        }
                         upperChestShapeY.text = string.Format("Y ({0:0.000})", value);
                     }
                 });
@@ -319,7 +334,10 @@ namespace AdvIKPlugin
                     if (selectedChar != null)
                     {
                         Vector3 upperChestRelative = selectedChar.charInfo.gameObject.GetComponent<AdvIKCharaController>().BreathingController.UpperChestRelativeScaling;
-                        selectedChar.charInfo.gameObject.GetComponent<AdvIKCharaController>().BreathingController.UpperChestRelativeScaling = new Vector3(upperChestRelative.x, upperChestRelative.y, value);
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.BreathingController.UpperChestRelativeScaling = new Vector3(upperChestRelative.x, upperChestRelative.y, value);
+                        }
                         upperChestShapeZ.text = string.Format("Z ({0:0.000})", value);
                     }
                 });
@@ -357,7 +375,10 @@ namespace AdvIKPlugin
                     if (selectedChar != null)
                     {
                         Vector3 lowerChestRelativeScaling = selectedChar.charInfo.gameObject.GetComponent<AdvIKCharaController>().BreathingController.LowerChestRelativeScaling;
-                        selectedChar.charInfo.gameObject.GetComponent<AdvIKCharaController>().BreathingController.LowerChestRelativeScaling = new Vector3(value, lowerChestRelativeScaling.y, lowerChestRelativeScaling.z);
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.BreathingController.LowerChestRelativeScaling = new Vector3(value, lowerChestRelativeScaling.y, lowerChestRelativeScaling.z);
+                        }
                         lowerChestShapeX.text = string.Format("X ({0:0.000})", value);
                     }
                 });
@@ -376,7 +397,10 @@ namespace AdvIKPlugin
                     if (selectedChar != null)
                     {
                         Vector3 lowerChestRelativeScaling = selectedChar.charInfo.gameObject.GetComponent<AdvIKCharaController>().BreathingController.LowerChestRelativeScaling;
-                        selectedChar.charInfo.gameObject.GetComponent<AdvIKCharaController>().BreathingController.LowerChestRelativeScaling = new Vector3(lowerChestRelativeScaling.x, value, lowerChestRelativeScaling.z);
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.BreathingController.LowerChestRelativeScaling = new Vector3(lowerChestRelativeScaling.x, value, lowerChestRelativeScaling.z);
+                        }
                         lowerChestShapeY.text = string.Format("Y ({0:0.000})", value);
                     }
                 });
@@ -395,7 +419,10 @@ namespace AdvIKPlugin
                     if (selectedChar != null)
                     {
                         Vector3 lowerChestRelativeScaling = selectedChar.charInfo.gameObject.GetComponent<AdvIKCharaController>().BreathingController.LowerChestRelativeScaling;
-                        selectedChar.charInfo.gameObject.GetComponent<AdvIKCharaController>().BreathingController.LowerChestRelativeScaling = new Vector3(lowerChestRelativeScaling.x, lowerChestRelativeScaling.y, value);
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.BreathingController.LowerChestRelativeScaling = new Vector3(lowerChestRelativeScaling.x, lowerChestRelativeScaling.y, value);
+                        }
                         lowerChestShapeZ.text = string.Format("Z ({0:0.000})", value);
                     }
                 });
@@ -433,7 +460,10 @@ namespace AdvIKPlugin
                     if (selectedChar != null)
                     {
                         Vector3 abdomenRelativeScaling = selectedChar.charInfo.gameObject.GetComponent<AdvIKCharaController>().BreathingController.AbdomenRelativeScaling;
-                        selectedChar.charInfo.gameObject.GetComponent<AdvIKCharaController>().BreathingController.AbdomenRelativeScaling = new Vector3(value, abdomenRelativeScaling.y, abdomenRelativeScaling.z);
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.BreathingController.AbdomenRelativeScaling = new Vector3(value, abdomenRelativeScaling.y, abdomenRelativeScaling.z);
+                        }
                         abdomenShapeX.text = string.Format("X ({0:0.000})", value);
                     }
                 });
@@ -452,7 +482,10 @@ namespace AdvIKPlugin
                     if (selectedChar != null)
                     {
                         Vector3 abdomenRelativeScaling = selectedChar.charInfo.gameObject.GetComponent<AdvIKCharaController>().BreathingController.AbdomenRelativeScaling;
-                        selectedChar.charInfo.gameObject.GetComponent<AdvIKCharaController>().BreathingController.AbdomenRelativeScaling = new Vector3(abdomenRelativeScaling.x, value, abdomenRelativeScaling.z);
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.BreathingController.AbdomenRelativeScaling = new Vector3(abdomenRelativeScaling.x, value, abdomenRelativeScaling.z);
+                        }
                         abdomenShapeY.text = string.Format("Y ({0:0.000})", value);
                     }
                 });
@@ -471,7 +504,10 @@ namespace AdvIKPlugin
                     if (selectedChar != null)
                     {
                         Vector3 abdomenRelativeScaling = selectedChar.charInfo.gameObject.GetComponent<AdvIKCharaController>().BreathingController.AbdomenRelativeScaling;
-                        selectedChar.charInfo.gameObject.GetComponent<AdvIKCharaController>().BreathingController.AbdomenRelativeScaling = new Vector3(abdomenRelativeScaling.x, abdomenRelativeScaling.y, value);
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.BreathingController.AbdomenRelativeScaling = new Vector3(abdomenRelativeScaling.x, abdomenRelativeScaling.y, value);
+                        }
                         abdomenShapeZ.text = string.Format("Z ({0:0.000})", value);
                     }
                 });
@@ -554,7 +590,10 @@ namespace AdvIKPlugin
                 {
                     if (selectedChar != null)
                     {
-                        selectedChar.charInfo.gameObject.GetComponent<AdvIKCharaController>().BreathingController.Enabled = value;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.BreathingController.Enabled = value;
+                        }
                     }
                 });
 
@@ -575,7 +614,10 @@ namespace AdvIKPlugin
                 {
                     if (selectedChar != null)
                     {
-                        selectedChar.charInfo.gameObject.GetComponent<AdvIKCharaController>().BreathingController.MagnitudeFactor = value;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.BreathingController.MagnitudeFactor = value;
+                        }
                         magnitudeText.text = string.Format("Breath Size % ({0:0.000})", value);
                     }
                 });
@@ -595,7 +637,10 @@ namespace AdvIKPlugin
                 {
                     if (selectedChar != null)
                     {
-                        selectedChar.charInfo.gameObject.GetComponent<AdvIKCharaController>().BreathingController.IntakePause = value;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.BreathingController.IntakePause = value;
+                        }
                         intakeText.text = string.Format("Intake Pause % ({0:0.000})", value);
                     }
                 });
@@ -615,7 +660,10 @@ namespace AdvIKPlugin
                 {
                     if (selectedChar != null)
                     {
-                        selectedChar.charInfo.gameObject.GetComponent<AdvIKCharaController>().BreathingController.HoldPause = value;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.BreathingController.HoldPause = value;
+                        }
                         holdText.text = string.Format("Hold Pause % ({0:0.000})", value);
                     }
                 });
@@ -635,7 +683,10 @@ namespace AdvIKPlugin
                 {
                     if (selectedChar != null)
                     {
-                        selectedChar.charInfo.gameObject.GetComponent<AdvIKCharaController>().BreathingController.InhalePercentage = value;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.BreathingController.InhalePercentage = value;
+                        }
                         inhaleText.text = string.Format("Inhale % ({0:0.000})", value);
                     }
                 });
@@ -655,7 +706,10 @@ namespace AdvIKPlugin
                 {
                     if (selectedChar != null)
                     {
-                        selectedChar.charInfo.gameObject.GetComponent<AdvIKCharaController>().BreathingController.BreathsPerMinute = (int)value;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.BreathingController.BreathsPerMinute = (int)value;
+                        }
                         bpmText.text = string.Format("Breath Per Min ({0:0})", value);
                     }
                 });
@@ -675,7 +729,10 @@ namespace AdvIKPlugin
                 {
                     if (selectedChar != null)
                     {
-                        selectedChar.charInfo.gameObject.GetComponent<AdvIKCharaController>().BreathingController.ShoulderDampeningFactor = value;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.BreathingController.ShoulderDampeningFactor = value;
+                        }
                         shoulderDampText.text = string.Format("Shldr Damp % ({0:0.000})", value);
                     }
                 });
@@ -694,7 +751,10 @@ namespace AdvIKPlugin
                 {
                     if (selectedChar != null)
                     {
-                        selectedChar.charInfo.gameObject.GetComponent<AdvIKCharaController>().BreathingController.RestoreDefaults();
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.BreathingController.RestoreDefaults();
+                        }
                         UpdateUI(selectedChar);
                     }
                 });
@@ -799,7 +859,10 @@ namespace AdvIKPlugin
                 {
                     if (selectedChar != null)
                     {
-                        selectedChar.charInfo.gameObject.GetComponent<AdvIKCharaController>().ShoulderRotationEnabled = value;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.ShoulderRotationEnabled = value;
+                        }
                     }
                 });
 
@@ -812,7 +875,10 @@ namespace AdvIKPlugin
                 {
                     if (selectedChar != null)
                     {
-                        selectedChar.charInfo.gameObject.GetComponent<AdvIKCharaController>().IndependentShoulders = value;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.IndependentShoulders = value;
+                        }
                     }
                 });
 
@@ -825,7 +891,10 @@ namespace AdvIKPlugin
                 {
                     if (selectedChar != null)
                     {
-                        selectedChar.charInfo.gameObject.GetComponent<AdvIKCharaController>().ReverseShoulderL = value;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.ReverseShoulderL = value;
+                        }
                     }
                 });
                 Text reverseShoulderRText = SetupText("ReverseShouldersR", -130, "R", AdvIKPanel);
@@ -838,7 +907,10 @@ namespace AdvIKPlugin
                 {
                     if (selectedChar != null)
                     {
-                        selectedChar.charInfo.gameObject.GetComponent<AdvIKCharaController>().ReverseShoulderR = value;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.ReverseShoulderR = value;
+                        }
                     }
                 });
 
@@ -905,7 +977,10 @@ namespace AdvIKPlugin
                 {
                     if (selectedChar != null)
                     {
-                        selectedChar.charInfo.gameObject.GetComponent<AdvIKCharaController>().EnableSpineFKHints = value;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.EnableSpineFKHints = value;
+                        }
                     }
                 });
 
@@ -918,7 +993,10 @@ namespace AdvIKPlugin
                 {
                     if (selectedChar != null)
                     {
-                        selectedChar.charInfo.gameObject.GetComponent<AdvIKCharaController>().EnableShoulderFKHints = value;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.EnableShoulderFKHints = value;
+                        }
                     }
                 });
 
@@ -933,7 +1011,10 @@ namespace AdvIKPlugin
                 {
                     if (selectedChar != null)
                     {
-                        selectedChar.charInfo.gameObject.GetComponent<AdvIKCharaController>().ShoulderWeight = value;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.ShoulderWeight = value;
+                        }
                         weightSliderText.text = string.Format("Shoulder Weight ({0:0.000})", Weight.value);
                     }
                 });
@@ -942,7 +1023,10 @@ namespace AdvIKPlugin
                 {
                     if (selectedChar != null)
                     {
-                        selectedChar.charInfo.gameObject.GetComponent<AdvIKCharaController>().ShoulderOffset = value;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.ShoulderOffset = value;
+                        }
                         offsetSliderText.text = string.Format("Shoulder Offset ({0:0.000})", Offset.value);
                     }
                 });
@@ -950,7 +1034,10 @@ namespace AdvIKPlugin
                 {
                     if (selectedChar != null)
                     {
-                        selectedChar.charInfo.gameObject.GetComponent<AdvIKCharaController>().ShoulderRightWeight = value;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.ShoulderRightWeight = value;
+                        }
                         weightRightSliderText.text = string.Format("R Shoulder Weight ({0:0.000})", WeightRight.value);
                     }
                 });
@@ -959,7 +1046,10 @@ namespace AdvIKPlugin
                 {
                     if (selectedChar != null)
                     {
-                        selectedChar.charInfo.gameObject.GetComponent<AdvIKCharaController>().ShoulderRightOffset = value;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.ShoulderRightOffset = value;
+                        }
                         offsetRightSliderText.text = string.Format("R Shoulder Offset ({0:0.000})", OffsetRight.value);
                     }
                 });
@@ -968,7 +1058,10 @@ namespace AdvIKPlugin
                 {
                     if (selectedChar != null)
                     {
-                        selectedChar.charInfo.gameObject.GetComponent<AdvIKCharaController>().SpineStiffness = value;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.SpineStiffness = value;
+                        }
                         spineSliderText.text = string.Format("Spine Stiffness ({0:0.000})", SpineStiffness.value);
                     }
                 });

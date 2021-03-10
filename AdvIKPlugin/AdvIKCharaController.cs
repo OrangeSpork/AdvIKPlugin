@@ -35,6 +35,8 @@ namespace AdvIKPlugin
 
         private AdvIKShoulderRotator _shoulderRotator;
 
+        private bool _loaded = false;
+
 
         public BreathingBoneEffect BreathingController
         {
@@ -228,7 +230,11 @@ namespace AdvIKPlugin
 
         protected override void OnReload(GameMode currentGameMode, bool maintainState)
         {
-            if (maintainState)
+#if DEBUG
+            AdvIKPlugin.Instance.Log.LogInfo($"Loaded {_loaded} Reload {maintainState} {ChaControl.fileParam.fullname}");
+            AdvIKPlugin.Instance.Log.LogInfo($"Before Shoulders: {ShoulderRotationEnabled} Breathing: {_breathing?.Enabled}");
+#endif
+            if (maintainState || (_loaded && StudioAPI.InsideStudio))
             {
                 ResetBreathing();
                 return;
@@ -256,7 +262,12 @@ namespace AdvIKPlugin
             else
             {
                 ResetBreathing();
-            } 
+            }
+
+#if DEBUG
+            AdvIKPlugin.Instance.Log.LogInfo($"After, BC Shoulders: {ShoulderRotationEnabled} Breathing: {_breathing?.Enabled}");
+#endif
+            _loaded = true;
         }
 
         private IEnumerator StartBreathing(PluginData data)
@@ -274,6 +285,11 @@ namespace AdvIKPlugin
             {
                 _breathing.LoadConfig(data);
             }
+
+#if DEBUG
+            AdvIKPlugin.Instance.Log.LogInfo($"After, AC Shoulders: {ShoulderRotationEnabled} Breathing: {_breathing?.Enabled} Data: {data}");
+#endif
+
         }
 
         private void ResetBreathing()
@@ -295,7 +311,7 @@ namespace AdvIKPlugin
             SpineStiffness = spineStiffnessValue;
         }
 
-        protected void Update()
+        protected override void Update()
         {
             if (_breathing != null) 
                 _breathing.FrameEffects = null;
