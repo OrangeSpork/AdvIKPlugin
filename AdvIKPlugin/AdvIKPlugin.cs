@@ -26,7 +26,7 @@ namespace AdvIKPlugin
     {
         public const string GUID = "orange.spork.advikplugin";
         public const string PluginName = "AdvIKPlugin";
-        public const string Version = "1.5.1";
+        public const string Version = "1.5.2";
 
         public static AdvIKPlugin Instance { get; set; }
 
