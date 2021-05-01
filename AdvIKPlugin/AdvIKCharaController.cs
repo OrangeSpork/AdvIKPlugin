@@ -658,7 +658,7 @@ namespace AdvIKPlugin
             if (FindAnimator())
             {
 #if KOIKATSU
-                return FindDescendant(FindAnimator().transform, "cf_j_toes01_L");
+                return FindDescendant(FindAnimator().transform, "cf_j_toes_L");
 #else
                 return FindDescendant(FindAnimator().transform, "cf_J_Toes01_L");
 #endif
@@ -674,7 +674,7 @@ namespace AdvIKPlugin
             if (FindAnimator())
             {
 #if KOIKATSU
-                return FindDescendant(FindAnimator().transform, "cf_j_toes01_R");
+                return FindDescendant(FindAnimator().transform, "cf_j_toes_R");
 #else
                 return FindDescendant(FindAnimator().transform, "cf_J_Toes01_R");
 #endif
