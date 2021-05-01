@@ -31,6 +31,10 @@ IK Shoulder Hints from FK
 
 Passes the current FK rotation of the Shoulders into the IK solver to weight it towards that configuration.
 
+IK Toe Hints from FK
+
+Rotates the toes using current FK rotation of the Toes as a baseline.
+
 To use:
 
 Click on character.\
