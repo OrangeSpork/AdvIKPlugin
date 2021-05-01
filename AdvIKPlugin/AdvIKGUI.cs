@@ -42,6 +42,7 @@ namespace AdvIKPlugin
             private static Text spineSliderText;
             private static Toggle spineFKHintsToggle;
             private static Toggle shoulderFKHintsToggle;
+            private static Toggle toeFKHintsToggle;
 
             private static Toggle BreathingToggle;
 
@@ -137,6 +138,7 @@ namespace AdvIKPlugin
                     SpineStiffness.value = advIKController.SpineStiffness;
                     spineFKHintsToggle.isOn = advIKController.EnableSpineFKHints;
                     shoulderFKHintsToggle.isOn = advIKController.EnableShoulderFKHints;
+                    toeFKHintsToggle.isOn = advIKController.EnableToeFKHints;
 
                     BreathingToggle.isOn = advIKController.BreathingController.Enabled;
                     intakeSlider.value = advIKController.BreathingController.IntakePause;
@@ -1000,6 +1002,22 @@ namespace AdvIKPlugin
                     }
                 });
 
+                Text toeFKHintsText = SetupText("Enable Toe FK Hints", -515, "Enable Toe FK Hints", AdvIKPanel);
+                toeFKHintsText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 150);
+                toeFKHintsText.fontSize = 16;
+                toeFKHintsToggle = SetupToggle("ToeFKHints", -515, AdvIKPanel);
+
+                toeFKHintsToggle.onValueChanged.AddListener(delegate (bool value)
+                {
+                    if (selectedChar != null)
+                    {
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.EnableToeFKHints = value;
+                        }
+                    }
+                });
+
                 Weight.onValueChanged.RemoveAllListeners();
                 WeightRight.onValueChanged.RemoveAllListeners();
                 Offset.onValueChanged.RemoveAllListeners();
@@ -1077,6 +1095,7 @@ namespace AdvIKPlugin
                         && child.gameObject != offsetRightSliderText.gameObject && child.gameObject != OffsetRight.gameObject
                         && child.gameObject != spineFKHintsText.gameObject && child.gameObject != spineFKHintsToggle.gameObject
                         && child.gameObject != shoulderFKHintsText.gameObject && child.gameObject != shoulderFKHintsToggle.gameObject
+                        && child.gameObject != toeFKHintsText.gameObject && child.gameObject != toeFKHintsToggle.gameObject
                         && child.gameObject != reverseShoulderText.gameObject && child.gameObject != ReverseShoulderLToggle.gameObject && child.gameObject != ReverseShoulderRToggle.gameObject && child.gameObject != reverseShoulderRText.gameObject
                         && child.gameObject != ikOptsButtonGO && child.gameObject != breathOptsButtonGO
                         )
@@ -1148,7 +1167,7 @@ namespace AdvIKPlugin
                 BreathShapePanel = Instantiate(originalPanel, kineMenu.transform, true);
 
                 RectTransform rect = AdvIKPanel.GetComponent<RectTransform>();
-                rect.sizeDelta = new Vector2(202, 520);
+                rect.sizeDelta = new Vector2(202, 550);
 
                 rect = BreathPanel.GetComponent<RectTransform>();
                 rect.sizeDelta = new Vector2(202, 490);

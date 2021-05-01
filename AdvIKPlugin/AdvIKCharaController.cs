@@ -24,6 +24,7 @@ namespace AdvIKPlugin
         private bool _reverseShoulderR = false;
         private bool _enableSpineFKHints = false;
         private bool _enableShoulderFKHints = false;
+        private bool _enableToeFKHints = false;
         private float _shoulderWeight = 1.5f;
         private float _shoulderOffset = .2f;
 
@@ -99,6 +100,15 @@ namespace AdvIKPlugin
             set
             {
                 _enableSpineFKHints = value;
+            }
+        }
+
+        public bool EnableToeFKHints
+        {
+            get => _enableToeFKHints;
+            set
+            {
+                _enableToeFKHints = value;
             }
         }
 
@@ -221,6 +231,7 @@ namespace AdvIKPlugin
             data.data["SpineStiffness"] = _spineStiffness;
             data.data["EnableSpineFKHints"] = _enableSpineFKHints;
             data.data["EnableShoulderFKHints"] = _enableShoulderFKHints;
+            data.data["EnableToeFKHints"] = _enableToeFKHints;
 
             if (BreathingController != null) BreathingController.SaveConfig(data);
 
@@ -256,6 +267,7 @@ namespace AdvIKPlugin
                 if (data.data.TryGetValue("EnableShoulderFKHints", out var val6)) EnableShoulderFKHints = (bool)val6;
                 if (data.data.TryGetValue("ReverseShoulderL", out var val7)) ReverseShoulderL = (bool)val7;
                 if (data.data.TryGetValue("ReverseShoulderR", out var val8)) ReverseShoulderR = (bool)val8;
+                if (data.data.TryGetValue("EnableToeFKHints", out var val9)) EnableToeFKHints = (bool)val9;
                 _breathing = null;
                 StartCoroutine("StartBreathing", data);
             }
@@ -335,7 +347,23 @@ namespace AdvIKPlugin
                         FindSolver().GetSpineMapping().spineBones[1].Rotate(spine1targetRotation, Space.Self);
                         FindSolver().GetSpineMapping().ReadPose();
                     }
-                }));              
+                }));
+                FindSolver().OnPostSolve = (IKSolver.UpdateDelegate)Delegate.Combine(FindSolver().OnPostSolve, new IKSolver.UpdateDelegate(() =>
+                    {
+                        if (EnableToeFKHints)
+                        {
+                            Vector3 lToeTargetRotation = FindFKRotation(FindLToeBone());
+                            Vector3 rToeTargetRotation = FindFKRotation(FindRToeBone());
+
+                            FindLToeBone().Rotate(lToeTargetRotation, Space.Self);
+                            FindRToeBone().Rotate(rToeTargetRotation, Space.Self);
+                        }
+                        else
+                        {
+                            FindLToeBone().Rotate(Vector3.zero, Space.Self);
+                            FindRToeBone().Rotate(Vector3.zero, Space.Self);
+                        }
+                    }));
             }
         }
 
@@ -615,6 +643,40 @@ namespace AdvIKPlugin
                 return FindDescendant(FindAnimator().transform, "cf_j_shoulder_R");
 #else
                 return FindDescendant(FindAnimator().transform, "cf_J_Shoulder_R");
+#endif
+            }
+            else
+            {
+                return null;
+           
+            
+            }
+        }
+
+        public Transform FindLToeBone()
+        {
+            if (FindAnimator())
+            {
+#if KOIKATSU
+                return FindDescendant(FindAnimator().transform, "cf_j_toes01_L");
+#else
+                return FindDescendant(FindAnimator().transform, "cf_J_Toes01_L");
+#endif
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public Transform FindRToeBone()
+        {
+            if (FindAnimator())
+            {
+#if KOIKATSU
+                return FindDescendant(FindAnimator().transform, "cf_j_toes01_R");
+#else
+                return FindDescendant(FindAnimator().transform, "cf_J_Toes01_R");
 #endif
             }
             else
