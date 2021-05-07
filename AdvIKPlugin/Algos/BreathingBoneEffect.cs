@@ -17,6 +17,10 @@ namespace AdvIKPlugin.Algos
 
         public BreathingBoneEffect(string upperChest, string lowerChest, string abdomen, string breasts, string leftShoulder, string rightShoulder, string leftBreast, string rightBreast)
         {
+            Initialize(upperChest, lowerChest, abdomen, breasts, leftShoulder, rightShoulder, leftBreast, rightBreast);
+        }
+        public void Initialize (string upperChest, string lowerChest, string abdomen, string breasts, string leftShoulder, string rightShoulder, string leftBreast, string rightBreast)
+        {
             OverrideTime = -1;
 
             UpperChest = upperChest;
@@ -28,6 +32,7 @@ namespace AdvIKPlugin.Algos
             LeftBreast = leftBreast;
             RightBreast = rightBreast;
 
+            affectedBones.Clear();
 
             affectedBones.Add(UpperChest);
             affectedBones.Add(LowerChest);

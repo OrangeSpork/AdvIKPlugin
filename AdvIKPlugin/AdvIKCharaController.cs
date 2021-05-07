@@ -268,7 +268,6 @@ namespace AdvIKPlugin
                 if (data.data.TryGetValue("ReverseShoulderL", out var val7)) ReverseShoulderL = (bool)val7;
                 if (data.data.TryGetValue("ReverseShoulderR", out var val8)) ReverseShoulderR = (bool)val8;
                 if (data.data.TryGetValue("EnableToeFKHints", out var val9)) EnableToeFKHints = (bool)val9;
-                _breathing = null;
                 StartCoroutine("StartBreathing", data);
             }
             else
@@ -289,8 +288,15 @@ namespace AdvIKPlugin
             BoneController boneController = ChaControl.GetComponent<BoneController>();
             if (_breathing == null)
             {
+#if DEBUG
+                AdvIKPlugin.Instance.Log.LogInfo("Adding Bone Effect");
+#endif
                 _breathing = new BreathingBoneEffect(FindUpperChestBone().name, FindLowerChestBone().name, FindAbdomenBone().name, FindBreastBone()?.name, FindLSBone().name, FindRSBone().name, FindLeftBreastBone()?.name, FindRightBreastBone()?.name);
                 boneController.AddBoneEffect(_breathing);
+            }
+            else
+            {
+                _breathing.Initialize(FindUpperChestBone().name, FindLowerChestBone().name, FindAbdomenBone().name, FindBreastBone()?.name, FindLSBone().name, FindRSBone().name, FindLeftBreastBone()?.name, FindRightBreastBone()?.name);
             }
             
             if (data != null)
@@ -333,7 +339,6 @@ namespace AdvIKPlugin
 
         protected void LateUpdate()
         {
-
             if (FindSolver() != null && FindSolver().OnPreSolve == null)
             {
 
