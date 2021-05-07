@@ -329,8 +329,12 @@ namespace AdvIKPlugin
             SpineStiffness = spineStiffnessValue;
         }
 
+        private bool toeAdjustmentApplied;
+
         protected override void Update()
         {
+            toeAdjustmentApplied = false;
+
             if (_breathing != null) 
                 _breathing.FrameEffects = null;
 
@@ -355,18 +359,22 @@ namespace AdvIKPlugin
                 }));
                 FindSolver().OnPostSolve = (IKSolver.UpdateDelegate)Delegate.Combine(FindSolver().OnPostSolve, new IKSolver.UpdateDelegate(() =>
                     {
-                        if (EnableToeFKHints)
+                        if (!toeAdjustmentApplied)
                         {
-                            Vector3 lToeTargetRotation = FindFKRotation(FindLToeBone());
-                            Vector3 rToeTargetRotation = FindFKRotation(FindRToeBone());
+                            if (EnableToeFKHints)
+                            {
+                                Vector3 lToeTargetRotation = FindFKRotation(FindLToeBone());
+                                Vector3 rToeTargetRotation = FindFKRotation(FindRToeBone());
 
-                            FindLToeBone().Rotate(lToeTargetRotation, Space.Self);
-                            FindRToeBone().Rotate(rToeTargetRotation, Space.Self);
-                        }
-                        else
-                        {
-                            FindLToeBone().Rotate(Vector3.zero, Space.Self);
-                            FindRToeBone().Rotate(Vector3.zero, Space.Self);
+                                FindLToeBone().Rotate(lToeTargetRotation, Space.Self);
+                                FindRToeBone().Rotate(rToeTargetRotation, Space.Self);
+                            }
+                            else
+                            {
+                                FindLToeBone().Rotate(Vector3.zero, Space.Self);
+                                FindRToeBone().Rotate(Vector3.zero, Space.Self);
+                            }
+                            toeAdjustmentApplied = true;
                         }
                     }));
             }
