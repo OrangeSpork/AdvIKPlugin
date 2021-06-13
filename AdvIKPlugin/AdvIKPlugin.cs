@@ -26,7 +26,7 @@ namespace AdvIKPlugin
     {
         public const string GUID = "orange.spork.advikplugin";
         public const string PluginName = "AdvIKPlugin";
-        public const string Version = "1.5.5";
+        public const string Version = "1.6.0";
 
         public static AdvIKPlugin Instance { get; set; }
 
@@ -39,6 +39,7 @@ namespace AdvIKPlugin
         public static ConfigEntry<bool> MakerBreathing { get; set; }
         public static ConfigEntry<float> MakerBreathScale { get; set; }
         public static ConfigEntry<float> MakerBreathRateScale { get; set; }
+        public static ConfigEntry<bool> StudioAutoApplyResize { get; set; }
 
         internal BepInEx.Logging.ManualLogSource Log => Logger;
 
@@ -61,6 +62,8 @@ namespace AdvIKPlugin
             MakerBreathing = Config.Bind("Options", "Breathe in Maker", false, new ConfigDescription("Characters in the Maker will Breathe", null, new ConfigurationManagerAttributes { Order = 4 }));
             MakerBreathScale = Config.Bind("Options", "Maker Breath Scale", 1.0f, new ConfigDescription("Multiplier applied to default breath sizing", new AcceptableValueRange<float>(.25f, 3f), new ConfigurationManagerAttributes { Order = 3 }));
             MakerBreathRateScale = Config.Bind("Options", "Maker Breath Rate Scale", 1.0f, new ConfigDescription("Multiplier applied to default breath rate (BPM)", new AcceptableValueRange<float>(.25f, 3f), new ConfigurationManagerAttributes { Order = 2 }));
+
+            StudioAutoApplyResize = Config.Bind("Options", "Studio - Auto Resize on Reload", true, "Automatically Apply Configured IK Adjustment on Reloading Characters");
 
             var harmony = Harmony.CreateAndPatchAll(typeof(Hooks));
             harmony.Patch(typeof(MPCharCtrl).GetNestedType("IKInfo", AccessTools.all).GetMethod("Init"), null, new HarmonyMethod(typeof(AdvIKGUI).GetMethod(nameof(AdvIKGUI.InitUI), AccessTools.all)));

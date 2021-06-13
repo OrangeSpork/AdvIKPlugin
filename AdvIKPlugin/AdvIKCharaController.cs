@@ -35,6 +35,7 @@ namespace AdvIKPlugin
         private float _spineStiffness = 0;
 
         private AdvIKShoulderRotator _shoulderRotator;
+        private IKResizeAdjustment _iKResizeAdjustment;
 
         private bool _loaded = false;
 
@@ -42,6 +43,11 @@ namespace AdvIKPlugin
         public BreathingBoneEffect BreathingController
         {
             get => _breathing;
+        }
+
+        public IKResizeAdjustment IKResizeController
+        {
+            get => _iKResizeAdjustment;
         }
 
         public bool ShoulderRotationEnabled
@@ -234,6 +240,7 @@ namespace AdvIKPlugin
             data.data["EnableToeFKHints"] = _enableToeFKHints;
 
             if (BreathingController != null) BreathingController.SaveConfig(data);
+            if (IKResizeController != null) IKResizeController.SaveConfig(data);
 
             SetExtendedData(data);
 
@@ -245,6 +252,12 @@ namespace AdvIKPlugin
             AdvIKPlugin.Instance.Log.LogInfo($"Loaded {_loaded} Reload {maintainState} {ChaControl.fileParam.fullname}");
             AdvIKPlugin.Instance.Log.LogInfo($"Before Shoulders: {ShoulderRotationEnabled} Breathing: {_breathing?.Enabled}");
 #endif
+            if (_iKResizeAdjustment == null)
+            {
+                _iKResizeAdjustment = new IKResizeAdjustment();
+            }
+            StartCoroutine("AdjustIKTargets");            
+
             if (maintainState || (_loaded && StudioAPI.InsideStudio))
             {
                 ResetBreathing();
@@ -269,16 +282,30 @@ namespace AdvIKPlugin
                 if (data.data.TryGetValue("ReverseShoulderR", out var val8)) ReverseShoulderR = (bool)val8;
                 if (data.data.TryGetValue("EnableToeFKHints", out var val9)) EnableToeFKHints = (bool)val9;
                 StartCoroutine("StartBreathing", data);
+                if (IKResizeController != null) IKResizeController.LoadConfig(data);
             }
             else
             {
                 ResetBreathing();
-            }
+            }            
 
 #if DEBUG
             AdvIKPlugin.Instance.Log.LogInfo($"After, BC Shoulders: {ShoulderRotationEnabled} Breathing: {_breathing?.Enabled}");
 #endif
             _loaded = true;
+        }
+
+        private IEnumerator AdjustIKTargets()
+        {
+            yield return new WaitUntil(() => ChaControl != null && ChaControl.objAnim != null);
+
+            // Wait for ABMX to run
+            yield return null;
+            yield return null;
+
+            _iKResizeAdjustment.OnReload(ChaControl);
+
+
         }
 
         private IEnumerator StartBreathing(PluginData data)

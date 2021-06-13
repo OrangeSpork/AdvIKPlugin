@@ -16,6 +16,7 @@ using IllusionUtility.SetUtility;
 using Illusion.Extensions;
 using UniRx.Triggers;
 using System.Collections;
+using GUITree;
 
 namespace AdvIKPlugin
 {
@@ -25,7 +26,11 @@ namespace AdvIKPlugin
         {
             private static GameObject AdvIKPanel;
             private static GameObject BreathPanel;
-            private static GameObject BreathShapePanel;            
+            private static GameObject BreathShapePanel;
+            private static GameObject ResizePanel;
+            
+
+
             private static Toggle ShoulderRotatorToggle;
             private static Toggle IndependentShoulderToggle;
             private static Toggle ReverseShoulderLToggle;
@@ -91,15 +96,56 @@ namespace AdvIKPlugin
             private static Slider abdomenShapeYSlider;
             private static Slider abdomenShapeZSlider;
 
+            // Resize Controls
+
+            private static Toggle resizeCentroid_None;
+            private static Toggle resizeCentroid_Auto;
+            private static Toggle resizeCentroid_Body;
+
+            private static Toggle resizeCentroid_FeetCenter;
+            private static Toggle resizeCentroid_FeetLeft;
+            private static Toggle resizeCentroid_FeetRight;
+
+            private static Toggle resizeCentroid_ThighCenter;
+            private static Toggle resizeCentroid_ThighLeft;
+            private static Toggle resizeCentroid_ThighRight;
+
+            private static Toggle resizeCentroid_ShoulderCenter;
+            private static Toggle resizeCentroid_ShoulderLeft;
+            private static Toggle resizeCentroid_ShoulderRight;
+
+            private static Toggle resizeCentroid_HandCenter;
+            private static Toggle resizeCentroid_HandLeft;
+            private static Toggle resizeCentroid_HandRight;
+
+            private static Toggle resizeCentroid_KneeCenter;
+            private static Toggle resizeCentroid_KneeLeft;
+            private static Toggle resizeCentroid_KneeRight;
+
+            private static Toggle resizeCentroid_ElbowCenter;
+            private static Toggle resizeCentroid_ElbowLeft;
+            private static Toggle resizeCentroid_ElbowRight;
+
+            private static Toggle resizeChainMode_LeftArm;
+            private static Toggle resizeChainMode_RightArm;
+            private static Toggle resizeChainMode_LeftLeg;
+            private static Toggle resizeChainMode_RightLeg;
+
+            private static Button resizeButton;
+            private static TextMeshProUGUI resizeButtonText;
 
             private static bool showAdvIKPanel = true;
+            private static bool showResizePanel = false;
 
-            private static Button breathPanelShowBreathButton;
+            private static Button breathPanelShowResizeButton;
             private static Button breathPanelShowIKOptsButton;
             private static Button openShapePanelButton;
 
             private static Button advIKPanelShowBreathButton;
-            private static Button advIKPanelShowIKOptsButton;
+            private static Button advIKPanelShowResizeButton;
+
+            private static Button resizePanelShowIKOptsButton;
+            private static Button resizePanelShowBreathButton;
 
 
             private static OCIChar selectedChar;
@@ -112,9 +158,11 @@ namespace AdvIKPlugin
                     CreatePanel(AdvIKPanel);
                     CreatePanel(BreathPanel);
                     CreatePanel(BreathShapePanel);
+                    CreatePanel(ResizePanel);
                     SetupAdvIKControls();
                     SetupBreathControls();
                     SetupBreathShapeControls();
+                    SetupResizeControls();
                 }
             }
 
@@ -164,6 +212,99 @@ namespace AdvIKPlugin
                     abdomenShapeYSlider.value = advIKController.BreathingController.AbdomenRelativeScaling.y;
                     abdomenShapeZSlider.value = advIKController.BreathingController.AbdomenRelativeScaling.z;
 
+                    updatingResizeCentroidControls = true;
+                    ClearResizeCentroidControls();                    
+                    switch (advIKController.IKResizeController.Centroid)
+                    {
+                        case Algos.IKResizeCentroid.AUTO:
+                            resizeCentroid_Auto.isOn = true;
+                            break;
+                        case Algos.IKResizeCentroid.NONE:
+                            resizeCentroid_None.isOn = true;
+                            break;
+                        case Algos.IKResizeCentroid.BODY:
+                            resizeCentroid_Body.isOn = true;
+                            break;
+                        case Algos.IKResizeCentroid.FEET_CENTER:
+                            resizeCentroid_FeetCenter.isOn = true;
+                            break;
+                        case Algos.IKResizeCentroid.FEET_LEFT:
+                            resizeCentroid_FeetLeft.isOn = true;
+                            break;
+                        case Algos.IKResizeCentroid.FEET_RIGHT:
+                            resizeCentroid_FeetRight.isOn = true;
+                            break;
+                        case Algos.IKResizeCentroid.THIGH_CENTER:
+                            resizeCentroid_ThighCenter.isOn = true;
+                            break;
+                        case Algos.IKResizeCentroid.THIGH_LEFT:
+                            resizeCentroid_ThighLeft.isOn = true;
+                            break;
+                        case Algos.IKResizeCentroid.THIGH_RIGHT:
+                            resizeCentroid_ThighRight.isOn = true;
+                            break;
+                        case Algos.IKResizeCentroid.HAND_CENTER:
+                            resizeCentroid_HandCenter.isOn = true;
+                            break;
+                        case Algos.IKResizeCentroid.HAND_LEFT:
+                            resizeCentroid_HandLeft.isOn = true;
+                            break;
+                        case Algos.IKResizeCentroid.HAND_RIGHT:
+                            resizeCentroid_HandRight.isOn = true;
+                            break;
+                        case Algos.IKResizeCentroid.SHOULDER_CENTER:
+                            resizeCentroid_ShoulderCenter.isOn = true;
+                            break;
+                        case Algos.IKResizeCentroid.SHOULDER_LEFT:
+                            resizeCentroid_ShoulderLeft.isOn = true;
+                            break;
+                        case Algos.IKResizeCentroid.SHOULDER_RIGHT:
+                            resizeCentroid_ShoulderRight.isOn = true;
+                            break;
+                        case Algos.IKResizeCentroid.KNEE_CENTER:
+                            resizeCentroid_KneeCenter.isOn = true;
+                            break;
+                        case Algos.IKResizeCentroid.KNEE_LEFT:
+                            resizeCentroid_KneeLeft.isOn = true;
+                            break;
+                        case Algos.IKResizeCentroid.KNEE_RIGHT:
+                            resizeCentroid_KneeRight.isOn = true;
+                            break;
+                        case Algos.IKResizeCentroid.ELBOW_CENTER:
+                            resizeCentroid_ElbowCenter.isOn = true;
+                            break;
+                        case Algos.IKResizeCentroid.ELBOW_LEFT:
+                            resizeCentroid_ElbowLeft.isOn = true;
+                            break;
+                        case Algos.IKResizeCentroid.ELBOW_RIGHT:
+                            resizeCentroid_ElbowRight.isOn = true;
+                            break;
+
+                    }
+                    Algos.IKResizeChainAdjustment leftArmAdjustment;
+                    if (!advIKController.IKResizeController.ChainAdjustments.TryGetValue(Algos.IKChain.LEFT_ARM, out leftArmAdjustment))
+                        leftArmAdjustment = Algos.IKResizeChainAdjustment.CHAIN;
+                    Algos.IKResizeChainAdjustment rightArmAdjustment;
+                    if (!advIKController.IKResizeController.ChainAdjustments.TryGetValue(Algos.IKChain.RIGHT_ARM, out rightArmAdjustment))
+                        rightArmAdjustment = Algos.IKResizeChainAdjustment.CHAIN;
+                    Algos.IKResizeChainAdjustment leftLegAdjustment;
+                    if (!advIKController.IKResizeController.ChainAdjustments.TryGetValue(Algos.IKChain.LEFT_LEG, out leftLegAdjustment))
+                        leftLegAdjustment = Algos.IKResizeChainAdjustment.CHAIN;
+                    Algos.IKResizeChainAdjustment rightLegAdjustment;
+                    if (!advIKController.IKResizeController.ChainAdjustments.TryGetValue(Algos.IKChain.RIGHT_LEG, out rightLegAdjustment))
+                        rightLegAdjustment = Algos.IKResizeChainAdjustment.CHAIN;
+
+                    resizeChainMode_LeftArm.isOn = leftArmAdjustment == Algos.IKResizeChainAdjustment.CHAIN;                                        
+                    resizeChainMode_RightArm.isOn = rightArmAdjustment == Algos.IKResizeChainAdjustment.CHAIN;
+                    resizeChainMode_LeftLeg.isOn = leftLegAdjustment == Algos.IKResizeChainAdjustment.CHAIN;
+                    resizeChainMode_RightLeg.isOn = rightLegAdjustment == Algos.IKResizeChainAdjustment.CHAIN;
+
+                    if (advIKController.IKResizeController.AdjustmentApplied)
+                        resizeButtonText.text = "Undo Resize Adjustment";
+                    else
+                        resizeButtonText.text = "Apply Resize Adjustment";
+
+                    updatingResizeCentroidControls = false;
                 }
             }
 
@@ -536,6 +677,1011 @@ namespace AdvIKPlugin
                 }
             }
 
+            public static void SetupResizeControls()
+            {
+                GameObject fkButton = GameObject.Find("StudioScene/Canvas Main Menu/02_Manipulate/00_Chara/02_Kinematic/Viewport/Content/FK");
+                var ikOptsButtonGO = Instantiate(fkButton, ResizePanel.transform);
+                ikOptsButtonGO.name = "IKS Opts";
+                ikOptsButtonGO.transform.localPosition = new Vector3(45, -65, 0);
+
+
+                TextMeshProUGUI tmp = ikOptsButtonGO.transform.GetChild(0).GetComponentInChildren(typeof(TextMeshProUGUI)) as TextMeshProUGUI;
+                tmp.text = "IK Solver";
+                resizePanelShowIKOptsButton = ikOptsButtonGO.GetComponent<Button>();
+                ClearButtonOnClick(resizePanelShowIKOptsButton);
+                resizePanelShowIKOptsButton.image.color = Color.white;
+
+                var breathOptsButtonGO = Instantiate(fkButton, ResizePanel.transform);
+                breathOptsButtonGO.name = "Breath Opts";
+                breathOptsButtonGO.transform.localPosition = new Vector3(145, -65, 0);
+
+                tmp = breathOptsButtonGO.transform.GetChild(0).GetComponentInChildren(typeof(TextMeshProUGUI)) as TextMeshProUGUI;
+                tmp.text = "Breath";
+                resizePanelShowBreathButton = breathOptsButtonGO.GetComponent<Button>();
+                ClearButtonOnClick(resizePanelShowBreathButton);
+                resizePanelShowBreathButton.image.color = Color.white;
+
+                resizePanelShowIKOptsButton.onClick.AddListener(() =>
+                {
+                    showAdvIKPanel = true;
+                    showResizePanel = false;
+                    BreathPanel.SetActive(false);
+                    ResizePanel.SetActive(false);
+                    AdvIKPanel.SetActive(true);
+                });
+
+                resizePanelShowBreathButton.onClick.AddListener(() =>
+                {
+                    showAdvIKPanel = false;
+                    showResizePanel = false;
+                    BreathPanel.SetActive(true);
+                    AdvIKPanel.SetActive(false);
+                    ResizePanel.SetActive(false);
+                });
+
+                Text resizeCentroidText = SetupText("ResizeCentroidDesc", -80, "Center - Adjust In/Out From Here", ResizePanel);
+                resizeCentroidText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 190);
+                resizeCentroidText.fontSize = 16;
+
+                Text resizeCentroidAdtlText = SetupText("ResizeCentroidDesc", -110, "Body - For Lying Poses", ResizePanel);
+                resizeCentroidAdtlText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 190);
+                resizeCentroidAdtlText.fontSize = 16;
+
+                // Row 1
+
+                Text resizeCentroidNoneText = SetupText("ResizeCentroid", -135, "Off:", ResizePanel);
+                resizeCentroidNoneText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 150);
+                resizeCentroidNoneText.fontSize = 16;
+                resizeCentroid_None = SetupToggle("ResizeCentroid", -135, resizeCentroidNoneText.transform, 30, ResizePanel);
+                resizeCentroid_None.onValueChanged.AddListener(delegate (bool value)
+                {
+                    if (updatingResizeCentroidControls)
+                    {
+                        return;
+                    }
+                    updatingResizeCentroidControls = true;
+                    ClearResizeCentroidControls();
+                    if (selectedChar != null && value)
+                    {
+                        resizeCentroid_None.isOn = true;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.IKResizeController.Centroid = Algos.IKResizeCentroid.NONE;
+                        }
+                        
+                    }
+                    else if (selectedChar != null)
+                    {
+                        resizeCentroid_Auto.isOn = true;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.IKResizeController.Centroid = Algos.IKResizeCentroid.AUTO;
+                        }
+                    }
+                    updatingResizeCentroidControls = false;
+                });
+
+                Text resizeCentroidAutoText = SetupText("ResizeCentroid", -135, 57, "Auto:", ResizePanel);
+                resizeCentroidAutoText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 150);
+                resizeCentroidAutoText.fontSize = 16;
+                resizeCentroid_Auto = SetupToggle("ResizeCentroid", -135, resizeCentroidAutoText.transform, 40, ResizePanel);
+                resizeCentroid_Auto.onValueChanged.AddListener(delegate (bool value)
+                {
+                    if (updatingResizeCentroidControls)
+                    {
+                        return;
+                    }
+                    updatingResizeCentroidControls = true;
+                    ClearResizeCentroidControls();
+                    if (selectedChar != null && value)
+                    {
+                        resizeCentroid_Auto.isOn = true;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.IKResizeController.Centroid = Algos.IKResizeCentroid.AUTO;
+                        }
+
+                    }
+                    else if (selectedChar != null)
+                    {
+                        resizeCentroid_None.isOn = true;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.IKResizeController.Centroid = Algos.IKResizeCentroid.NONE;
+                        }
+                    }
+                    updatingResizeCentroidControls = false;
+                });
+
+                Text resizeCentroidBodyText = SetupText("ResizeCentroid", -135, 125, "Body:", ResizePanel);
+                resizeCentroidBodyText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 150);
+                resizeCentroidBodyText.fontSize = 16;
+                resizeCentroid_Body = SetupToggle("ResizeCentroid", -135, resizeCentroidBodyText.transform, 40, ResizePanel);                
+                resizeCentroid_Body.onValueChanged.AddListener(delegate (bool value)
+                {
+                    if (updatingResizeCentroidControls)
+                    {
+                        return;
+                    }
+                    updatingResizeCentroidControls = true;
+                    ClearResizeCentroidControls();
+                    if (selectedChar != null && value)
+                    {
+                        resizeCentroid_Body.isOn = true;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.IKResizeController.Centroid = Algos.IKResizeCentroid.BODY;
+                        }
+
+                    }
+                    else if (selectedChar != null)
+                    {
+                        resizeCentroid_Auto.isOn = true;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.IKResizeController.Centroid = Algos.IKResizeCentroid.AUTO;
+                        }
+                    }
+                    updatingResizeCentroidControls = false;
+                });
+
+                // Row 2
+
+                Text resizeFeetCentroidText = SetupText("ResizeFeetDesc", -160, "Feet - Standing Poses", ResizePanel);
+                resizeFeetCentroidText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 190);
+                resizeFeetCentroidText.fontSize = 16;
+
+                Text resizeCentroidFeetLeftText = SetupText("ResizeCentroid", -185, "Left:", ResizePanel);
+                resizeCentroidFeetLeftText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 150);
+                resizeCentroidFeetLeftText.fontSize = 16;
+                resizeCentroid_FeetLeft = SetupToggle("ResizeCentroid", -185, resizeCentroidFeetLeftText.transform, 35, ResizePanel);
+                resizeCentroid_FeetLeft.onValueChanged.AddListener(delegate (bool value)
+                {
+                    if (updatingResizeCentroidControls)
+                    {
+                        return;
+                    }
+                    updatingResizeCentroidControls = true;
+                    ClearResizeCentroidControls();
+                    if (selectedChar != null && value)
+                    {
+                        resizeCentroid_FeetLeft.isOn = true;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.IKResizeController.Centroid = Algos.IKResizeCentroid.FEET_LEFT;
+                        }
+
+                    }
+                    else if (selectedChar != null)
+                    {
+                        resizeCentroid_Auto.isOn = true;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.IKResizeController.Centroid = Algos.IKResizeCentroid.AUTO;
+                        }
+                    }
+                    updatingResizeCentroidControls = false;
+                });
+
+                Text resizeCentroidFeetCntrText = SetupText("ResizeCentroid", -185, 60, "Cntr:", ResizePanel);
+                resizeCentroidFeetCntrText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 150);
+                resizeCentroidFeetCntrText.fontSize = 16;
+                resizeCentroid_FeetCenter = SetupToggle("ResizeCentroid", -185, resizeCentroidFeetCntrText.transform, 40, ResizePanel);
+                resizeCentroid_FeetCenter.onValueChanged.AddListener(delegate (bool value)
+                {
+                    if (updatingResizeCentroidControls)
+                    {
+                        return;
+                    }
+                    updatingResizeCentroidControls = true;
+                    ClearResizeCentroidControls();
+                    if (selectedChar != null && value)
+                    {
+                        resizeCentroid_FeetCenter.isOn = true;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.IKResizeController.Centroid = Algos.IKResizeCentroid.FEET_CENTER;
+                        }
+
+                    }
+                    else if (selectedChar != null)
+                    {
+                        resizeCentroid_None.isOn = true;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.IKResizeController.Centroid = Algos.IKResizeCentroid.NONE;
+                        }
+                    }
+                    updatingResizeCentroidControls = false;
+                });
+
+                Text resizeCentroidFeetRghtText = SetupText("ResizeCentroid", -185, 125, "Rgt:", ResizePanel);
+                resizeCentroidFeetRghtText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 150);
+                resizeCentroidFeetRghtText.fontSize = 16;
+                resizeCentroid_FeetRight = SetupToggle("ResizeCentroid", -185, resizeCentroidFeetRghtText.transform, 40, ResizePanel);
+                resizeCentroid_FeetRight.onValueChanged.AddListener(delegate (bool value)
+                {
+                    if (updatingResizeCentroidControls)
+                    {
+                        return;
+                    }
+                    updatingResizeCentroidControls = true;
+                    ClearResizeCentroidControls();
+                    if (selectedChar != null && value)
+                    {
+                        resizeCentroid_FeetRight.isOn = true;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.IKResizeController.Centroid = Algos.IKResizeCentroid.FEET_RIGHT;
+                        }
+
+                    }
+                    else if (selectedChar != null)
+                    {
+                        resizeCentroid_Auto.isOn = true;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.IKResizeController.Centroid = Algos.IKResizeCentroid.AUTO;
+                        }
+                    }
+                    updatingResizeCentroidControls = false;
+                });
+
+                // Row 3
+
+                Text resizeThighCentroidText = SetupText("ResizeThighDesc", -210, "Thigh - Seated Poses", ResizePanel);
+                resizeThighCentroidText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 190);
+                resizeThighCentroidText.fontSize = 16;
+
+                Text resizeCentroidThighLeftText = SetupText("ResizeCentroid", -235, "Left:", ResizePanel);
+                resizeCentroidThighLeftText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 150);
+                resizeCentroidThighLeftText.fontSize = 16;
+                resizeCentroid_ThighLeft = SetupToggle("ResizeCentroid", -235, resizeCentroidThighLeftText.transform, 35, ResizePanel);
+                resizeCentroid_ThighLeft.onValueChanged.AddListener(delegate (bool value)
+                {
+                    if (updatingResizeCentroidControls)
+                    {
+                        return;
+                    }
+                    updatingResizeCentroidControls = true;
+                    ClearResizeCentroidControls();
+                    if (selectedChar != null && value)
+                    {
+                        resizeCentroid_ThighLeft.isOn = true;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.IKResizeController.Centroid = Algos.IKResizeCentroid.THIGH_LEFT;
+                        }
+
+                    }
+                    else if (selectedChar != null)
+                    {
+                        resizeCentroid_Auto.isOn = true;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.IKResizeController.Centroid = Algos.IKResizeCentroid.AUTO;
+                        }
+                    }
+                    updatingResizeCentroidControls = false;
+                });
+
+                Text resizeCentroidThighCntrText = SetupText("ResizeCentroid", -235, 60, "Cntr:", ResizePanel);
+                resizeCentroidThighCntrText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 150);
+                resizeCentroidThighCntrText.fontSize = 16;
+                resizeCentroid_ThighCenter = SetupToggle("ResizeCentroid", -235, resizeCentroidThighCntrText.transform, 40, ResizePanel);
+                resizeCentroid_ThighCenter.onValueChanged.AddListener(delegate (bool value)
+                {
+                    if (updatingResizeCentroidControls)
+                    {
+                        return;
+                    }
+                    updatingResizeCentroidControls = true;
+                    ClearResizeCentroidControls();
+                    if (selectedChar != null && value)
+                    {
+                        resizeCentroid_ThighCenter.isOn = true;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.IKResizeController.Centroid = Algos.IKResizeCentroid.THIGH_CENTER;
+                        }
+
+                    }
+                    else if (selectedChar != null)
+                    {
+                        resizeCentroid_None.isOn = true;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.IKResizeController.Centroid = Algos.IKResizeCentroid.NONE;
+                        }
+                    }
+                    updatingResizeCentroidControls = false;
+                });
+
+                Text resizeCentroidThighRgtText = SetupText("ResizeCentroid", -235, 125, "Rgt:", ResizePanel);
+                resizeCentroidThighRgtText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 150);
+                resizeCentroidThighRgtText.fontSize = 16;
+                resizeCentroid_ThighRight = SetupToggle("ResizeCentroid", -235, resizeCentroidThighRgtText.transform, 40, ResizePanel);
+                resizeCentroid_ThighRight.onValueChanged.AddListener(delegate (bool value)
+                {
+                    if (updatingResizeCentroidControls)
+                    {
+                        return;
+                    }
+                    updatingResizeCentroidControls = true;
+                    ClearResizeCentroidControls();
+                    if (selectedChar != null && value)
+                    {
+                        resizeCentroid_ThighRight.isOn = true;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.IKResizeController.Centroid = Algos.IKResizeCentroid.BODY;
+                        }
+
+                    }
+                    else if (selectedChar != null)
+                    {
+                        resizeCentroid_Auto.isOn = true;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.IKResizeController.Centroid = Algos.IKResizeCentroid.AUTO;
+                        }
+                    }
+                    updatingResizeCentroidControls = false;
+                });
+
+                // Row 4
+
+                Text resizeHandCentroidText = SetupText("ResizeHandDesc", -260, "Hands - Dangling Poses", ResizePanel);
+                resizeHandCentroidText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 190);
+                resizeHandCentroidText.fontSize = 16;
+
+                Text resizeCentroidHandLeftText = SetupText("ResizeCentroid", -285, "Left:", ResizePanel);
+                resizeCentroidHandLeftText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 150);
+                resizeCentroidHandLeftText.fontSize = 16;
+                resizeCentroid_HandLeft = SetupToggle("ResizeCentroid", -285, resizeCentroidHandLeftText.transform, 35, ResizePanel);
+                resizeCentroid_HandLeft.onValueChanged.AddListener(delegate (bool value)
+                {
+                    if (updatingResizeCentroidControls)
+                    {
+                        return;
+                    }
+                    updatingResizeCentroidControls = true;
+                    ClearResizeCentroidControls();
+                    if (selectedChar != null && value)
+                    {
+                        resizeCentroid_HandLeft.isOn = true;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.IKResizeController.Centroid = Algos.IKResizeCentroid.HAND_LEFT;
+                        }
+
+                    }
+                    else if (selectedChar != null)
+                    {
+                        resizeCentroid_Auto.isOn = true;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.IKResizeController.Centroid = Algos.IKResizeCentroid.AUTO;
+                        }
+                    }
+                    updatingResizeCentroidControls = false;
+                });
+
+                Text resizeCentroidHandCntrText = SetupText("ResizeCentroid", -285, 60, "Cntr:", ResizePanel);
+                resizeCentroidHandCntrText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 150);
+                resizeCentroidHandCntrText.fontSize = 16;
+                resizeCentroid_HandCenter = SetupToggle("ResizeCentroid", -285, resizeCentroidHandCntrText.transform, 40, ResizePanel);
+                resizeCentroid_HandCenter.onValueChanged.AddListener(delegate (bool value)
+                {
+                    if (updatingResizeCentroidControls)
+                    {
+                        return;
+                    }
+                    updatingResizeCentroidControls = true;
+                    ClearResizeCentroidControls();
+                    if (selectedChar != null && value)
+                    {
+                        resizeCentroid_HandCenter.isOn = true;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.IKResizeController.Centroid = Algos.IKResizeCentroid.HAND_CENTER;
+                        }
+
+                    }
+                    else if (selectedChar != null)
+                    {
+                        resizeCentroid_None.isOn = true;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.IKResizeController.Centroid = Algos.IKResizeCentroid.NONE;
+                        }
+                    }
+                    updatingResizeCentroidControls = false;
+                });
+
+                Text resizeCentroidHandRgtText = SetupText("ResizeCentroid", -285, 125, "Rgt:", ResizePanel);
+                resizeCentroidHandRgtText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 150);
+                resizeCentroidHandRgtText.fontSize = 16;
+                resizeCentroid_HandRight = SetupToggle("ResizeCentroid", -285, resizeCentroidHandRgtText.transform, 40, ResizePanel);
+                resizeCentroid_HandRight.onValueChanged.AddListener(delegate (bool value)
+                {
+                    if (updatingResizeCentroidControls)
+                    {
+                        return;
+                    }
+                    updatingResizeCentroidControls = true;
+                    ClearResizeCentroidControls();
+                    if (selectedChar != null && value)
+                    {
+                        resizeCentroid_HandRight.isOn = true;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.IKResizeController.Centroid = Algos.IKResizeCentroid.HAND_RIGHT;
+                        }
+
+                    }
+                    else if (selectedChar != null)
+                    {
+                        resizeCentroid_Auto.isOn = true;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.IKResizeController.Centroid = Algos.IKResizeCentroid.AUTO;
+                        }
+                    }
+                    updatingResizeCentroidControls = false;
+                });
+
+                // Row 5
+
+                Text resizeShldrCentroidText = SetupText("ResizeShldrDesc", -310, "Shoulder - Some Back Poses", ResizePanel);
+                resizeShldrCentroidText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 190);
+                resizeShldrCentroidText.fontSize = 16;
+
+                Text resizeCentroidShldrLeftText = SetupText("ResizeCentroid", -335, "Left:", ResizePanel);
+                resizeCentroidShldrLeftText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 150);
+                resizeCentroidShldrLeftText.fontSize = 16;
+                resizeCentroid_ShoulderLeft = SetupToggle("ResizeCentroid", -335, resizeCentroidShldrLeftText.transform, 35, ResizePanel);
+                resizeCentroid_ShoulderLeft.onValueChanged.AddListener(delegate (bool value)
+                {
+                    if (updatingResizeCentroidControls)
+                    {
+                        return;
+                    }
+                    updatingResizeCentroidControls = true;
+                    ClearResizeCentroidControls();
+                    if (selectedChar != null && value)
+                    {
+                        resizeCentroid_ShoulderLeft.isOn = true;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.IKResizeController.Centroid = Algos.IKResizeCentroid.SHOULDER_LEFT;
+                        }
+
+                    }
+                    else if (selectedChar != null)
+                    {
+                        resizeCentroid_Auto.isOn = true;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.IKResizeController.Centroid = Algos.IKResizeCentroid.AUTO;
+                        }
+                    }
+                    updatingResizeCentroidControls = false;
+                });
+
+                Text resizeCentroidShldrCntrText = SetupText("ResizeCentroid", -335, 60, "Cntr:", ResizePanel);
+                resizeCentroidShldrCntrText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 150);
+                resizeCentroidShldrCntrText.fontSize = 16;
+                resizeCentroid_ShoulderCenter = SetupToggle("ResizeCentroid", -335, resizeCentroidShldrCntrText.transform, 40, ResizePanel);
+                resizeCentroid_ShoulderCenter.onValueChanged.AddListener(delegate (bool value)
+                {
+                    if (updatingResizeCentroidControls)
+                    {
+                        return;
+                    }
+                    updatingResizeCentroidControls = true;
+                    ClearResizeCentroidControls();
+                    if (selectedChar != null && value)
+                    {
+                        resizeCentroid_ShoulderCenter.isOn = true;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.IKResizeController.Centroid = Algos.IKResizeCentroid.SHOULDER_CENTER;
+                        }
+
+                    }
+                    else if (selectedChar != null)
+                    {
+                        resizeCentroid_None.isOn = true;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.IKResizeController.Centroid = Algos.IKResizeCentroid.NONE;
+                        }
+                    }
+                    updatingResizeCentroidControls = false;
+                });
+
+                Text resizeCentroidShldrRgtText = SetupText("ResizeCentroid", -335, 125, "Rgt:", ResizePanel);
+                resizeCentroidShldrRgtText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 150);
+                resizeCentroidShldrRgtText.fontSize = 16;
+                resizeCentroid_ShoulderRight = SetupToggle("ResizeCentroid", -335, resizeCentroidShldrRgtText.transform, 40, ResizePanel);
+                resizeCentroid_ShoulderRight.onValueChanged.AddListener(delegate (bool value)
+                {
+                    if (updatingResizeCentroidControls)
+                    {
+                        return;
+                    }
+                    updatingResizeCentroidControls = true;
+                    ClearResizeCentroidControls();
+                    if (selectedChar != null && value)
+                    {
+                        resizeCentroid_ShoulderRight.isOn = true;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.IKResizeController.Centroid = Algos.IKResizeCentroid.SHOULDER_RIGHT;
+                        }
+
+                    }
+                    else if (selectedChar != null)
+                    {
+                        resizeCentroid_Auto.isOn = true;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.IKResizeController.Centroid = Algos.IKResizeCentroid.AUTO;
+                        }
+                    }
+                    updatingResizeCentroidControls = false;
+                });
+
+                // Row 6
+
+                Text resizeKneeCentroidText = SetupText("ResizeShldrDesc", -360, "Knee - Kneeling Poses", ResizePanel);
+                resizeKneeCentroidText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 190);
+                resizeKneeCentroidText.fontSize = 16;
+
+                Text resizeCentroidKneeLeftText = SetupText("ResizeCentroid", -385, "Left:", ResizePanel);
+                resizeCentroidKneeLeftText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 150);
+                resizeCentroidKneeLeftText.fontSize = 16;
+                resizeCentroid_KneeLeft = SetupToggle("ResizeCentroid", -385, resizeCentroidKneeLeftText.transform, 35, ResizePanel);
+                resizeCentroid_KneeLeft.onValueChanged.AddListener(delegate (bool value)
+                {
+                    if (updatingResizeCentroidControls)
+                    {
+                        return;
+                    }
+                    updatingResizeCentroidControls = true;
+                    ClearResizeCentroidControls();
+                    if (selectedChar != null && value)
+                    {
+                        resizeCentroid_KneeLeft.isOn = true;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.IKResizeController.Centroid = Algos.IKResizeCentroid.KNEE_LEFT;
+                        }
+
+                    }
+                    else if (selectedChar != null)
+                    {
+                        resizeCentroid_Auto.isOn = true;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.IKResizeController.Centroid = Algos.IKResizeCentroid.AUTO;
+                        }
+                    }
+                    updatingResizeCentroidControls = false;
+                });
+
+                Text resizeCentroidKneeCntrText = SetupText("ResizeCentroid", -385, 60, "Cntr:", ResizePanel);
+                resizeCentroidKneeCntrText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 150);
+                resizeCentroidKneeCntrText.fontSize = 16;
+                resizeCentroid_KneeCenter = SetupToggle("ResizeCentroid", -385, resizeCentroidKneeCntrText.transform, 40, ResizePanel);
+                resizeCentroid_KneeCenter.onValueChanged.AddListener(delegate (bool value)
+                {
+                    if (updatingResizeCentroidControls)
+                    {
+                        return;
+                    }
+                    updatingResizeCentroidControls = true;
+                    ClearResizeCentroidControls();
+                    if (selectedChar != null && value)
+                    {
+                        resizeCentroid_KneeCenter.isOn = true;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.IKResizeController.Centroid = Algos.IKResizeCentroid.KNEE_CENTER;
+                        }
+
+                    }
+                    else if (selectedChar != null)
+                    {
+                        resizeCentroid_None.isOn = true;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.IKResizeController.Centroid = Algos.IKResizeCentroid.NONE;
+                        }
+                    }
+                    updatingResizeCentroidControls = false;
+                });
+
+                Text resizeCentroidKneeRgtText = SetupText("ResizeCentroid", -385, 125, "Rgt:", ResizePanel);
+                resizeCentroidKneeRgtText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 150);
+                resizeCentroidKneeRgtText.fontSize = 16;
+                resizeCentroid_KneeRight = SetupToggle("ResizeCentroid", -385, resizeCentroidKneeRgtText.transform, 40, ResizePanel);
+                resizeCentroid_KneeRight.onValueChanged.AddListener(delegate (bool value)
+                {
+                    if (updatingResizeCentroidControls)
+                    {
+                        return;
+                    }
+                    updatingResizeCentroidControls = true;
+                    ClearResizeCentroidControls();
+                    if (selectedChar != null && value)
+                    {
+                        resizeCentroid_KneeRight.isOn = true;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.IKResizeController.Centroid = Algos.IKResizeCentroid.KNEE_RIGHT;
+                        }
+
+                    }
+                    else if (selectedChar != null)
+                    {
+                        resizeCentroid_Auto.isOn = true;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.IKResizeController.Centroid = Algos.IKResizeCentroid.AUTO;
+                        }
+                    }
+                    updatingResizeCentroidControls = false;
+                });
+
+                // Row 7
+
+                Text resizeElbowCentroidText = SetupText("ResizeShldrDesc", -410, "Elbow - Some Back Poses", ResizePanel);
+                resizeElbowCentroidText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 190);
+                resizeElbowCentroidText.fontSize = 16;
+
+                Text resizeCentroidElbowLeftText = SetupText("ResizeCentroid", -435, "Left:", ResizePanel);
+                resizeCentroidElbowLeftText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 150);
+                resizeCentroidElbowLeftText.fontSize = 16;
+                resizeCentroid_ElbowLeft = SetupToggle("ResizeCentroid", -435, resizeCentroidElbowLeftText.transform, 35, ResizePanel);
+                resizeCentroid_ElbowLeft.onValueChanged.AddListener(delegate (bool value)
+                {
+                    if (updatingResizeCentroidControls)
+                    {
+                        return;
+                    }
+                    updatingResizeCentroidControls = true;
+                    ClearResizeCentroidControls();
+                    if (selectedChar != null && value)
+                    {
+                        resizeCentroid_ElbowLeft.isOn = true;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.IKResizeController.Centroid = Algos.IKResizeCentroid.ELBOW_LEFT;
+                        }
+
+                    }
+                    else if (selectedChar != null)
+                    {
+                        resizeCentroid_Auto.isOn = true;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.IKResizeController.Centroid = Algos.IKResizeCentroid.AUTO;
+                        }
+                    }
+                    updatingResizeCentroidControls = false;
+                });
+
+                Text resizeCentroidElbowCntrText = SetupText("ResizeCentroid", -435, 60, "Cntr:", ResizePanel);
+                resizeCentroidElbowCntrText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 150);
+                resizeCentroidElbowCntrText.fontSize = 16;
+                resizeCentroid_ElbowCenter = SetupToggle("ResizeCentroid", -435, resizeCentroidElbowCntrText.transform, 40, ResizePanel);
+                resizeCentroid_ElbowCenter.onValueChanged.AddListener(delegate (bool value)
+                {
+                    if (updatingResizeCentroidControls)
+                    {
+                        return;
+                    }
+                    updatingResizeCentroidControls = true;
+                    ClearResizeCentroidControls();
+                    if (selectedChar != null && value)
+                    {
+                        resizeCentroid_ElbowCenter.isOn = true;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.IKResizeController.Centroid = Algos.IKResizeCentroid.ELBOW_CENTER;
+                        }
+
+                    }
+                    else if (selectedChar != null)
+                    {
+                        resizeCentroid_None.isOn = true;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.IKResizeController.Centroid = Algos.IKResizeCentroid.NONE;
+                        }
+                    }
+                    updatingResizeCentroidControls = false;
+                });
+
+                Text resizeCentroidElbowRgtText = SetupText("ResizeCentroid", -435, 125, "Rgt:", ResizePanel);
+                resizeCentroidElbowRgtText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 150);
+                resizeCentroidElbowRgtText.fontSize = 16;
+                resizeCentroid_ElbowRight = SetupToggle("ResizeCentroid", -435, resizeCentroidElbowRgtText.transform, 40, ResizePanel);
+                resizeCentroid_ElbowRight.onValueChanged.AddListener(delegate (bool value)
+                {
+                    if (updatingResizeCentroidControls)
+                    {
+                        return;
+                    }
+                    updatingResizeCentroidControls = true;
+                    ClearResizeCentroidControls();
+                    if (selectedChar != null && value)
+                    {
+                        resizeCentroid_ElbowRight.isOn = true;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.IKResizeController.Centroid = Algos.IKResizeCentroid.ELBOW_RIGHT;
+                        }
+
+                    }
+                    else if (selectedChar != null)
+                    {
+                        resizeCentroid_Auto.isOn = true;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.IKResizeController.Centroid = Algos.IKResizeCentroid.AUTO;
+                        }
+                    }
+                    updatingResizeCentroidControls = false;
+                });
+
+                // Left Arm Chain Mode
+
+                Text resizeLeftArmChainText = SetupText("ResizeLAChainDesc", -460, "Turn On/Off Ind. Limbs", ResizePanel);
+                resizeLeftArmChainText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 190);
+                resizeLeftArmChainText.fontSize = 16;
+
+                Text resizeLeftArmChainOffText = SetupText("ResizeCentroid", -485, "Left Arm:", ResizePanel);
+                resizeLeftArmChainOffText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 150);
+                resizeLeftArmChainOffText.fontSize = 16;
+                resizeChainMode_LeftArm = SetupToggle("ResizeCentroid", -485, resizeLeftArmChainOffText.transform, 65, ResizePanel);
+                resizeChainMode_LeftArm.onValueChanged.AddListener(delegate (bool value)
+                {
+                    if (updatingResizeCentroidControls)
+                    {
+                        return;
+                    }
+                    updatingResizeCentroidControls = true;
+                    
+                    if (selectedChar != null && value)
+                    {
+                        resizeChainMode_LeftArm.isOn = true;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.IKResizeController.ChainAdjustments[Algos.IKChain.LEFT_ARM] = Algos.IKResizeChainAdjustment.CHAIN;
+                        }
+
+                    }
+                    else if (selectedChar != null)
+                    {
+                        resizeChainMode_LeftArm.isOn = false;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.IKResizeController.ChainAdjustments[Algos.IKChain.LEFT_ARM] = Algos.IKResizeChainAdjustment.OFF;
+                        }
+                    }
+                    updatingResizeCentroidControls = false;
+                });
+
+                Text resizeRightArmChainOffText = SetupText("ResizeCentroid", -485, 90, "Right Arm:", ResizePanel);
+                resizeRightArmChainOffText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 150);
+                resizeRightArmChainOffText.fontSize = 16;
+                resizeChainMode_RightArm = SetupToggle("ResizeCentroid", -485, resizeRightArmChainOffText.transform, 75, ResizePanel);
+                resizeChainMode_RightArm.onValueChanged.AddListener(delegate (bool value)
+                {
+                    if (updatingResizeCentroidControls)
+                    {
+                        return;
+                    }
+                    updatingResizeCentroidControls = true;
+
+                    if (selectedChar != null && value)
+                    {
+                        resizeChainMode_RightArm.isOn = true;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.IKResizeController.ChainAdjustments[Algos.IKChain.RIGHT_ARM] = Algos.IKResizeChainAdjustment.CHAIN;
+                        }
+
+                    }
+                    else if (selectedChar != null)
+                    {
+                        resizeChainMode_RightArm.isOn = false;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.IKResizeController.ChainAdjustments[Algos.IKChain.RIGHT_ARM] = Algos.IKResizeChainAdjustment.OFF;
+                        }
+                    }
+                    updatingResizeCentroidControls = false;
+                });                
+
+                Text resizeLeftLegChainOffText = SetupText("ResizeCentroid", -510, "Left Leg:", ResizePanel);
+                resizeLeftLegChainOffText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 150);
+                resizeLeftLegChainOffText.fontSize = 16;
+                resizeChainMode_LeftLeg = SetupToggle("ResizeCentroid", -510, resizeLeftLegChainOffText.transform, 65, ResizePanel);
+                resizeChainMode_LeftLeg.onValueChanged.AddListener(delegate (bool value)
+                {
+                    if (updatingResizeCentroidControls)
+                    {
+                        return;
+                    }
+                    updatingResizeCentroidControls = true;
+
+                    if (selectedChar != null && value)
+                    {
+                        resizeChainMode_LeftLeg.isOn = true;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.IKResizeController.ChainAdjustments[Algos.IKChain.LEFT_LEG] = Algos.IKResizeChainAdjustment.CHAIN;
+                        }
+
+                    }
+                    else if (selectedChar != null)
+                    {
+                        resizeChainMode_LeftLeg.isOn = false;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.IKResizeController.ChainAdjustments[Algos.IKChain.LEFT_LEG] = Algos.IKResizeChainAdjustment.OFF;
+                        }
+                    }
+                    updatingResizeCentroidControls = false;
+                });
+
+                Text resizeRightLegChainOffText = SetupText("ResizeCentroid", -510, 90, "Right Leg:", ResizePanel);
+                resizeRightLegChainOffText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 150);
+                resizeRightLegChainOffText.fontSize = 16;
+                resizeChainMode_RightLeg = SetupToggle("ResizeCentroid", -510, resizeRightLegChainOffText.transform, 75, ResizePanel);
+                resizeChainMode_RightLeg.onValueChanged.AddListener(delegate (bool value)
+                {
+                    if (updatingResizeCentroidControls)
+                    {
+                        return;
+                    }
+                    updatingResizeCentroidControls = true;
+
+                    if (selectedChar != null && value)
+                    {
+                        resizeChainMode_RightLeg.isOn = true;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.IKResizeController.ChainAdjustments[Algos.IKChain.RIGHT_LEG] = Algos.IKResizeChainAdjustment.CHAIN;
+                        }
+
+                    }
+                    else if (selectedChar != null)
+                    {
+                        resizeChainMode_RightLeg.isOn = false;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.IKResizeController.ChainAdjustments[Algos.IKChain.RIGHT_LEG] = Algos.IKResizeChainAdjustment.OFF;
+                        }
+                    }
+                    updatingResizeCentroidControls = false;
+                });
+
+                // Undo/Redo Button
+
+                var resizeButtonGO = Instantiate(fkButton, ResizePanel.transform);
+                resizeButtonGO.name = "Undo Resize";
+                resizeButtonGO.transform.localPosition = new Vector3(100, -575, 0);
+                resizeButtonGO.GetComponent<RectTransform>().sizeDelta = new Vector2(200, 20);
+                resizeButtonGO.GetComponent<PreferredSizeFitter>().preferredWidth = 200;
+
+                resizeButtonText = resizeButtonGO.transform.GetChild(0).GetComponentInChildren(typeof(TextMeshProUGUI)) as TextMeshProUGUI;
+                resizeButtonText.text = "Undo Resize Adjustment";
+                resizeButtonText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 200);
+                resizeButton = resizeButtonGO.GetComponent<Button>();
+                ClearButtonOnClick(resizeButton);
+                resizeButton.image.color = Color.white;
+                resizeButton.image.rectTransform.sizeDelta = new Vector2(180, 20);
+
+                resizeButton.onClick.AddListener(() =>
+                {
+                    foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                    {
+                        if (controller.IKResizeController.AdjustmentApplied)
+                            controller.IKResizeController.UndoAdjustment();
+                        else
+                            controller.IKResizeController.ApplyAdjustment();
+
+                        if (controller.IKResizeController.AdjustmentApplied)
+                            resizeButtonText.text = "Undo Resize Adjustment";
+                        else
+                            resizeButtonText.text = "Apply Resize Adjustment";
+                    }
+                });
+
+                // Clear controls
+                foreach (Transform child in ResizePanel.transform)
+                {
+                    if (child.gameObject != ikOptsButtonGO && child.gameObject != breathOptsButtonGO && child.gameObject != resizeCentroidText.gameObject && child.gameObject != resizeCentroidAdtlText.gameObject
+                        && child.gameObject != resizeButtonGO && child.gameObject != resizeButton.gameObject
+                        && child.gameObject != resizePanelShowBreathButton.gameObject && child.gameObject != resizePanelShowIKOptsButton.gameObject
+                        && child.gameObject != resizeCentroidBodyText.gameObject && child.gameObject != resizeCentroid_Body.gameObject
+                        && child.gameObject != resizeCentroidAutoText.gameObject && child.gameObject != resizeCentroid_Auto.gameObject
+                        && child.gameObject != resizeCentroidNoneText.gameObject && child.gameObject != resizeCentroid_None.gameObject
+
+                        && child.gameObject != resizeCentroidFeetCntrText.gameObject && child.gameObject != resizeCentroidFeetLeftText.gameObject && child.gameObject != resizeCentroidFeetRghtText.gameObject && child.gameObject != resizeFeetCentroidText.gameObject
+                        && child.gameObject != resizeCentroid_FeetCenter.gameObject && child.gameObject != resizeCentroid_FeetLeft.gameObject && child.gameObject != resizeCentroid_FeetRight.gameObject
+
+                        && child.gameObject != resizeCentroidThighCntrText.gameObject && child.gameObject != resizeCentroidThighLeftText.gameObject && child.gameObject != resizeCentroidThighRgtText.gameObject && child.gameObject != resizeThighCentroidText.gameObject
+                        && child.gameObject != resizeCentroid_ThighCenter.gameObject && child.gameObject != resizeCentroid_ThighLeft.gameObject && child.gameObject != resizeCentroid_ThighRight.gameObject
+
+                        && child.gameObject != resizeCentroidHandCntrText.gameObject && child.gameObject != resizeCentroidHandLeftText.gameObject && child.gameObject != resizeCentroidHandRgtText.gameObject && child.gameObject != resizeHandCentroidText.gameObject
+                        && child.gameObject != resizeCentroid_HandCenter.gameObject && child.gameObject != resizeCentroid_HandLeft.gameObject && child.gameObject != resizeCentroid_HandRight.gameObject
+
+                        && child.gameObject != resizeCentroidShldrCntrText.gameObject && child.gameObject != resizeCentroidShldrLeftText.gameObject && child.gameObject != resizeCentroidShldrRgtText.gameObject && child.gameObject != resizeShldrCentroidText.gameObject
+                        && child.gameObject != resizeCentroid_ShoulderCenter.gameObject && child.gameObject != resizeCentroid_ShoulderLeft.gameObject && child.gameObject != resizeCentroid_ShoulderRight.gameObject
+
+                        && child.gameObject != resizeCentroidKneeCntrText.gameObject && child.gameObject != resizeCentroidKneeLeftText.gameObject && child.gameObject != resizeCentroidKneeRgtText.gameObject && child.gameObject != resizeKneeCentroidText.gameObject
+                        && child.gameObject != resizeCentroid_KneeCenter.gameObject && child.gameObject != resizeCentroid_KneeLeft.gameObject && child.gameObject != resizeCentroid_KneeRight.gameObject
+
+                        && child.gameObject != resizeCentroidElbowCntrText.gameObject && child.gameObject != resizeCentroidElbowLeftText.gameObject && child.gameObject != resizeCentroidElbowRgtText.gameObject && child.gameObject != resizeElbowCentroidText.gameObject
+                        && child.gameObject != resizeCentroid_ElbowCenter.gameObject && child.gameObject != resizeCentroid_ElbowLeft.gameObject && child.gameObject != resizeCentroid_ElbowRight.gameObject
+
+                        && child.gameObject != resizeLeftArmChainOffText.gameObject && child.gameObject != resizeLeftArmChainText.gameObject
+                        && child.gameObject != resizeChainMode_LeftArm.gameObject
+
+                        && child.gameObject != resizeRightArmChainOffText.gameObject
+                        && child.gameObject != resizeChainMode_RightArm.gameObject
+
+                        && child.gameObject != resizeLeftLegChainOffText.gameObject
+                        && child.gameObject != resizeChainMode_LeftLeg.gameObject
+
+                        && child.gameObject != resizeRightLegChainOffText.gameObject
+                        && child.gameObject != resizeChainMode_RightLeg.gameObject
+
+                        )
+                    {
+                        Destroy(child.gameObject);
+                    }
+                }
+            }
+
+            private static bool updatingResizeCentroidControls = false;
+            private static void ClearResizeCentroidControls()
+            {
+                resizeCentroid_None.isOn = false;
+                resizeCentroid_Auto.isOn = false;
+                resizeCentroid_Body.isOn = false;
+
+                resizeCentroid_FeetCenter.isOn = false;
+                resizeCentroid_FeetLeft.isOn = false;
+                resizeCentroid_FeetRight.isOn = false;
+
+                resizeCentroid_ThighCenter.isOn = false;
+                resizeCentroid_ThighLeft.isOn = false;
+                resizeCentroid_ThighRight.isOn = false;
+
+                resizeCentroid_ShoulderCenter.isOn = false;
+                resizeCentroid_ShoulderLeft.isOn = false;
+                resizeCentroid_ShoulderRight.isOn = false;
+
+                resizeCentroid_HandCenter.isOn = false;
+                resizeCentroid_HandLeft.isOn = false;
+                resizeCentroid_HandRight.isOn = false;
+
+                resizeCentroid_KneeCenter.isOn = false;
+                resizeCentroid_KneeLeft.isOn = false;
+                resizeCentroid_KneeRight.isOn = false;
+
+                resizeCentroid_ElbowCenter.isOn = false;
+                resizeCentroid_ElbowLeft.isOn = false;
+                resizeCentroid_ElbowRight.isOn = false;
+            }
+
             public static void SetupBreathControls()
             {
                 GameObject fkButton = GameObject.Find("StudioScene/Canvas Main Menu/02_Manipulate/00_Chara/02_Kinematic/Viewport/Content/FK");
@@ -555,31 +1701,27 @@ namespace AdvIKPlugin
                 breathOptsButtonGO.transform.localPosition = new Vector3(145, -65, 0);
 
                 tmp = breathOptsButtonGO.transform.GetChild(0).GetComponentInChildren(typeof(TextMeshProUGUI)) as TextMeshProUGUI;
-                tmp.text = "Breath";
-                breathPanelShowBreathButton = breathOptsButtonGO.GetComponent<Button>();
-                ClearButtonOnClick(breathPanelShowBreathButton);
-                breathPanelShowBreathButton.image.color = Color.green;
+                tmp.text = "Resize";
+                breathPanelShowResizeButton = breathOptsButtonGO.GetComponent<Button>();
+                ClearButtonOnClick(breathPanelShowResizeButton);
+                breathPanelShowResizeButton.image.color = Color.white;
 
                 breathPanelShowIKOptsButton.onClick.AddListener(() =>
                 {
                     showAdvIKPanel = true;
+                    showResizePanel = false;
                     BreathPanel.SetActive(false);
                     AdvIKPanel.SetActive(true);
-                    advIKPanelShowIKOptsButton.image.color = Color.green;
-                    breathPanelShowIKOptsButton.image.color = Color.green;
-                    advIKPanelShowBreathButton.image.color = Color.white;
-                    breathPanelShowBreathButton.image.color = Color.white;
+                    ResizePanel.SetActive(false);
                 });
 
-                breathPanelShowBreathButton.onClick.AddListener(() =>
+                breathPanelShowResizeButton.onClick.AddListener(() =>
                 {
                     showAdvIKPanel = false;
-                    BreathPanel.SetActive(true);
+                    showResizePanel = true;
+                    BreathPanel.SetActive(false);
                     AdvIKPanel.SetActive(false);
-                    advIKPanelShowIKOptsButton.image.color = Color.white;
-                    breathPanelShowIKOptsButton.image.color = Color.white;
-                    advIKPanelShowBreathButton.image.color = Color.green;
-                    breathPanelShowBreathButton.image.color = Color.green;
+                    ResizePanel.SetActive(true);
                 });
 
 
@@ -815,10 +1957,10 @@ namespace AdvIKPlugin
 
 
                 TextMeshProUGUI tmp = ikOptsButtonGO.transform.GetChild(0).GetComponentInChildren(typeof(TextMeshProUGUI)) as TextMeshProUGUI;
-                tmp.text = "IK Solver";
-                advIKPanelShowIKOptsButton = ikOptsButtonGO.GetComponent<Button>();
-                ClearButtonOnClick(advIKPanelShowIKOptsButton);
-                advIKPanelShowIKOptsButton.image.color = Color.green;
+                tmp.text = "Resize";
+                advIKPanelShowResizeButton = ikOptsButtonGO.GetComponent<Button>();
+                ClearButtonOnClick(advIKPanelShowResizeButton);
+                advIKPanelShowResizeButton.image.color = Color.white;
 
                 var breathOptsButtonGO = Instantiate(fkButton, AdvIKPanel.transform);
                 breathOptsButtonGO.name = "Breath Opts";
@@ -830,26 +1972,22 @@ namespace AdvIKPlugin
                 ClearButtonOnClick(advIKPanelShowBreathButton);
                 advIKPanelShowBreathButton.image.color = Color.white;
 
-                advIKPanelShowIKOptsButton.onClick.AddListener(() =>
+                advIKPanelShowResizeButton.onClick.AddListener(() =>
                 {
-                    showAdvIKPanel = true;
+                    showAdvIKPanel = false;
+                    showResizePanel = true;
                     BreathPanel.SetActive(false);
-                    AdvIKPanel.SetActive(true);
-                    advIKPanelShowIKOptsButton.image.color = Color.green;
-                    breathPanelShowIKOptsButton.image.color = Color.green;
-                    advIKPanelShowBreathButton.image.color = Color.white;
-                    breathPanelShowBreathButton.image.color = Color.white;
+                    ResizePanel.SetActive(true);
+                    AdvIKPanel.SetActive(false);
                 });
 
                 advIKPanelShowBreathButton.onClick.AddListener(() =>
                 {
                     showAdvIKPanel = false;
+                    showResizePanel = false;
                     BreathPanel.SetActive(true);
                     AdvIKPanel.SetActive(false);
-                    advIKPanelShowIKOptsButton.image.color = Color.white;
-                    breathPanelShowIKOptsButton.image.color = Color.white;
-                    advIKPanelShowBreathButton.image.color = Color.green;
-                    breathPanelShowBreathButton.image.color = Color.green;
+                    ResizePanel.SetActive(false);
                 });
 
                 Text shoulderToggleText = SetupText("ShoulderRotationEnabled", -80, "Shoulder Rotation", AdvIKPanel);
@@ -1116,6 +2254,15 @@ namespace AdvIKPlugin
                 return txt;
             }
 
+            private static Text SetupText(string name, int pos, int xoffset, string text, GameObject parent)
+            {
+                Text txt = Instantiate(GetPanelObject<Text>("Text Neck", parent), parent.transform);
+                txt.name = name;
+                txt.text = text;
+                txt.transform.localPosition = new Vector3(txt.transform.localPosition.x + xoffset + 10, pos, txt.transform.localPosition.z);
+                return txt;
+            }
+
             private static Toggle SetupToggle(string name, int pos, GameObject parent)
             {
                 Toggle tglOriginal = GetPanelObject<Toggle>("Toggle Neck", parent);
@@ -1126,6 +2273,17 @@ namespace AdvIKPlugin
                 return tgl;
 
             }
+            private static Toggle SetupToggle(string name, int pos, Transform xFrom, int xoffset, GameObject parent)
+            {
+                Toggle tglOriginal = GetPanelObject<Toggle>("Toggle Neck", parent);
+                Toggle tgl = Instantiate(tglOriginal, parent.transform);
+                tgl.name = name;
+                tgl.transform.localPosition = new Vector3(xFrom.localPosition.x + xoffset, pos, tgl.transform.localPosition.z);
+                tgl.onValueChanged.RemoveAllListeners();
+                return tgl;
+
+            }
+
 
             public static void CreatePanel(GameObject obj)
             {
@@ -1165,6 +2323,7 @@ namespace AdvIKPlugin
                 AdvIKPanel = Instantiate(originalPanel, kineMenu.transform, true);
                 BreathPanel = Instantiate(originalPanel, kineMenu.transform, true);
                 BreathShapePanel = Instantiate(originalPanel, kineMenu.transform, true);
+                ResizePanel = Instantiate(originalPanel, kineMenu.transform, true);
 
                 RectTransform rect = AdvIKPanel.GetComponent<RectTransform>();
                 rect.sizeDelta = new Vector2(202, 550);
@@ -1174,6 +2333,9 @@ namespace AdvIKPlugin
 
                 rect = BreathShapePanel.GetComponent<RectTransform>();
                 rect.sizeDelta = new Vector3(222, 340);
+
+                rect = ResizePanel.GetComponent<RectTransform>();
+                rect.sizeDelta = new Vector2(202, 600);
              
                 Button fkikSelectButton = newSelect.GetComponent<Button>();
                 ClearButtonOnClick(fkikSelectButton);
@@ -1184,11 +2346,12 @@ namespace AdvIKPlugin
                     {
                         button.onClick.AddListener(delegate ()
                         {
-                            if (AdvIKPanel.activeSelf || BreathPanel.activeSelf || BreathShapePanel.activeSelf)
+                            if (AdvIKPanel.activeSelf || BreathPanel.activeSelf || BreathShapePanel.activeSelf || ResizePanel.activeSelf)
                             {
                                 AdvIKPanel.SetActive(false);
                                 BreathPanel.SetActive(false);
                                 BreathShapePanel.SetActive(false);
+                                ResizePanel.SetActive(false);
                                 fkikSelectButton.image.color = Color.white;
                                 openShapePanelButton.image.color = Color.white;
                                 if (lastPanel != null && button.gameObject.Equals(lastButton))
@@ -1227,6 +2390,10 @@ namespace AdvIKPlugin
                     if (showAdvIKPanel)
                     {
                         AdvIKPanel.SetActive(true);
+                    }
+                    else if (showResizePanel)
+                    {
+                        ResizePanel.SetActive(true);
                     }
                     else
                     {
