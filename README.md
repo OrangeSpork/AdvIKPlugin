@@ -6,7 +6,7 @@ Requirement: ExtensibleSaveFormat -> https://github.com/IllusionMods/BepisPlugin
 
 This plugin adds additional advanced control over the IK solver and positioning of the final poses.
 
-Current Features: IK Shoulder Rotation Control, IK Spine Hints from FK, IK Shoulder Hints from FK, Procedural Breathing Animation Overlay
+Current Features: IK Shoulder Rotation Control, IK Spine Hints from FK, IK Shoulder Hints from FK, Procedural Breathing Animation Overlay, Automatic IK Adjusment For Different Character Heights
 
 Shoulder Rotation Control
 
@@ -80,3 +80,21 @@ Abdomen Scaling: Abdomen scaling applied at maximum inhalation. Note, use a nega
 
 Note: The individual component scaling is multiplied by the Overall Breath Scale and then by the Breath Size %...so watch the multiplicative effects :)
 
+Auto IK Adjustment on Replacement Characters of Different Sizes
+
+This feature adjusts the IK Targets for the character when the character is replaced by a character of a different height, compensating for the size change. To do this, the plugin needs some information about the pose to adjust correctly. Specifically it needs the center point the other IK points should adjust from. To specify this, go to the Adv IK plugin window (under Anim->Kinematics) and hit the Resize button at the top to bring up the Resize panel. You'll see a large array of center points you can adjust from.
+
+Off - Deactivates adjustment.\
+Auto - System attempts to select the correct center for you. May or may not pick something useful.\
+Body - Readjusts IK target points out from the body center point. Use this for many lying down poses or if otherwise unsure.\
+Feet (Left/Center/Right) - Adjusts IK points up from the feet (either left or right or midway between them). Use this for standing positions, select the down foot or center if both are planted.\
+Thigh (Left/Center/Right) - Adjusts IK points from the thigh point selected. Best used with seated poses.\
+Hands (Left/Center/Right) - Adjusts IK points from the hand point selected. Best with poses where the character is dangling from things by the hands or standing on their hands?\
+Shoulder (Left/Center/Right) - Adjusts IK points from the shoulder point selected. Works with some lying poses where the shoulder is in contact with the 'ground'.\
+Knee (Left/Center/Right) - Adjusts IK points from the knee point selected. Best with kneeling poses.\
+Elbow (Left/Center/Right) - Adjusts IK points from the elbow point selected. Useful with some leaning back on elbow poses.
+
+Individual limb controls - These allow you to turn off adjustment for the specified limb. Useful if you want everything else to adjust but not this. For example a seated chair pose with feet on the floor wants to use the Center Thigh point for adjustment but turn off the leg chains so the feet don't move.
+
+Unapply Resize Adjustment - If an adjustment has been applied to this character, clicking this reverses out the adjustment, restoring the character to an unadjusted state. The button will then change to read Apply.\
+Apply Resize Adjustment - If no adjustment has been applied to this character, clicking this applies the adjustment specified on the panel. Using Unapply/Apply will allow you to experiment with various settings. Note: if the character has not been replaced, application of settings does nothing.
