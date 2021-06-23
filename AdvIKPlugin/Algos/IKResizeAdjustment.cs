@@ -826,6 +826,7 @@ namespace AdvIKPlugin.Algos
         {
             foreach (IKScale scale in Enum.GetValues(typeof(IKScale)))
             {
+                Log.LogInfo($"Looking up scale: {scale}");
                 CurrentScale[scale] = FindChainScale(scale);
 #if DEBUG
                 Log.LogInfo($"Scale {scale} is {CurrentScale[scale]}");
@@ -846,13 +847,43 @@ namespace AdvIKPlugin.Algos
 
         private Vector3 FindCurrentScale()
         {
+#if KOIKATSU
+            return Self.charInfo.objAnim.transform.Find("cf_j_root/cf_n_height").localScale;
+#else
             return Self.charInfo.objAnim.transform.Find("cf_J_Root/cf_N_height").localScale;
+#endif
         }
 
         private float FindChainScale(IKScale scale)
         {
             switch (scale)
             {
+#if KOIKATSU
+                case IKScale.LEFT_UPPER_LEG:
+                    return Vector3.Distance(Self.charInfo.objAnim.transform.Find("cf_j_root/cf_n_height/cf_j_hips/cf_j_waist01/cf_j_waist02/cf_j_thigh00_L").transform.position, Self.charInfo.objAnim.transform.Find("cf_j_root/cf_n_height/cf_j_hips/cf_j_waist01/cf_j_waist02/cf_j_thigh00_L/cf_j_leg01_L").transform.position);
+                case IKScale.LEFT_LOWER_LEG:
+                    return Vector3.Distance(Self.charInfo.objAnim.transform.Find("cf_j_root/cf_n_height/cf_j_hips/cf_j_waist01/cf_j_waist02/cf_j_thigh00_L/cf_j_leg01_L/cf_j_leg03_L/cf_j_foot_L").transform.position, Self.charInfo.objAnim.transform.Find("cf_j_root/cf_n_height/cf_j_hips/cf_j_waist01/cf_j_waist02/cf_j_thigh00_L/cf_j_leg01_L").transform.position);
+                case IKScale.LEFT_LEG:
+                    return Vector3.Distance(Self.charInfo.objAnim.transform.Find("cf_j_root/cf_n_height/cf_j_hips/cf_j_waist01/cf_j_waist02/cf_j_thigh00_L").transform.position, Self.charInfo.objAnim.transform.Find("cf_j_root/cf_n_height/cf_j_hips/cf_j_waist01/cf_j_waist02/cf_j_thigh00_L/cf_j_leg01_L").transform.position) + Vector3.Distance(Self.charInfo.objAnim.transform.Find("cf_j_root/cf_n_height/cf_j_hips/cf_j_waist01/cf_j_waist02/cf_j_thigh00_L/cf_j_leg01_L/cf_j_leg03_L/cf_j_foot_L").transform.position, Self.charInfo.objAnim.transform.Find("cf_j_root/cf_n_height/cf_j_hips/cf_j_waist01/cf_j_waist02/cf_j_thigh00_L/cf_j_leg01_L").transform.position);
+                case IKScale.RIGHT_UPPER_LEG:
+                    return Vector3.Distance(Self.charInfo.objAnim.transform.Find("cf_j_root/cf_n_height/cf_j_hips/cf_j_waist01/cf_j_waist02/cf_j_thigh00_R").transform.position, Self.charInfo.objAnim.transform.Find("cf_j_root/cf_n_height/cf_j_hips/cf_j_waist01/cf_j_waist02/cf_j_thigh00_R/cf_j_leg01_R").transform.position);
+                case IKScale.RIGHT_LOWER_LEG:
+                    return Vector3.Distance(Self.charInfo.objAnim.transform.Find("cf_j_root/cf_n_height/cf_j_hips/cf_j_waist01/cf_j_waist02/cf_j_thigh00_R/cf_j_leg01_R/cf_j_leg03_R/cf_j_foot_R").transform.position, Self.charInfo.objAnim.transform.Find("cf_j_root/cf_n_height/cf_j_hips/cf_j_waist01/cf_j_waist02/cf_j_thigh00_R/cf_j_leg01_R").transform.position);
+                case IKScale.RIGHT_LEG:
+                    return Vector3.Distance(Self.charInfo.objAnim.transform.Find("cf_j_root/cf_n_height/cf_j_hips/cf_j_waist01/cf_j_waist02/cf_j_thigh00_R").transform.position, Self.charInfo.objAnim.transform.Find("cf_j_root/cf_n_height/cf_j_hips/cf_j_waist01/cf_j_waist02/cf_j_thigh00_R/cf_j_leg01_R").transform.position) + Vector3.Distance(Self.charInfo.objAnim.transform.Find("cf_j_root/cf_n_height/cf_j_hips/cf_j_waist01/cf_j_waist02/cf_j_thigh00_R/cf_j_leg01_R/cf_j_leg03_R/cf_j_foot_R").transform.position, Self.charInfo.objAnim.transform.Find("cf_j_root/cf_n_height/cf_j_hips/cf_j_waist01/cf_j_waist02/cf_j_thigh00_R/cf_j_leg01_R").transform.position);
+                case IKScale.LEFT_UPPER_ARM:
+                    return Vector3.Distance(Self.charInfo.objAnim.transform.Find("cf_j_root/cf_n_height/cf_j_hips/cf_j_spine01/cf_j_spine02/cf_j_spine03/cf_d_shoulder_L/cf_j_shoulder_L/cf_j_arm00_L").transform.position, Self.charInfo.objAnim.transform.Find("cf_j_root/cf_n_height/cf_j_hips/cf_j_spine01/cf_j_spine02/cf_j_spine03/cf_d_shoulder_L/cf_j_shoulder_L/cf_j_arm00_L/cf_j_forearm01_L").transform.position);
+                case IKScale.LEFT_LOWER_ARM:
+                    return Vector3.Distance(Self.charInfo.objAnim.transform.Find("cf_j_root/cf_n_height/cf_j_hips/cf_j_spine01/cf_j_spine02/cf_j_spine03/cf_d_shoulder_L/cf_j_shoulder_L/cf_j_arm00_L/cf_j_forearm01_L/cf_j_hand_L").transform.position, Self.charInfo.objAnim.transform.Find("cf_j_root/cf_n_height/cf_j_hips/cf_j_spine01/cf_j_spine02/cf_j_spine03/cf_d_shoulder_L/cf_j_shoulder_L/cf_j_arm00_L/cf_j_forearm01_L").transform.position);
+                case IKScale.LEFT_ARM:
+                    return Vector3.Distance(Self.charInfo.objAnim.transform.Find("cf_j_root/cf_n_height/cf_j_hips/cf_j_spine01/cf_j_spine02/cf_j_spine03/cf_d_shoulder_L/cf_j_shoulder_L/cf_j_arm00_L").transform.position, Self.charInfo.objAnim.transform.Find("cf_j_root/cf_n_height/cf_j_hips/cf_j_spine01/cf_j_spine02/cf_j_spine03/cf_d_shoulder_L/cf_j_shoulder_L/cf_j_arm00_L/cf_j_forearm01_L").transform.position) + Vector3.Distance(Self.charInfo.objAnim.transform.Find("cf_j_root/cf_n_height/cf_j_hips/cf_j_spine01/cf_j_spine02/cf_j_spine03/cf_d_shoulder_L/cf_j_shoulder_L/cf_j_arm00_L/cf_j_forearm01_L/cf_j_hand_L").transform.position, Self.charInfo.objAnim.transform.Find("cf_j_root/cf_n_height/cf_j_hips/cf_j_spine01/cf_j_spine02/cf_j_spine03/cf_d_shoulder_L/cf_j_shoulder_L/cf_j_arm00_L/cf_j_forearm01_L").transform.position);
+                case IKScale.RIGHT_UPPER_ARM:
+                    return Vector3.Distance(Self.charInfo.objAnim.transform.Find("cf_j_root/cf_n_height/cf_j_hips/cf_j_spine01/cf_j_spine02/cf_j_spine03/cf_d_shoulder_R/cf_j_shoulder_R/cf_j_arm00_R").transform.position, Self.charInfo.objAnim.transform.Find("cf_j_root/cf_n_height/cf_j_hips/cf_j_spine01/cf_j_spine02/cf_j_spine03/cf_d_shoulder_R/cf_j_shoulder_R/cf_j_arm00_R/cf_j_forearm01_R").transform.position);
+                case IKScale.RIGHT_LOWER_ARM:
+                    return Vector3.Distance(Self.charInfo.objAnim.transform.Find("cf_j_root/cf_n_height/cf_j_hips/cf_j_spine01/cf_j_spine02/cf_j_spine03/cf_d_shoulder_R/cf_j_shoulder_R/cf_j_arm00_R/cf_j_forearm01_R/cf_j_hand_R").transform.position, Self.charInfo.objAnim.transform.Find("cf_j_root/cf_n_height/cf_j_hips/cf_j_spine01/cf_j_spine02/cf_j_spine03/cf_d_shoulder_R/cf_j_shoulder_R/cf_j_arm00_R/cf_j_forearm01_R").transform.position);
+                case IKScale.RIGHT_ARM:
+                    return Vector3.Distance(Self.charInfo.objAnim.transform.Find("cf_j_root/cf_n_height/cf_j_hips/cf_j_spine01/cf_j_spine02/cf_j_spine03/cf_d_shoulder_R/cf_j_shoulder_R/cf_j_arm00_R").transform.position, Self.charInfo.objAnim.transform.Find("cf_j_root/cf_n_height/cf_j_hips/cf_j_spine01/cf_j_spine02/cf_j_spine03/cf_d_shoulder_R/cf_j_shoulder_R/cf_j_arm00_R/cf_j_forearm01_R").transform.position) + Vector3.Distance(Self.charInfo.objAnim.transform.Find("cf_j_root/cf_n_height/cf_j_hips/cf_j_spine01/cf_j_spine02/cf_j_spine03/cf_d_shoulder_R/cf_j_shoulder_R/cf_j_arm00_R/cf_j_forearm01_R/cf_j_hand_R").transform.position, Self.charInfo.objAnim.transform.Find("cf_j_root/cf_n_height/cf_j_hips/cf_j_spine01/cf_j_spine02/cf_j_spine03/cf_d_shoulder_R/cf_j_shoulder_R/cf_j_arm00_R/cf_j_forearm01_R").transform.position);
+#else
                 case IKScale.LEFT_UPPER_LEG:
                     return Vector3.Distance(Self.charInfo.objAnim.transform.Find("cf_J_Root/cf_N_height/cf_J_Hips/cf_J_Kosi01/cf_J_Kosi02/cf_J_LegUp00_L").transform.position, Self.charInfo.objAnim.transform.Find("cf_J_Root/cf_N_height/cf_J_Hips/cf_J_Kosi01/cf_J_Kosi02/cf_J_LegUp00_L/cf_J_LegLow01_L").transform.position);
                 case IKScale.LEFT_LOWER_LEG:
@@ -877,6 +908,7 @@ namespace AdvIKPlugin.Algos
                     return Vector3.Distance(Self.charInfo.objAnim.transform.Find("cf_J_Root/cf_N_height/cf_J_Hips/cf_J_Spine01/cf_J_Spine02/cf_J_Spine03/cf_J_ShoulderIK_R/cf_J_Shoulder_R/cf_J_ArmUp00_R/cf_J_ArmLow01_R/cf_J_Hand_R").transform.position, Self.charInfo.objAnim.transform.Find("cf_J_Root/cf_N_height/cf_J_Hips/cf_J_Spine01/cf_J_Spine02/cf_J_Spine03/cf_J_ShoulderIK_R/cf_J_Shoulder_R/cf_J_ArmUp00_R/cf_J_ArmLow01_R").transform.position);
                 case IKScale.RIGHT_ARM:
                     return Vector3.Distance(Self.charInfo.objAnim.transform.Find("cf_J_Root/cf_N_height/cf_J_Hips/cf_J_Spine01/cf_J_Spine02/cf_J_Spine03/cf_J_ShoulderIK_R/cf_J_Shoulder_R/cf_J_ArmUp00_R").transform.position, Self.charInfo.objAnim.transform.Find("cf_J_Root/cf_N_height/cf_J_Hips/cf_J_Spine01/cf_J_Spine02/cf_J_Spine03/cf_J_ShoulderIK_R/cf_J_Shoulder_R/cf_J_ArmUp00_R/cf_J_ArmLow01_R").transform.position) + Vector3.Distance(Self.charInfo.objAnim.transform.Find("cf_J_Root/cf_N_height/cf_J_Hips/cf_J_Spine01/cf_J_Spine02/cf_J_Spine03/cf_J_ShoulderIK_R/cf_J_Shoulder_R/cf_J_ArmUp00_R/cf_J_ArmLow01_R/cf_J_Hand_R").transform.position, Self.charInfo.objAnim.transform.Find("cf_J_Root/cf_N_height/cf_J_Hips/cf_J_Spine01/cf_J_Spine02/cf_J_Spine03/cf_J_ShoulderIK_R/cf_J_Shoulder_R/cf_J_ArmUp00_R/cf_J_ArmLow01_R").transform.position);
+#endif
             }
             return FindCurrentScale().y;
         }
@@ -908,6 +940,21 @@ namespace AdvIKPlugin.Algos
 
         private static readonly Dictionary<IKTarget, string> IKTargetNames = new Dictionary<IKTarget, string>
         {
+#if KOIKATSU
+            { IKTarget.BODY, "cf_t_hips" },
+            { IKTarget.LEFT_SHOULDER, "cf_t_shoulder_L"},
+            { IKTarget.LEFT_ELBOW, "cf_t_elbo_L"},
+            { IKTarget.LEFT_HAND, "cf_t_hand_L"},
+            { IKTarget.RIGHT_SHOULDER, "cf_t_shoulder_R"},
+            { IKTarget.RIGHT_ELBOW, "cf_t_elbo_R"},
+            { IKTarget.RIGHT_HAND, "cf_t_hand_R"},
+            { IKTarget.LEFT_THIGH, "cf_t_waist_L"},
+            { IKTarget.LEFT_KNEE, "cf_t_knee_L"},
+            { IKTarget.LEFT_FOOT, "cf_t_leg_L"},
+            { IKTarget.RIGHT_THIGH, "cf_t_waist_R"},
+            { IKTarget.RIGHT_KNEE, "cf_t_knee_R"},
+            { IKTarget.RIGHT_FOOT, "cf_t_leg_R"},
+#else
             { IKTarget.BODY, "f_t_hips" },
             { IKTarget.LEFT_SHOULDER, "f_t_shoulder_L"},
             { IKTarget.LEFT_ELBOW, "f_t_elbo_L"},
@@ -921,6 +968,7 @@ namespace AdvIKPlugin.Algos
             { IKTarget.RIGHT_THIGH, "f_t_thigh_R"},
             { IKTarget.RIGHT_KNEE, "f_t_knee_R"},
             { IKTarget.RIGHT_FOOT, "f_t_leg_R"},
+#endif
         };
 
         private static readonly Dictionary<IKChain, IKTarget[]> IKChainTargets = new Dictionary<IKChain, IKTarget[]>
