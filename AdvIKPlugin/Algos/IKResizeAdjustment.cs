@@ -826,7 +826,6 @@ namespace AdvIKPlugin.Algos
         {
             foreach (IKScale scale in Enum.GetValues(typeof(IKScale)))
             {
-                Log.LogInfo($"Looking up scale: {scale}");
                 CurrentScale[scale] = FindChainScale(scale);
 #if DEBUG
                 Log.LogInfo($"Scale {scale} is {CurrentScale[scale]}");
