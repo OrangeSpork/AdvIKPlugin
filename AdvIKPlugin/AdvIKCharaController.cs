@@ -12,6 +12,7 @@ using KKAPI.Studio;
 using Studio;
 using AdvIKPlugin.Algos;
 using KKABMX.Core;
+using System.Collections.Generic;
 
 namespace AdvIKPlugin
 {
@@ -727,21 +728,33 @@ namespace AdvIKPlugin
 
         public Transform FindDescendant(Transform start, string name)
         {
+            if (boneCache.TryGetValue(name, out Transform descendant))
+                return descendant;
+
             if (start == null)
             {
                 return null;
             }
 
             if (start.name.Equals(name))
+            {
+                boneCache.Add(name, start);
                 return start;
+            }
             foreach (Transform t in start)
             {
                 Transform res = FindDescendant(t, name);
                 if (res != null)
+                {
+                    if (!boneCache.ContainsKey(name))
+                        boneCache.Add(name, res);
                     return res;
+                }
             }
             return null;
         }
+
+        private Dictionary<string, Transform> boneCache = new Dictionary<string, Transform>();
 
         System.Random rand = new System.Random();
         private double randomGaussian(double mean, double stdDev)
