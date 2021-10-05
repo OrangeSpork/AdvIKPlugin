@@ -62,14 +62,22 @@ namespace AdvIKPlugin
                 ik.solver.GetLimbMapping(chain).parentBone.Rotate(baseRotation);
             }
 
+            Vector3 localVector = advIKCharaController.ChaControl.gameObject.transform.InverseTransformPoint(ik.solver.GetEndEffector(chain).position) - advIKCharaController.ChaControl.gameObject.transform.InverseTransformPoint(ik.solver.GetLimbMapping(chain).bone1.position);
+            bool applyShoulderReversal = localVector.y < 0;
+            if (applyShoulderReversal)
+            {
+                offset *= 0.67f;
+                weight *= 0.67f;
+            }
+
             Quaternion b = Quaternion.FromToRotation(GetParentBoneMap(chain).swingDirection, ik.solver.GetEndEffector(chain).position - GetParentBoneMap(chain).transform.position);
             Vector3 vector = ik.solver.GetEndEffector(chain).position - ik.solver.GetLimbMapping(chain).bone1.position;
             float num = ik.solver.GetChain(chain).nodes[0].length + ik.solver.GetChain(chain).nodes[1].length;
             float num2 = vector.magnitude / num - 1f + offset;
             num2 = Mathf.Clamp(num2 * weight, 0f, 1f);
-            Quaternion lhs = Quaternion.Lerp(Quaternion.identity, b, num2 * ik.solver.GetEndEffector(chain).positionWeight * ik.solver.IKPositionWeight);
-            if ( (advIKCharaController.ReverseShoulderL && chain == FullBodyBipedChain.LeftArm) || (advIKCharaController.ReverseShoulderR && chain == FullBodyBipedChain.RightArm))
-            {
+            Quaternion lhs = Quaternion.Lerp(Quaternion.identity, b, num2 * ik.solver.GetEndEffector(chain).positionWeight * ik.solver.IKPositionWeight);            
+            if (applyShoulderReversal && ((advIKCharaController.ReverseShoulderL && chain == FullBodyBipedChain.LeftArm) || (advIKCharaController.ReverseShoulderR && chain == FullBodyBipedChain.RightArm)))
+            {                
                 lhs = Quaternion.Inverse(lhs);
             }
             ik.solver.GetLimbMapping(chain).parentBone.rotation = lhs * ik.solver.GetLimbMapping(chain).parentBone.rotation;

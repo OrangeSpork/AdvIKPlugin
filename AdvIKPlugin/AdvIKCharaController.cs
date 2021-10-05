@@ -352,9 +352,16 @@ namespace AdvIKPlugin
         {
             SpineStiffness = spineStiffnessValue;
 
+            yield return null;    // This is a horrible hack, but something after load is resetting this and I need to get to make sure this runs afterwards and can't find a better hook point...       
+            yield return null;
+            yield return null;
+
+            SpineStiffness = spineStiffnessValue;
+
             yield return new WaitForSeconds(1);     // This is a horrible hack, but something after load is resetting this and I need to get to make sure this runs afterwards and can't find a better hook point...       
 
             SpineStiffness = spineStiffnessValue;
+
         }
 
         private bool toeAdjustmentApplied;
@@ -410,11 +417,14 @@ namespace AdvIKPlugin
 
         public Vector3 FindFKRotation(Transform t)
         {
-            foreach (OCIChar.BoneInfo bone in this.ChaControl.GetOCIChar().listBones)
+            if (StudioAPI.InsideStudio)
             {
-                if (bone.guideObject.transformTarget.name.Equals(t.name, StringComparison.OrdinalIgnoreCase))
+                foreach (OCIChar.BoneInfo bone in this.ChaControl.GetOCIChar().listBones)
                 {
-                    return bone.guideObject.changeAmount.rot;
+                    if (bone.guideObject.transformTarget.name.Equals(t.name, StringComparison.OrdinalIgnoreCase))
+                    {
+                        return bone.guideObject.changeAmount.rot;
+                    }
                 }
             }
             return Vector3.zero;
