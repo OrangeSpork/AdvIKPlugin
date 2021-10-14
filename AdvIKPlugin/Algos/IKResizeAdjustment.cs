@@ -6,7 +6,7 @@ using BepInEx.Logging;
 using System.Linq;
 using System;
 using System.Collections.Specialized;
-#if !KOIKATSU
+#if !KOIKATSU && !KKS
 using AIChara;
 #endif
 
@@ -64,6 +64,9 @@ namespace AdvIKPlugin.Algos
             AdjustmentApplied = false;
 
             Self = KKAPI.Studio.StudioObjectExtensions.GetOCIChar(chaControl);
+#if DEBUG
+            Log.LogInfo($"Setting Resize Self to: {Self} for: {chaControl.chaFile.parameter.fullname}");
+#endif
             if (Self == null)
             {
                 return;
@@ -846,7 +849,7 @@ namespace AdvIKPlugin.Algos
 
         private Vector3 FindCurrentScale()
         {
-#if KOIKATSU
+#if KOIKATSU || KKS
             return Self.charInfo.objAnim.transform.Find("cf_j_root/cf_n_height").localScale;
 #else
             return Self.charInfo.objAnim.transform.Find("cf_J_Root/cf_N_height").localScale;
@@ -857,7 +860,7 @@ namespace AdvIKPlugin.Algos
         {
             switch (scale)
             {
-#if KOIKATSU
+#if KOIKATSU || KKS
                 case IKScale.LEFT_UPPER_LEG:
                     return Vector3.Distance(Self.charInfo.objAnim.transform.Find("cf_j_root/cf_n_height/cf_j_hips/cf_j_waist01/cf_j_waist02/cf_j_thigh00_L").transform.position, Self.charInfo.objAnim.transform.Find("cf_j_root/cf_n_height/cf_j_hips/cf_j_waist01/cf_j_waist02/cf_j_thigh00_L/cf_j_leg01_L").transform.position);
                 case IKScale.LEFT_LOWER_LEG:
@@ -939,7 +942,7 @@ namespace AdvIKPlugin.Algos
 
         private static readonly Dictionary<IKTarget, string> IKTargetNames = new Dictionary<IKTarget, string>
         {
-#if KOIKATSU
+#if KOIKATSU || KKS
             { IKTarget.BODY, "cf_t_hips" },
             { IKTarget.LEFT_SHOULDER, "cf_t_shoulder_L"},
             { IKTarget.LEFT_ELBOW, "cf_t_elbo_L"},

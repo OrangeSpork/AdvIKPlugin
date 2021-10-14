@@ -59,7 +59,7 @@ namespace AdvIKPlugin.Algos
         }
 
 
-#if KOIKATSU
+#if KOIKATSU || KKS
         public override BoneModifierData GetEffect(string bone, BoneController origin, ChaFileDefine.CoordinateType coordinate)
 #else
         public override BoneModifierData GetEffect(string bone, BoneController origin, CoordinateType coordinate)
@@ -89,7 +89,7 @@ namespace AdvIKPlugin.Algos
                 }
                 else
                 {
-#if KOIKATSU
+#if KOIKATSU || KKS
                     if (KKAPI.MainGame.GameAPI.InsideHScene)
 #else
                     if (HSceneManager.isHScene)
@@ -138,7 +138,7 @@ namespace AdvIKPlugin.Algos
                 }
                 else
                 {
-#if KOIKATSU
+#if KOIKATSU || KKS
                     if (KKAPI.MainGame.GameAPI.InsideHScene)
 #else
                     if (HSceneManager.isHScene)
@@ -186,7 +186,7 @@ namespace AdvIKPlugin.Algos
                 newAbdomenPos.y = ((1 + newAbdomenPos.y) * appliedAbsScale.y) - ((1 + newAbdomenPos.y));
 
                 // Breasts move forward on an average of the lower/upper movement
-#if KOIKATSU
+#if KOIKATSU || KKS
                 Vector3 newBreastDelta = (newLowerChestPos / 2f);
 #else
                 Vector3 newBreastDelta = (newLowerChestPos + newUpperChestPos);
@@ -222,7 +222,7 @@ namespace AdvIKPlugin.Algos
 
             if (bone.Equals(UpperChest))
             {
-#if KOIKATSU
+#if KOIKATSU || KKS
                 return new BoneModifierData(FrameEffects.UpperChestScale, 1f, Vector3.zero, Vector3.zero);
 #else
                 return new BoneModifierData(FrameEffects.UpperChestScale, 1f, FrameEffects.UpperChestPos, Vector3.zero);
@@ -230,7 +230,7 @@ namespace AdvIKPlugin.Algos
             }
             else if (bone.Equals(LowerChest))
             {
-#if KOIKATSU
+#if KOIKATSU || KKS
                 return new BoneModifierData(FrameEffects.LowerChestScale, 1f, Vector3.zero, Vector3.zero);
 #else
                 return new BoneModifierData(FrameEffects.LowerChestScale, 1f, FrameEffects.LowerChestPos, Vector3.zero);
@@ -238,7 +238,7 @@ namespace AdvIKPlugin.Algos
             }
             else if (bone.Equals(Abdomen))
             {
-#if KOIKATSU
+#if KOIKATSU || KKS
                 return new BoneModifierData(FrameEffects.AbdomenScale, 1f, Vector3.zero, Vector3.zero);
 #else
                 return new BoneModifierData(FrameEffects.AbdomenScale, 1f, FrameEffects.AbdomenPos, Vector3.zero);
@@ -246,13 +246,13 @@ namespace AdvIKPlugin.Algos
             }
             else if (bone.Equals(Breasts))
             {
-#if KOIKATSU
+#if KOIKATSU || KKS
                 return null;
 #else
                 return new BoneModifierData(Vector3.one, 1f, FrameEffects.BreastAdj, Vector3.zero);
 #endif
             }
-#if KOIKATSU
+#if KOIKATSU || KKS
             else if (bone.Equals(LeftBreast))
             {
                 return new BoneModifierData(Vector3.one, 1f, FrameEffects.BreastAdj, Vector3.zero);
@@ -264,7 +264,7 @@ namespace AdvIKPlugin.Algos
 #endif
             else if (bone.Equals(LeftShoulder))
             {
-#if KOIKATSU
+#if KOIKATSU || KKS
                 return new BoneModifierData(Vector3.one, 1f, new Vector3(FrameEffects.LeftShoulderAdj.x / 2, 0, 0), Vector3.zero);
 #else
                 return new BoneModifierData(Vector3.one, 1f, FrameEffects.LeftShoulderAdj, Vector3.zero);
@@ -272,7 +272,7 @@ namespace AdvIKPlugin.Algos
             }
             else if (bone.Equals(RightShoulder))
             {
-#if KOIKATSU
+#if KOIKATSU || KKS
                 return new BoneModifierData(Vector3.one, 1f, new Vector3(FrameEffects.RightShoulderAdj.x / 2, 0, 0), Vector3.zero);
 #else
                 return new BoneModifierData(Vector3.one, 1f, FrameEffects.RightShoulderAdj, Vector3.zero);                
@@ -388,7 +388,7 @@ namespace AdvIKPlugin.Algos
         public float ShoulderDampeningFactor { get; set; } // Dampens Shoulder movement rather than moving shoulders with upper chest. Use 0 for no motion, 1 for full motion
         public float MagnitudeFactor { get; set; } // Single number dial for breath size
 
-#if KOIKATSU
+#if KOIKATSU || KKS
         private static float gameScale = .3f;
 #else
         private static float gameScale = 1f;
@@ -400,7 +400,7 @@ namespace AdvIKPlugin.Algos
         private float defaultInhalePercentage = .6f;
         private int defaultBreathsPerMinute = 15;
         private Vector3 defaultBreathMagnitude = new Vector3(1.0f, 1.0f, 1.0f);
-#if KOIKATSU
+#if KOIKATSU || KKS
         private Vector3 defaultUpperBreathScale = new Vector3(.04f, 0.200f, .025f);
         private Vector3 defaultLowerBreathScale = new Vector3(.05f, 0.10f, .045f);
         private Vector3 defaultAbdomenScale = new Vector3(-0.045f, 0f, -0.15f);
