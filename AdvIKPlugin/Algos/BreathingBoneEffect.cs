@@ -15,11 +15,11 @@ namespace AdvIKPlugin.Algos
 
         private List<string> affectedBones = new List<string>();
 
-        public BreathingBoneEffect(string upperChest, string lowerChest, string abdomen, string breasts, string leftShoulder, string rightShoulder, string leftBreast, string rightBreast)
+        public BreathingBoneEffect(string upperChest, string lowerChest, string abdomen, string breasts, string leftShoulder, string rightShoulder, string leftBreast, string rightBreast, string neck)
         {
-            Initialize(upperChest, lowerChest, abdomen, breasts, leftShoulder, rightShoulder, leftBreast, rightBreast);
+            Initialize(upperChest, lowerChest, abdomen, breasts, leftShoulder, rightShoulder, leftBreast, rightBreast, neck);
         }
-        public void Initialize (string upperChest, string lowerChest, string abdomen, string breasts, string leftShoulder, string rightShoulder, string leftBreast, string rightBreast)
+        public void Initialize (string upperChest, string lowerChest, string abdomen, string breasts, string leftShoulder, string rightShoulder, string leftBreast, string rightBreast, string neck)
         {
             OverrideTime = -1;
 
@@ -31,6 +31,7 @@ namespace AdvIKPlugin.Algos
             RightShoulder = rightShoulder;
             LeftBreast = leftBreast;
             RightBreast = rightBreast;
+            Neck = neck;
 
             affectedBones.Clear();
 
@@ -48,6 +49,7 @@ namespace AdvIKPlugin.Algos
                 affectedBones.Add(LeftBreast);
                 affectedBones.Add(RightBreast);
             }
+            affectedBones.Add(Neck);
 
             RestoreDefaults();
 
@@ -175,6 +177,8 @@ namespace AdvIKPlugin.Algos
                 newUpperChestPos.z = ((1 + newUpperChestPos.z) * appliedUpperBreathScale.z) - ((1 + newUpperChestPos.z));
                 newUpperChestPos.y = ((1 + newUpperChestPos.y) * appliedUpperBreathScale.y) - ((1 + newUpperChestPos.y));
 
+                Vector3 newNeckPos = new Vector3(0, newUpperChestPos.y + (newUpperChestPos.y * NeckMotionDampeningFactor), newUpperChestPos.z + (newUpperChestPos.z * NeckMotionDampeningFactor));
+
                 // Same with lower chest
                 Vector3 newLowerChestPos = new Vector3(0, 0, 0);
                 newLowerChestPos.z = ((1 + newLowerChestPos.z) * appliedLowerBreathScale.z) - ((1 + newLowerChestPos.z));
@@ -216,7 +220,8 @@ namespace AdvIKPlugin.Algos
                     AbdomenScale = appliedAbsScale,
                     BreastAdj = newBreastDelta,
                     LeftShoulderAdj = newLSPosition,
-                    RightShoulderAdj = newRSPosition
+                    RightShoulderAdj = newRSPosition,
+                    NeckAdj = newNeckPos,
                 };
             }
 
@@ -278,6 +283,10 @@ namespace AdvIKPlugin.Algos
                 return new BoneModifierData(Vector3.one, 1f, FrameEffects.RightShoulderAdj, Vector3.zero);                
 #endif
             }
+            else if (bone.Equals(Neck))
+            {
+                return new BoneModifierData(Vector3.one, 1f, FrameEffects.NeckAdj, Vector3.zero);
+            }
             else
             {
                 return null;
@@ -296,6 +305,7 @@ namespace AdvIKPlugin.Algos
             AbdomenRelativeScaling = defaultAbdomenScale;
             ShoulderDampeningFactor = defaultShoulderDampeningFactor;
             MagnitudeFactor = defaultMagnitudeFactor;
+            NeckMotionDampeningFactor = defaultNeckMotionDampeningFactor;
         }
 
         public void SaveConfig(PluginData data)
@@ -314,6 +324,7 @@ namespace AdvIKPlugin.Algos
 
             data.data["BreathingShoulderDampeningFactor"] = ShoulderDampeningFactor;
             data.data["MagnitudeFactor"] = MagnitudeFactor;
+            data.data["NeckMotionDampeningFactor"] = NeckMotionDampeningFactor;
         }
 
         private void SaveVector3(Vector3 vector, string prefix, PluginData data)
@@ -342,6 +353,7 @@ namespace AdvIKPlugin.Algos
 
             if (data.data.TryGetValue("BreathingShoulderDampeningFactor", out var val10)) ShoulderDampeningFactor = (float)val10;
             if (data.data.TryGetValue("MagnitudeFactor", out var val11)) MagnitudeFactor = (float)val11;
+            if (data.data.TryGetValue("NeckMotionDampeningFactor", out var val12)) NeckMotionDampeningFactor = (float)val12;
         }
 
         private Vector3 LoadVector3(string prefix, PluginData data)
@@ -375,6 +387,7 @@ namespace AdvIKPlugin.Algos
         public string RightShoulder { get; set; }
         public string LeftBreast { get; set; }
         public string RightBreast { get; set; }
+        public string Neck { get; set; }
 
         // Configuration
         public float IntakePause { get; set; }  // Percentage of breath time spent waiting on empty lungs (0.0-1.0) -- larger time spent here and HoldPause makes for sharper breathing
@@ -387,6 +400,7 @@ namespace AdvIKPlugin.Algos
         public Vector3 AbdomenRelativeScaling { get; set; } // Ditto, Abdomen - note use negative x and z for diaphragm breathing, positive for belly breathing
         public float ShoulderDampeningFactor { get; set; } // Dampens Shoulder movement rather than moving shoulders with upper chest. Use 0 for no motion, 1 for full motion
         public float MagnitudeFactor { get; set; } // Single number dial for breath size
+        public float NeckMotionDampeningFactor { get; set; }
 
 #if KOIKATSU || KKS
         private static float gameScale = .3f;
@@ -411,6 +425,7 @@ namespace AdvIKPlugin.Algos
 #endif
         private float defaultShoulderDampeningFactor = .5f;
         private float defaultMagnitudeFactor = 1.0f;
+        private float defaultNeckMotionDampeningFactor = .5f;
     }
 
     public class AppliedEffects
@@ -424,5 +439,6 @@ namespace AdvIKPlugin.Algos
         public Vector3 BreastAdj;
         public Vector3 LeftShoulderAdj;
         public Vector3 RightShoulderAdj;
+        public Vector3 NeckAdj;
     }
 }

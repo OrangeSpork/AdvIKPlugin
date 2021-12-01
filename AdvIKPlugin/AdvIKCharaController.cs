@@ -327,12 +327,12 @@ namespace AdvIKPlugin
 #if DEBUG
                 AdvIKPlugin.Instance.Log.LogInfo("Adding Bone Effect");
 #endif
-                _breathing = new BreathingBoneEffect(FindUpperChestBone().name, FindLowerChestBone().name, FindAbdomenBone().name, FindBreastBone()?.name, FindLSBone().name, FindRSBone().name, FindLeftBreastBone()?.name, FindRightBreastBone()?.name);
+                _breathing = new BreathingBoneEffect(FindUpperChestBone().name, FindLowerChestBone().name, FindAbdomenBone().name, FindBreastBone()?.name, FindLSBone().name, FindRSBone().name, FindLeftBreastBone()?.name, FindRightBreastBone()?.name, FindNeck()?.name);
                 boneController.AddBoneEffect(_breathing);
             }
             else
             {
-                _breathing.Initialize(FindUpperChestBone().name, FindLowerChestBone().name, FindAbdomenBone().name, FindBreastBone()?.name, FindLSBone().name, FindRSBone().name, FindLeftBreastBone()?.name, FindRightBreastBone()?.name);
+                _breathing.Initialize(FindUpperChestBone().name, FindLowerChestBone().name, FindAbdomenBone().name, FindBreastBone()?.name, FindLSBone().name, FindRSBone().name, FindLeftBreastBone()?.name, FindRightBreastBone()?.name, FindNeck()?.name);
             }
             
             if (data != null)
@@ -404,32 +404,37 @@ namespace AdvIKPlugin
                     {
                         if (!toeAdjustmentApplied)
                         {
-                            if (EnableToeFKHints)
+                            Transform lToe = FindLToeBone();
+                            Transform rToe = FindRToeBone();
+                            if (lToe != null && rToe != null)
                             {
-                                Vector3 lToeTargetRotation = FindFKRotation(FindLToeBone());
-                                Vector3 rToeTargetRotation = FindFKRotation(FindRToeBone());
+                                if (EnableToeFKHints)
+                                {
+                                    Vector3 lToeTargetRotation = FindFKRotation(lToe);
+                                    Vector3 rToeTargetRotation = FindFKRotation(rToe);
 
-                                FindLToeBone().Rotate(lToeTargetRotation, Space.Self);
-                                FindRToeBone().Rotate(rToeTargetRotation, Space.Self);
+                                    lToe.Rotate(lToeTargetRotation, Space.Self);
+                                    rToe.Rotate(rToeTargetRotation, Space.Self);
+                                }
+                                else
+                                {
+                                    lToe.Rotate(Vector3.zero, Space.Self);
+                                    rToe.Rotate(Vector3.zero, Space.Self);
+                                }
                             }
-                            else
-                            {
-                                FindLToeBone().Rotate(Vector3.zero, Space.Self);
-                                FindRToeBone().Rotate(Vector3.zero, Space.Self);
-                            }
-                            toeAdjustmentApplied = true;
+                            toeAdjustmentApplied = true;                            
                         }
                     }));
             }
         }
 
         public Vector3 FindFKRotation(Transform t)
-        {
-            if (StudioAPI.InsideStudio)
+        {            
+            if (StudioAPI.InsideStudio && t != null)
             {
                 foreach (OCIChar.BoneInfo bone in this.ChaControl.GetOCIChar().listBones)
                 {
-                    if (bone.guideObject.transformTarget.name.Equals(t.name, StringComparison.OrdinalIgnoreCase))
+                    if (bone.guideObject.transformTarget != null && bone.guideObject.transformTarget.name.Equals(t.name, StringComparison.OrdinalIgnoreCase))
                     {
                         return bone.guideObject.changeAmount.rot;
                     }
@@ -542,6 +547,23 @@ namespace AdvIKPlugin
                 return FindDescendant(FindAnimator().transform, "cf_j_spine02");
 #else
                 return FindDescendant(FindAnimator().transform, "cf_J_Spine02");
+#endif
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        private Transform FindNeck()
+        {
+
+            if (FindAnimator())
+            {
+#if KOIKATSU || KKS
+                return FindDescendant(FindAnimator().transform, "cf_j_neck");
+#else
+                return FindDescendant(FindAnimator().transform, "cf_J_Neck");
 #endif
             }
             else

@@ -96,6 +96,8 @@ namespace AdvIKPlugin
             private static Slider abdomenShapeYSlider;
             private static Slider abdomenShapeZSlider;
 
+            private static Slider NeckMotionSlider;
+
             // Resize Controls
 
             private static Toggle resizeCentroid_None;
@@ -211,6 +213,8 @@ namespace AdvIKPlugin
                     abdomenShapeXSlider.value = advIKController.BreathingController.AbdomenRelativeScaling.x;
                     abdomenShapeYSlider.value = advIKController.BreathingController.AbdomenRelativeScaling.y;
                     abdomenShapeZSlider.value = advIKController.BreathingController.AbdomenRelativeScaling.z;
+
+                    NeckMotionSlider.value = advIKController.BreathingController.NeckMotionDampeningFactor;
 
                     updatingResizeCentroidControls = true;
                     ClearResizeCentroidControls();                    
@@ -655,6 +659,30 @@ namespace AdvIKPlugin
                     }
                 });
 
+                Text neckMotionSliderText = SetupText("Neck Motion", -310, "Neck Motion", BreathShapePanel);
+                neckMotionSliderText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 150);
+                neckMotionSliderText.fontSize = 16;
+                NeckMotionSlider = Instantiate(sldSize, BreathShapePanel.transform);
+                NeckMotionSlider.name = "NeckMotion";
+                NeckMotionSlider.GetComponent<RectTransform>().sizeDelta = new Vector2(75, 20);
+                NeckMotionSlider.transform.SetLocalScale(1f, 1.0f, 1.0f);
+                NeckMotionSlider.transform.SetLocalPosition(150, -310, 0);
+                NeckMotionSlider.minValue = 0.0f;
+                NeckMotionSlider.maxValue = 1.0f;
+
+                NeckMotionSlider.onValueChanged.RemoveAllListeners();
+                NeckMotionSlider.onValueChanged.AddListener(delegate (float value)
+                {
+                    if (selectedChar != null)
+                    {
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.BreathingController.NeckMotionDampeningFactor = value;
+                        }
+                        neckMotionSliderText.text = string.Format("Neck Motion: ({0:0.00})", value);
+                    }
+                });
+
                 // Clear controls
                 foreach (Transform child in BreathShapePanel.transform)
                 {
@@ -670,6 +698,7 @@ namespace AdvIKPlugin
                          && child.gameObject != abdomenShape.gameObject && child.gameObject != abdomenShapeX.gameObject && child.gameObject != abdomenShapeXSlider.gameObject
                          && child.gameObject != abdomenShapeY.gameObject && child.gameObject != abdomenShapeYSlider.gameObject
                          && child.gameObject != abdomenShapeZ.gameObject && child.gameObject != abdomenShapeZSlider.gameObject
+                         && child.gameObject != neckMotionSliderText.gameObject && child.gameObject != NeckMotionSlider.gameObject
                         )
                     {
                         Destroy(child.gameObject);
