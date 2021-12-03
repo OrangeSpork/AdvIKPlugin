@@ -127,11 +127,12 @@ namespace AdvIKPlugin
             private static Toggle resizeCentroid_ElbowCenter;
             private static Toggle resizeCentroid_ElbowLeft;
             private static Toggle resizeCentroid_ElbowRight;
+            private static Toggle resizeCentroid_Resize;
 
             private static Toggle resizeChainMode_LeftArm;
             private static Toggle resizeChainMode_RightArm;
             private static Toggle resizeChainMode_LeftLeg;
-            private static Toggle resizeChainMode_RightLeg;
+            private static Toggle resizeChainMode_RightLeg;            
 
             private static Button resizeButton;
             private static TextMeshProUGUI resizeButtonText;
@@ -282,6 +283,9 @@ namespace AdvIKPlugin
                             break;
                         case Algos.IKResizeCentroid.ELBOW_RIGHT:
                             resizeCentroid_ElbowRight.isOn = true;
+                            break;
+                        case Algos.IKResizeCentroid.RESIZE:
+                            resizeCentroid_Resize.isOn = true;
                             break;
 
                     }
@@ -1466,16 +1470,50 @@ namespace AdvIKPlugin
                     updatingResizeCentroidControls = false;
                 });
 
+                // Full Chara Resize
+                Text resizeCentroidResize = SetupText("ResizeCentroid", -460, "Rescale Chara:", ResizePanel);
+                resizeCentroidResize.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 190);
+                resizeCentroidResize.fontSize = 16;
+                resizeCentroid_Resize = SetupToggle("ResizeCentroid", -460, resizeCentroidResize.transform, 105, ResizePanel);
+                resizeCentroid_Resize.onValueChanged.AddListener(delegate (bool value)
+                {
+                    if (updatingResizeCentroidControls)
+                    {
+                        return;
+                    }
+                    updatingResizeCentroidControls = true;
+                    ClearResizeCentroidControls();
+                    if (selectedChar != null && value)
+                    {
+                        resizeCentroid_Resize.isOn = true;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.IKResizeController.Centroid = Algos.IKResizeCentroid.RESIZE;
+                        }
+
+                    }
+                    else if (selectedChar != null)
+                    {
+                        resizeCentroid_Auto.isOn = true;
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.IKResizeController.Centroid = Algos.IKResizeCentroid.AUTO;
+                        }
+                    }
+                    updatingResizeCentroidControls = false;
+                });
+
+
                 // Left Arm Chain Mode
 
-                Text resizeLeftArmChainText = SetupText("ResizeLAChainDesc", -460, "Turn On/Off Ind. Limbs", ResizePanel);
+                Text resizeLeftArmChainText = SetupText("ResizeLAChainDesc", -485, "Turn On/Off Ind. Limbs", ResizePanel);
                 resizeLeftArmChainText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 190);
                 resizeLeftArmChainText.fontSize = 16;
 
-                Text resizeLeftArmChainOffText = SetupText("ResizeCentroid", -485, "Left Arm:", ResizePanel);
+                Text resizeLeftArmChainOffText = SetupText("ResizeCentroid", -510, "Left Arm:", ResizePanel);
                 resizeLeftArmChainOffText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 150);
                 resizeLeftArmChainOffText.fontSize = 16;
-                resizeChainMode_LeftArm = SetupToggle("ResizeCentroid", -485, resizeLeftArmChainOffText.transform, 65, ResizePanel);
+                resizeChainMode_LeftArm = SetupToggle("ResizeCentroid", -510, resizeLeftArmChainOffText.transform, 65, ResizePanel);
                 resizeChainMode_LeftArm.onValueChanged.AddListener(delegate (bool value)
                 {
                     if (updatingResizeCentroidControls)
@@ -1504,10 +1542,10 @@ namespace AdvIKPlugin
                     updatingResizeCentroidControls = false;
                 });
 
-                Text resizeRightArmChainOffText = SetupText("ResizeCentroid", -485, 90, "Right Arm:", ResizePanel);
+                Text resizeRightArmChainOffText = SetupText("ResizeCentroid", -510, 90, "Right Arm:", ResizePanel);
                 resizeRightArmChainOffText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 150);
                 resizeRightArmChainOffText.fontSize = 16;
-                resizeChainMode_RightArm = SetupToggle("ResizeCentroid", -485, resizeRightArmChainOffText.transform, 75, ResizePanel);
+                resizeChainMode_RightArm = SetupToggle("ResizeCentroid", -510, resizeRightArmChainOffText.transform, 75, ResizePanel);
                 resizeChainMode_RightArm.onValueChanged.AddListener(delegate (bool value)
                 {
                     if (updatingResizeCentroidControls)
@@ -1536,10 +1574,10 @@ namespace AdvIKPlugin
                     updatingResizeCentroidControls = false;
                 });                
 
-                Text resizeLeftLegChainOffText = SetupText("ResizeCentroid", -510, "Left Leg:", ResizePanel);
+                Text resizeLeftLegChainOffText = SetupText("ResizeCentroid", -535, "Left Leg:", ResizePanel);
                 resizeLeftLegChainOffText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 150);
                 resizeLeftLegChainOffText.fontSize = 16;
-                resizeChainMode_LeftLeg = SetupToggle("ResizeCentroid", -510, resizeLeftLegChainOffText.transform, 65, ResizePanel);
+                resizeChainMode_LeftLeg = SetupToggle("ResizeCentroid", -535, resizeLeftLegChainOffText.transform, 65, ResizePanel);
                 resizeChainMode_LeftLeg.onValueChanged.AddListener(delegate (bool value)
                 {
                     if (updatingResizeCentroidControls)
@@ -1568,10 +1606,10 @@ namespace AdvIKPlugin
                     updatingResizeCentroidControls = false;
                 });
 
-                Text resizeRightLegChainOffText = SetupText("ResizeCentroid", -510, 90, "Right Leg:", ResizePanel);
+                Text resizeRightLegChainOffText = SetupText("ResizeCentroid", -535, 90, "Right Leg:", ResizePanel);
                 resizeRightLegChainOffText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 150);
                 resizeRightLegChainOffText.fontSize = 16;
-                resizeChainMode_RightLeg = SetupToggle("ResizeCentroid", -510, resizeRightLegChainOffText.transform, 75, ResizePanel);
+                resizeChainMode_RightLeg = SetupToggle("ResizeCentroid", -535, resizeRightLegChainOffText.transform, 75, ResizePanel);
                 resizeChainMode_RightLeg.onValueChanged.AddListener(delegate (bool value)
                 {
                     if (updatingResizeCentroidControls)
@@ -1660,6 +1698,8 @@ namespace AdvIKPlugin
                         && child.gameObject != resizeCentroidElbowCntrText.gameObject && child.gameObject != resizeCentroidElbowLeftText.gameObject && child.gameObject != resizeCentroidElbowRgtText.gameObject && child.gameObject != resizeElbowCentroidText.gameObject
                         && child.gameObject != resizeCentroid_ElbowCenter.gameObject && child.gameObject != resizeCentroid_ElbowLeft.gameObject && child.gameObject != resizeCentroid_ElbowRight.gameObject
 
+                        && child.gameObject != resizeCentroidResize.gameObject && child.gameObject != resizeCentroid_Resize.gameObject
+
                         && child.gameObject != resizeLeftArmChainOffText.gameObject && child.gameObject != resizeLeftArmChainText.gameObject
                         && child.gameObject != resizeChainMode_LeftArm.gameObject
 
@@ -1709,6 +1749,8 @@ namespace AdvIKPlugin
                 resizeCentroid_ElbowCenter.isOn = false;
                 resizeCentroid_ElbowLeft.isOn = false;
                 resizeCentroid_ElbowRight.isOn = false;
+
+                resizeCentroid_Resize.isOn = false;
             }
 
             public static void SetupBreathControls()

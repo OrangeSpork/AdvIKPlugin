@@ -177,7 +177,7 @@ namespace AdvIKPlugin.Algos
                 newUpperChestPos.z = ((1 + newUpperChestPos.z) * appliedUpperBreathScale.z) - ((1 + newUpperChestPos.z));
                 newUpperChestPos.y = ((1 + newUpperChestPos.y) * appliedUpperBreathScale.y) - ((1 + newUpperChestPos.y));
 
-                Vector3 newNeckPos = new Vector3(0, newUpperChestPos.y + (newUpperChestPos.y * NeckMotionDampeningFactor), newUpperChestPos.z + (newUpperChestPos.z * NeckMotionDampeningFactor));
+                Vector3 newNeckPos = new Vector3(0, newUpperChestPos.y + (newUpperChestPos.y * NeckMotionDampeningFactor), 0);
 
                 // Same with lower chest
                 Vector3 newLowerChestPos = new Vector3(0, 0, 0);
@@ -228,25 +228,25 @@ namespace AdvIKPlugin.Algos
             if (bone.Equals(UpperChest))
             {
 #if KOIKATSU || KKS
-                return new BoneModifierData(FrameEffects.UpperChestScale, 1f, Vector3.zero, Vector3.zero);
+                return UpdateBoneModifier(bone, FrameEffects.UpperChestScale, Vector3.zero);
 #else
-                return new BoneModifierData(FrameEffects.UpperChestScale, 1f, FrameEffects.UpperChestPos, Vector3.zero);
+                return UpdateBoneModifier(bone, FrameEffects.UpperChestScale, FrameEffects.UpperChestPos);
 #endif
             }
             else if (bone.Equals(LowerChest))
             {
 #if KOIKATSU || KKS
-                return new BoneModifierData(FrameEffects.LowerChestScale, 1f, Vector3.zero, Vector3.zero);
+                return UpdateBoneModifier(bone, FrameEffects.LowerChestScale, Vector3.zero);
 #else
-                return new BoneModifierData(FrameEffects.LowerChestScale, 1f, FrameEffects.LowerChestPos, Vector3.zero);
+                return UpdateBoneModifier(bone, FrameEffects.LowerChestScale, FrameEffects.LowerChestPos);
 #endif
             }
             else if (bone.Equals(Abdomen))
             {
 #if KOIKATSU || KKS
-                return new BoneModifierData(FrameEffects.AbdomenScale, 1f, Vector3.zero, Vector3.zero);
+                return UpdateBoneModifier(bone, FrameEffects.AbdomenScale, Vector3.zero);
 #else
-                return new BoneModifierData(FrameEffects.AbdomenScale, 1f, FrameEffects.AbdomenPos, Vector3.zero);
+                return UpdateBoneModifier(bone, FrameEffects.AbdomenScale, FrameEffects.AbdomenPos);
 #endif
             }
             else if (bone.Equals(Breasts))
@@ -254,43 +254,56 @@ namespace AdvIKPlugin.Algos
 #if KOIKATSU || KKS
                 return null;
 #else
-                return new BoneModifierData(Vector3.one, 1f, FrameEffects.BreastAdj, Vector3.zero);
+                return UpdateBoneModifier(bone, Vector3.one, FrameEffects.BreastAdj);
 #endif
             }
 #if KOIKATSU || KKS
             else if (bone.Equals(LeftBreast))
             {
-                return new BoneModifierData(Vector3.one, 1f, FrameEffects.BreastAdj, Vector3.zero);
+                return UpdateBoneModifier(bone, Vector3.one, FrameEffects.BreastAdj);
             }
             else if (bone.Equals(RightBreast))
             {
-                return new BoneModifierData(Vector3.one, 1f, FrameEffects.BreastAdj, Vector3.zero);
+                return UpdateBoneModifier(bone, Vector3.one, FrameEffects.BreastAdj);
             }
 #endif
             else if (bone.Equals(LeftShoulder))
             {
 #if KOIKATSU || KKS
-                return new BoneModifierData(Vector3.one, 1f, new Vector3(FrameEffects.LeftShoulderAdj.x / 2, 0, 0), Vector3.zero);
+                return UpdateBoneModifier(bone, Vector3.one, new Vector3(FrameEffects.LeftShoulderAdj.x / 2, 0, 0));
 #else
-                return new BoneModifierData(Vector3.one, 1f, FrameEffects.LeftShoulderAdj, Vector3.zero);
+                return UpdateBoneModifier(bone, Vector3.one, FrameEffects.LeftShoulderAdj);
 #endif
             }
             else if (bone.Equals(RightShoulder))
             {
 #if KOIKATSU || KKS
-                return new BoneModifierData(Vector3.one, 1f, new Vector3(FrameEffects.RightShoulderAdj.x / 2, 0, 0), Vector3.zero);
+                return UpdateBoneModifier(bone, Vector3.one, new Vector3(FrameEffects.RightShoulderAdj.x / 2, 0, 0));
 #else
-                return new BoneModifierData(Vector3.one, 1f, FrameEffects.RightShoulderAdj, Vector3.zero);                
+                return UpdateBoneModifier(bone, Vector3.one, FrameEffects.RightShoulderAdj);                
 #endif
             }
             else if (bone.Equals(Neck))
             {
-                return new BoneModifierData(Vector3.one, 1f, FrameEffects.NeckAdj, Vector3.zero);
+                return UpdateBoneModifier(bone, Vector3.one, FrameEffects.NeckAdj);
             }
             else
             {
                 return null;
             }
+        }
+
+        private Dictionary<string, BoneModifierData> boneModifierCache = new Dictionary<string, BoneModifierData>();
+        private BoneModifierData UpdateBoneModifier(string bone, Vector3 scale, Vector3 position)
+        {
+            if (!boneModifierCache.TryGetValue(bone, out BoneModifierData boneModifier))
+            {
+                boneModifier = new BoneModifierData();
+                boneModifierCache[bone] = boneModifier;
+            }
+            boneModifier.ScaleModifier = scale;
+            boneModifier.PositionModifier = position;
+            return boneModifier;
         }
 
         public void RestoreDefaults()

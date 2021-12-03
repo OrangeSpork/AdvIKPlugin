@@ -6,6 +6,8 @@ using BepInEx.Logging;
 using System.Linq;
 using System;
 using System.Collections.Specialized;
+using System.Collections;
+using KKABMX.Core;
 #if !KOIKATSU && !KKS
 using AIChara;
 #endif
@@ -16,6 +18,9 @@ namespace AdvIKPlugin.Algos
     {
 
         public OCIChar Self { get; set; }
+
+        private ResizeBoneEffect _resize;
+
 
         private IKResizeCentroid centroid;
         public IKResizeCentroid Centroid
@@ -41,6 +46,8 @@ namespace AdvIKPlugin.Algos
         private IKResizeCentroid AppliedCentroid { get; set; }
         private Dictionary<IKChain, IKResizeChainAdjustment> AppliedChainAdjustments { get; set; }
 
+        private Vector3 OriginalCharacterScale { get; set; }
+
         private ManualLogSource Log => AdvIKPlugin.Instance.Log;
 
         public IKResizeAdjustment()
@@ -61,6 +68,16 @@ namespace AdvIKPlugin.Algos
 
         public void OnReload(ChaControl chaControl)
         {
+            if (_resize == null)
+            {
+                BoneController boneController = chaControl.GetComponent<BoneController>();
+                _resize = new ResizeBoneEffect();
+                boneController.AddBoneEffect(_resize);
+#if DEBUG
+                Log.LogInfo($"Registering Resize Bone Effect");
+#endif
+            }
+
             AdjustmentApplied = false;
 
             Self = KKAPI.Studio.StudioObjectExtensions.GetOCIChar(chaControl);
@@ -81,6 +98,17 @@ namespace AdvIKPlugin.Algos
 
             // Update Current Scale
             PopulateCurrentScale();
+
+            // Reinitialize Rescale -- Must be after Populate Current Scale since we need the old number to reverse out the scaling adjustment as ABMX is still applying the prior number
+            _resize.ResizeAmount = Vector3.one;
+
+            if (OriginalCharacterScale == Vector3.zero)
+            {
+                OriginalCharacterScale = FindCurrentScale();
+#if DEBUG
+                Log.LogInfo($"Setting Original Character Scale to: {OriginalCharacterScale}");
+#endif
+            }
 
             if (!AdvIKPlugin.StudioAutoApplyResize.Value)
             {
@@ -107,12 +135,12 @@ namespace AdvIKPlugin.Algos
             Dictionary<IKScale, float> tempPriorScale = new Dictionary<IKScale, float>(PriorScale);
             Dictionary<IKScale, float> tempCurrentScale = new Dictionary<IKScale, float>(CurrentScale);
             Dictionary<IKChain, IKResizeChainAdjustment> tempChainAdjustments = new Dictionary<IKChain, IKResizeChainAdjustment>(ChainAdjustments);
-            IKResizeCentroid tempCentroid = Centroid;
+            IKResizeCentroid tempCentroid = Centroid;            
 
             Centroid = AppliedCentroid;
             ChainAdjustments = AppliedChainAdjustments;
             CurrentScale = tempPriorScale;
-            PriorScale = tempCurrentScale;
+            PriorScale = tempCurrentScale;                       
 
             ApplyAdjustment();
 
@@ -120,6 +148,7 @@ namespace AdvIKPlugin.Algos
             PriorScale = new Dictionary<IKScale, float>(tempPriorScale);
             Centroid = tempCentroid;
             ChainAdjustments = new Dictionary<IKChain, IKResizeChainAdjustment>(tempChainAdjustments);
+            _resize.ResizeAmount = Vector3.one;
 
             AdjustmentApplied = false;
         }
@@ -170,6 +199,8 @@ namespace AdvIKPlugin.Algos
             {
                 ApplyElbowCentroidAdjustment(UseCentroid);
             }
+            else if (UseCentroid == IKResizeCentroid.RESIZE)
+                ApplyFullResize(UseCentroid);
 
 
             if (UseCentroid != IKResizeCentroid.NONE)
@@ -178,6 +209,14 @@ namespace AdvIKPlugin.Algos
                 AppliedCentroid = UseCentroid;
                 AppliedChainAdjustments = new Dictionary<IKChain, IKResizeChainAdjustment>(ChainAdjustments);
             }
+        }
+
+        private void ApplyFullResize(IKResizeCentroid centroid)
+        {
+            _resize.ResizeAmount = OriginalCharacterScale / CurrentScale[IKScale.BODY];
+#if DEBUG
+            Log.LogInfo($"Applying Character Resize Scaling Adjustment of: {_resize.ResizeAmount.y} Targeting: {OriginalCharacterScale.y} From: {CurrentScale[IKScale.BODY]}");
+#endif
         }
 
         private void ApplyThighCentroidAdjustment(IKResizeCentroid centroid)
@@ -850,9 +889,9 @@ namespace AdvIKPlugin.Algos
         private Vector3 FindCurrentScale()
         {
 #if KOIKATSU || KKS
-            return Self.charInfo.objAnim.transform.Find("cf_j_root/cf_n_height").localScale;
+            return Self.charInfo.objAnim.transform.Find("cf_j_root/cf_n_height").localScale / _resize.ResizeAmount.y;
 #else
-            return Self.charInfo.objAnim.transform.Find("cf_J_Root/cf_N_height").localScale;
+            return Self.charInfo.objAnim.transform.Find("cf_J_Root/cf_N_height").localScale / _resize.ResizeAmount.y;
 #endif
         }
 
@@ -1072,6 +1111,7 @@ namespace AdvIKPlugin.Algos
         KNEE_RIGHT = 17,
         ELBOW_CENTER = 18,
         ELBOW_LEFT = 19,
-        ELBOW_RIGHT = 20
+        ELBOW_RIGHT = 20,
+        RESIZE = 21
     }
 }
