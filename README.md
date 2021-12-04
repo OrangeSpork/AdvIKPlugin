@@ -92,7 +92,8 @@ Thigh (Left/Center/Right) - Adjusts IK points from the thigh point selected. Bes
 Hands (Left/Center/Right) - Adjusts IK points from the hand point selected. Best with poses where the character is dangling from things by the hands or standing on their hands?\
 Shoulder (Left/Center/Right) - Adjusts IK points from the shoulder point selected. Works with some lying poses where the shoulder is in contact with the 'ground'.\
 Knee (Left/Center/Right) - Adjusts IK points from the knee point selected. Best with kneeling poses.\
-Elbow (Left/Center/Right) - Adjusts IK points from the elbow point selected. Useful with some leaning back on elbow poses.
+Elbow (Left/Center/Right) - Adjusts IK points from the elbow point selected. Useful with some leaning back on elbow poses.\
+Rescale Chara - Brute force option, completely rescales the character to match the scaling of the prior character, erasing any height differences. Unlike the other options this works in any mode (IK, FK, or even just plain animation).
 
 Individual limb controls - These allow you to turn off adjustment for the specified limb. Useful if you want everything else to adjust but not this. For example a seated chair pose with feet on the floor wants to use the Center Thigh point for adjustment but turn off the leg chains so the feet don't move.
 
