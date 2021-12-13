@@ -39,6 +39,7 @@ namespace AdvIKPlugin.Algos
 
         private Dictionary<IKScale, float> CurrentScale { get; set; } = new Dictionary<IKScale, float>();
         private Dictionary<IKScale, float> PriorScale { get; set; } = new Dictionary<IKScale, float>();
+        private Dictionary<IKScale, float> OriginalScale { get; set; } = new Dictionary<IKScale, float>();
 
         public bool AdjustmentApplied { get; set; }
         public bool PriorCharacter { get; set; }
@@ -63,8 +64,7 @@ namespace AdvIKPlugin.Algos
 
             AdjustmentApplied = false;
             PriorCharacter = false;
-        }
-
+        }       
 
         public void OnReload(ChaControl chaControl)
         {
@@ -105,6 +105,7 @@ namespace AdvIKPlugin.Algos
             if (OriginalCharacterScale == Vector3.zero)
             {
                 OriginalCharacterScale = FindCurrentScale();
+                OriginalScale = new Dictionary<IKScale, float>(CurrentScale);
 #if DEBUG
                 Log.LogInfo($"Setting Original Character Scale to: {OriginalCharacterScale}");
 #endif
@@ -153,11 +154,17 @@ namespace AdvIKPlugin.Algos
             AdjustmentApplied = false;
         }
 
-        public void ApplyAdjustment()
+        public void ApplyAdjustment(bool useOriginal = false)
         {
             if (!PriorScale.ContainsKey(IKScale.BODY) || !PriorScale.Where(entry => CurrentScale[entry.Key] != entry.Value).Any())
             {
                 return;
+            }
+
+            Dictionary<IKScale, float> priorCopy = new Dictionary<IKScale, float>(PriorScale);
+            if (useOriginal)
+            {
+                PriorScale = OriginalScale;
             }
 
             IKResizeCentroid UseCentroid = Centroid;
@@ -209,6 +216,9 @@ namespace AdvIKPlugin.Algos
                 AppliedCentroid = UseCentroid;
                 AppliedChainAdjustments = new Dictionary<IKChain, IKResizeChainAdjustment>(ChainAdjustments);
             }
+
+            if (useOriginal)
+                PriorScale = priorCopy;
         }
 
         private void ApplyFullResize(IKResizeCentroid centroid)

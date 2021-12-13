@@ -285,7 +285,12 @@ namespace AdvIKPlugin.Algos
             }
             else if (bone.Equals(Neck))
             {
-                return UpdateBoneModifier(bone, Vector3.one, FrameEffects.NeckAdj);
+                // Looks like applying a 0 position offset to a bone with a length adjustment causes ABMX to incorrectly revert the length adjustment
+                // Work around by supplying a very small position offset instead
+                if (FrameEffects.NeckAdj.y == 0)
+                    return UpdateBoneModifier(bone, Vector3.one, new Vector3(0f, 0.001f, 0f));
+                else
+                    return UpdateBoneModifier(bone, Vector3.one, FrameEffects.NeckAdj);
             }
             else
             {

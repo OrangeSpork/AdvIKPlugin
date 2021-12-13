@@ -26,7 +26,7 @@ namespace AdvIKPlugin
     {
         public const string GUID = "orange.spork.advikplugin";
         public const string PluginName = "AdvIKPlugin";
-        public const string Version = "1.6.6";
+        public const string Version = "1.6.7";
 
         public static AdvIKPlugin Instance { get; set; }
 
@@ -40,6 +40,7 @@ namespace AdvIKPlugin
         public static ConfigEntry<float> MakerBreathScale { get; set; }
         public static ConfigEntry<float> MakerBreathRateScale { get; set; }
         public static ConfigEntry<bool> StudioAutoApplyResize { get; set; }
+        public static ConfigEntry<bool> EnableResizeOnFolder { get; set; }
 
         internal BepInEx.Logging.ManualLogSource Log => Logger;
 
@@ -64,6 +65,8 @@ namespace AdvIKPlugin
             MakerBreathRateScale = Config.Bind("Options", "Maker Breath Rate Scale", 1.0f, new ConfigDescription("Multiplier applied to default breath rate (BPM)", new AcceptableValueRange<float>(.25f, 3f), new ConfigurationManagerAttributes { Order = 2 }));
 
             StudioAutoApplyResize = Config.Bind("Options", "Studio - Auto Resize on Reload", true, "Automatically Apply Configured IK Adjustment on Reloading Characters");
+
+            EnableResizeOnFolder = Config.Bind("Options", "Studio - Enable Resize on Folder Control", true, "Trigger resize with a folder of name -RESIZE:CENTROID_NAME - see readme for list of valid centroid names");
 
             var harmony = Harmony.CreateAndPatchAll(typeof(Hooks));
             harmony.Patch(typeof(MPCharCtrl).GetNestedType("IKInfo", AccessTools.all).GetMethod("Init"), null, new HarmonyMethod(typeof(AdvIKGUI).GetMethod(nameof(AdvIKGUI.InitUI), AccessTools.all)));

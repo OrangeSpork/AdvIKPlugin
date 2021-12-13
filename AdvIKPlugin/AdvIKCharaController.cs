@@ -1,5 +1,5 @@
 ﻿using System;
-
+using System.Linq;
 
 using KKAPI.Chara;
 using KKAPI;
@@ -374,12 +374,78 @@ namespace AdvIKPlugin
 
         private bool toeAdjustmentApplied;
 
+        private void RecurseForName(TreeNodeObject tno)
+        {
+            if (tno.textName != null && tno.textName.ToUpper().StartsWith("-RESIZE"))
+                flagNodeObjectList.Add(tno);
+
+            foreach (TreeNodeObject child in tno.child)
+            {
+                RecurseForName(child);                
+            }
+        }
+
+        private IEnumerator ScanForFlagCo()
+        {
+            yield return new WaitUntil(() => Studio.Studio.Instance != null && Studio.Studio.Instance.dicObjectCtrl != null);
+            while (this.enabled)
+            {                
+                flagNodeObjectList.Clear();
+                if (AdvIKPlugin.EnableResizeOnFolder.Value)
+                {
+                    OCIChar me = StudioObjectExtensions.GetOCIChar(ChaControl);
+                    RecurseForName(me.treeNodeObject);                    
+                }
+                yield return new WaitForSeconds(5);
+            }
+        }
+
+
+        private List<TreeNodeObject> flagNodeObjectList = new List<TreeNodeObject>();
+
         protected override void Update()
         {
             toeAdjustmentApplied = false;
 
             if (_breathing != null) 
                 _breathing.FrameEffects = null;
+
+            foreach (TreeNodeObject flagNodeObject in flagNodeObjectList)
+            {
+                if (flagNodeObject != null && flagNodeObject.visible)
+                {
+                    try
+                    {
+                        if (flagNodeObject.textName == null || !flagNodeObject.textName.ToUpper().StartsWith("-RESIZE"))
+                        {
+                            flagNodeObjectList.Remove(flagNodeObject);
+                            break;
+                        }
+
+                        string reqCentroidMode = flagNodeObject.textName.ToUpper().Substring(flagNodeObject.textName.LastIndexOf(":") + 1);
+#if DEBUG
+                    AdvIKPlugin.Instance.Log.LogInfo($"Folder Requested Adjustment via: {reqCentroidMode}");
+#endif
+                        IKResizeCentroid currentCentroid = _iKResizeAdjustment.Centroid;
+                        IKResizeCentroid requestedCentroid = (IKResizeCentroid)Enum.Parse(typeof(IKResizeCentroid), reqCentroidMode);
+                        _iKResizeAdjustment.Centroid = requestedCentroid;
+                        _iKResizeAdjustment.ApplyAdjustment(true);
+                        _iKResizeAdjustment.Centroid = currentCentroid;
+                        flagNodeObject.SetVisible(false);
+                    }
+                    catch (Exception errAny)
+                    {
+#if DEBUG
+                    AdvIKPlugin.Instance.Log.LogInfo($"Error checking resize flag: {errAny.Message}\n{errAny.StackTrace}");
+#endif
+                        try
+                        {
+                            flagNodeObjectList.Remove(flagNodeObject);
+                        }
+                        catch { }
+                    }
+                }
+            }
 
             base.Update();
         }
@@ -448,6 +514,7 @@ namespace AdvIKPlugin
         protected override void OnEnable()
         {
             StartCoroutine("StartBreathing", new PluginData());
+            StartCoroutine(ScanForFlagCo());
         }
 
 
