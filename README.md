@@ -99,3 +99,29 @@ Individual limb controls - These allow you to turn off adjustment for the specif
 
 Unapply Resize Adjustment - If an adjustment has been applied to this character, clicking this reverses out the adjustment, restoring the character to an unadjusted state. The button will then change to read Apply.\
 Apply Resize Adjustment - If no adjustment has been applied to this character, clicking this applies the adjustment specified on the panel. Using Unapply/Apply will allow you to experiment with various settings. Note: if the character has not been replaced, application of settings does nothing.
+
+Rescale via folder - Intended to allow resizing from a VNGE scene, when you jump from VNGE scene to scene the scene locks in the original character's IK positions. Replacing the character will resize only the current position, as soon as you swap scenes everything will revert to original and you need to apply resizing again. To make this work with VNGE, add a folder as a child of the character to resize (pick any attachment point, doesn't matter) and name it -RESIZE:CENTROID_NAME where CENTROID_NAME is the name of the resize adjustment point. Then track that folder as visible in your scene. When you switch to the scene VNGE will make the folder visible, AdvIKPlugin will spot that folder, apply the adjustment and then disable the folder automatically. Note that setting the folder visible will immediately trigger the replacement and set it back hidden, which makes it hard to have time to update the scene in VNGE. The trick is to temporarily rename the folder (remove the leading hyphen for example), set the folder visible, update the scene, then make it hidden and rename it back before saving. As VNGE doesn't track the folder name this'll work.
+
+List of CENTROID_NAME - must be EXACTLY one of these, all upper case as listed below:
+
+        AUTO
+        FEET_CENTER
+        FEET_LEFT
+        FEET_RIGHT
+        THIGH_CENTER
+        THIGH_LEFT
+        THIGH_RIGHT
+        BODY
+        SHOULDER_CENTER
+        SHOULDER_LEFT
+        SHOULDER_RIGHT
+        HAND_CENTER
+        HAND_LEFT
+        HAND_RIGHT
+        KNEE_CENTER
+        KNEE_LEFT
+        KNEE_RIGHT
+        ELBOW_CENTER
+        ELBOW_LEFT
+        ELBOW_RIGHT
+        RESIZE
