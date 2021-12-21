@@ -410,39 +410,42 @@ namespace AdvIKPlugin
             if (_breathing != null) 
                 _breathing.FrameEffects = null;
 
-            foreach (TreeNodeObject flagNodeObject in flagNodeObjectList)
+            if (KKAPI.Studio.StudioAPI.InsideStudio && AdvIKPlugin.EnableResizeOnFolder.Value && flagNodeObjectList.Count > 0)
             {
-                if (flagNodeObject != null && flagNodeObject.visible)
+                foreach (TreeNodeObject flagNodeObject in flagNodeObjectList)
                 {
-                    try
+                    if (flagNodeObject != null && flagNodeObject.visible)
                     {
-                        if (flagNodeObject.textName == null || !flagNodeObject.textName.ToUpper().StartsWith("-RESIZE"))
+                        try
                         {
-                            flagNodeObjectList.Remove(flagNodeObject);
-                            break;
-                        }
+                            if (flagNodeObject.textName == null || !flagNodeObject.textName.ToUpper().StartsWith("-RESIZE"))
+                            {
+                                flagNodeObjectList.Remove(flagNodeObject);
+                                break;
+                            }
 
-                        string reqCentroidMode = flagNodeObject.textName.ToUpper().Substring(flagNodeObject.textName.LastIndexOf(":") + 1);
+                            string reqCentroidMode = flagNodeObject.textName.ToUpper().Substring(flagNodeObject.textName.LastIndexOf(":") + 1);
 #if DEBUG
                     AdvIKPlugin.Instance.Log.LogInfo($"Folder Requested Adjustment via: {reqCentroidMode}");
 #endif
-                        IKResizeCentroid currentCentroid = _iKResizeAdjustment.Centroid;
-                        IKResizeCentroid requestedCentroid = (IKResizeCentroid)Enum.Parse(typeof(IKResizeCentroid), reqCentroidMode);
-                        _iKResizeAdjustment.Centroid = requestedCentroid;
-                        _iKResizeAdjustment.ApplyAdjustment(true);
-                        _iKResizeAdjustment.Centroid = currentCentroid;
-                        flagNodeObject.SetVisible(false);
-                    }
-                    catch (Exception errAny)
-                    {
+                            IKResizeCentroid currentCentroid = _iKResizeAdjustment.Centroid;
+                            IKResizeCentroid requestedCentroid = (IKResizeCentroid)Enum.Parse(typeof(IKResizeCentroid), reqCentroidMode);
+                            _iKResizeAdjustment.Centroid = requestedCentroid;
+                            _iKResizeAdjustment.ApplyAdjustment(true);
+                            _iKResizeAdjustment.Centroid = currentCentroid;
+                            flagNodeObject.SetVisible(false);
+                        }
+                        catch (Exception errAny)
+                        {
 #if DEBUG
                     AdvIKPlugin.Instance.Log.LogInfo($"Error checking resize flag: {errAny.Message}\n{errAny.StackTrace}");
 #endif
-                        try
-                        {
-                            flagNodeObjectList.Remove(flagNodeObject);
+                            try
+                            {
+                                flagNodeObjectList.Remove(flagNodeObject);
+                            }
+                            catch { }
                         }
-                        catch { }
                     }
                 }
             }
@@ -514,7 +517,8 @@ namespace AdvIKPlugin
         protected override void OnEnable()
         {
             StartCoroutine("StartBreathing", new PluginData());
-            StartCoroutine(ScanForFlagCo());
+            if (KKAPI.Studio.StudioAPI.InsideStudio)
+                StartCoroutine(ScanForFlagCo());
         }
 
 
