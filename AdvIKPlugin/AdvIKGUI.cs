@@ -48,6 +48,9 @@ namespace AdvIKPlugin
             private static Toggle spineFKHintsToggle;
             private static Toggle shoulderFKHintsToggle;
             private static Toggle toeFKHintsToggle;
+            private static Toggle heelzAllToggle;
+            private static Toggle heelzLToggle;
+            private static Toggle heelzRToggle;
 
             private static Toggle BreathingToggle;
 
@@ -190,6 +193,9 @@ namespace AdvIKPlugin
                     spineFKHintsToggle.isOn = advIKController.EnableSpineFKHints;
                     shoulderFKHintsToggle.isOn = advIKController.EnableShoulderFKHints;
                     toeFKHintsToggle.isOn = advIKController.EnableToeFKHints;
+                    heelzAllToggle.isOn = advIKController.EnableHeelzHoverAll;
+                    heelzLToggle.isOn = advIKController.EnableHeelzHoverLeftFoot;
+                    heelzRToggle.isOn = advIKController.EnableHeelzHoverRightFoot;
 
                     BreathingToggle.isOn = advIKController.BreathingController.Enabled;
                     intakeSlider.value = advIKController.BreathingController.IntakePause;
@@ -2227,6 +2233,58 @@ namespace AdvIKPlugin
                     }
                 });
 
+                Text heelzAllText = SetupText("Heelz All ", -545, "Heelz All ", AdvIKPanel);
+                heelzAllText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 150);
+                heelzAllText.fontSize = 16;
+                heelzAllToggle = SetupToggle("HeelzAll", -545, AdvIKPanel);
+                heelzAllToggle.transform.Translate(-95, 0, 0, Space.Self);
+
+                heelzAllToggle.onValueChanged.AddListener(delegate (bool value)
+                {
+                    if (selectedChar != null)
+                    {
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.EnableHeelzHoverAll = value;
+                        }
+                    }
+                });
+
+                Text heelzLText = SetupText("L ", -545, "L ", AdvIKPanel);
+                heelzLText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 150);
+                heelzLText.fontSize = 16;
+                heelzLText.transform.Translate(100, 0, 0, Space.Self);
+                heelzLToggle = SetupToggle("HeelzL", -545, AdvIKPanel);
+                heelzLToggle.transform.Translate(-45, 0, 0, Space.Self);
+
+                heelzLToggle.onValueChanged.AddListener(delegate (bool value)
+                {
+                    if (selectedChar != null)
+                    {
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.EnableHeelzHoverLeftFoot = value;
+                        }
+                    }
+                });
+
+                Text heelzRText = SetupText("R ", -545, "R ", AdvIKPanel);
+                heelzRText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 150);
+                heelzRText.fontSize = 16;
+                heelzRText.transform.Translate(145, 0, 0, Space.Self);
+                heelzRToggle = SetupToggle("HeelzR", -545, AdvIKPanel);
+                heelzRToggle.transform.Translate(0, 0, 0, Space.Self);
+                heelzRToggle.onValueChanged.AddListener(delegate (bool value)
+                {
+                    if (selectedChar != null)
+                    {
+                        foreach (AdvIKCharaController controller in StudioAPI.GetSelectedControllers<AdvIKCharaController>())
+                        {
+                            controller.EnableHeelzHoverRightFoot = value;
+                        }
+                    }
+                });
+
                 Weight.onValueChanged.RemoveAllListeners();
                 WeightRight.onValueChanged.RemoveAllListeners();
                 Offset.onValueChanged.RemoveAllListeners();
@@ -2305,6 +2363,9 @@ namespace AdvIKPlugin
                         && child.gameObject != spineFKHintsText.gameObject && child.gameObject != spineFKHintsToggle.gameObject
                         && child.gameObject != shoulderFKHintsText.gameObject && child.gameObject != shoulderFKHintsToggle.gameObject
                         && child.gameObject != toeFKHintsText.gameObject && child.gameObject != toeFKHintsToggle.gameObject
+                        && child.gameObject != heelzAllText.gameObject && child.gameObject != heelzAllToggle.gameObject
+                        && child.gameObject != heelzLText.gameObject && child.gameObject != heelzLToggle.gameObject
+                        && child.gameObject != heelzRText.gameObject && child.gameObject != heelzRToggle.gameObject
                         && child.gameObject != reverseShoulderText.gameObject && child.gameObject != ReverseShoulderLToggle.gameObject && child.gameObject != ReverseShoulderRToggle.gameObject && child.gameObject != reverseShoulderRText.gameObject
                         && child.gameObject != ikOptsButtonGO && child.gameObject != breathOptsButtonGO
                         )
@@ -2397,7 +2458,7 @@ namespace AdvIKPlugin
                 ResizePanel = Instantiate(originalPanel, kineMenu.transform, true);
 
                 RectTransform rect = AdvIKPanel.GetComponent<RectTransform>();
-                rect.sizeDelta = new Vector2(202, 550);
+                rect.sizeDelta = new Vector2(202, 600);
 
                 rect = BreathPanel.GetComponent<RectTransform>();
                 rect.sizeDelta = new Vector2(202, 490);

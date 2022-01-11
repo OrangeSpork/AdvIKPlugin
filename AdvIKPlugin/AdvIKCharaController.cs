@@ -13,6 +13,9 @@ using Studio;
 using AdvIKPlugin.Algos;
 using KKABMX.Core;
 using System.Collections.Generic;
+using HarmonyLib;
+using System.Reflection;
+using System.Diagnostics;
 
 namespace AdvIKPlugin
 {
@@ -34,6 +37,10 @@ namespace AdvIKPlugin
         private float _shoulderRightOffset = .2f;
 
         private float _spineStiffness = 0;
+
+        private bool _enableHeelzHoverLeftFoot = false;
+        private bool _enableHeelzHoverRightFoot = false;
+        private bool _enableHeelzHoverAll = false;
 
         private AdvIKShoulderRotator _shoulderRotator;
         private IKResizeAdjustment _iKResizeAdjustment;
@@ -221,7 +228,11 @@ namespace AdvIKPlugin
                     FindSolver().spineStiffness = _spineStiffness;
                 }
             }
-        }
+        }        
+
+        public bool EnableHeelzHoverAll { get => _enableHeelzHoverAll; set => _enableHeelzHoverAll = value; }
+        public bool EnableHeelzHoverLeftFoot { get => _enableHeelzHoverLeftFoot; set => _enableHeelzHoverLeftFoot = value; }
+        public bool EnableHeelzHoverRightFoot { get => _enableHeelzHoverRightFoot; set => _enableHeelzHoverRightFoot = value; }
 
         protected override void OnCardBeingSaved(GameMode currentGameMode)
         {
@@ -239,6 +250,9 @@ namespace AdvIKPlugin
             data.data["EnableSpineFKHints"] = _enableSpineFKHints;
             data.data["EnableShoulderFKHints"] = _enableShoulderFKHints;
             data.data["EnableToeFKHints"] = _enableToeFKHints;
+            data.data["EnableHeelzHoverAll"] = _enableHeelzHoverAll;
+            data.data["EnableHeelzHoverLeftFoot"] = _enableHeelzHoverLeftFoot;
+            data.data["EnableHeelzHoverRightFoot"] = _enableHeelzHoverRightFoot;
 
             if (BreathingController != null) BreathingController.SaveConfig(data);
             if (IKResizeController != null) IKResizeController.SaveConfig(data);
@@ -282,6 +296,9 @@ namespace AdvIKPlugin
                 if (data.data.TryGetValue("ReverseShoulderL", out var val7)) ReverseShoulderL = (bool)val7;
                 if (data.data.TryGetValue("ReverseShoulderR", out var val8)) ReverseShoulderR = (bool)val8;
                 if (data.data.TryGetValue("EnableToeFKHints", out var val9)) EnableToeFKHints = (bool)val9;
+                if (data.data.TryGetValue("EnableHeelzHoverAll", out var val10)) EnableHeelzHoverAll = (bool)val10;
+                if (data.data.TryGetValue("EnableHeelzHoverLeftFoot", out var val11)) EnableHeelzHoverLeftFoot = (bool)val11;
+                if (data.data.TryGetValue("EnableHeelzHoverRightFoot", out var val12)) EnableHeelzHoverRightFoot = (bool)val12;
                 StartCoroutine("StartBreathing", data);
                 if (IKResizeController != null) IKResizeController.LoadConfig(data);
             }
@@ -468,6 +485,12 @@ namespace AdvIKPlugin
                         FindSolver().GetSpineMapping().spineBones[1].Rotate(spine1targetRotation, Space.Self);
                         FindSolver().GetSpineMapping().ReadPose();
                     }
+#if !KOIKATSU && !KKS
+
+                    ClearHoverAdjustment();
+                    ApplyHeelzHoverAdjustment();
+
+#endif
                 }));
                 FindSolver().OnPostSolve = (IKSolver.UpdateDelegate)Delegate.Combine(FindSolver().OnPostSolve, new IKSolver.UpdateDelegate(() =>
                     {
@@ -496,6 +519,140 @@ namespace AdvIKPlugin
                     }));
             }
         }
+
+#if !KOIKATSU && !KKS
+
+        private void ClearHoverAdjustment()
+        {
+            IKSolverFullBodyBiped solver = FindSolver();
+            if (solver != null)
+            {
+                if (currentHoverAdjustment == null)
+                {
+                    currentHoverAdjustment = new float[solver.effectors.Length];
+                    for (int i = 0; i < solver.effectors.Length; i++)
+                    {
+                        currentHoverAdjustment[i] = 0.0f;
+                    }
+                }
+                for (int i = 0; i < solver.effectors.Length; i++)
+                {
+                    IKEffector effector = solver.effectors[i];
+                    effector.target.localPosition += new Vector3(0, -1 * currentHoverAdjustment[i], 0);
+                    currentHoverAdjustment[i] = 0.0f;
+                }
+            }
+        }
+
+        private float[] currentHoverAdjustment;
+        private void ApplyHeelzHoverAdjustment()
+        {
+            if (ChaControl.fileStatus.clothesState[7] != 0)
+                return;
+
+            IKSolverFullBodyBiped solver = FindSolver();
+            if (solver != null)
+            {
+                if (currentHoverAdjustment == null)
+                {
+                    currentHoverAdjustment = new float[solver.effectors.Length];
+                    for (int i = 0; i < solver.effectors.Length; i++)
+                    {
+                        currentHoverAdjustment[i] = 0.0f;
+                    }
+                }
+
+                if (_enableHeelzHoverAll)
+                {
+                    float hoverAdjustment = FindHeelzHoverAdjustment();
+                    for (int i = 0; i < solver.effectors.Length; i++)
+                    {
+                        currentHoverAdjustment[i] = hoverAdjustment;                        
+                        solver.effectors[i].target.localPosition += new Vector3(0, currentHoverAdjustment[i], 0);
+                    }
+                }
+                else
+                {
+                    if (_enableHeelzHoverLeftFoot)
+                    {
+                        float hoverAdj = FindHeelzHoverAdjustment();
+                        currentHoverAdjustment[(int)FullBodyBipedEffector.LeftFoot] = hoverAdj;
+                        solver.effectors[(int)FullBodyBipedEffector.LeftFoot].target.localPosition += new Vector3(0, currentHoverAdjustment[(int)FullBodyBipedEffector.LeftFoot], 0);                        
+                    }
+                    if (_enableHeelzHoverRightFoot)
+                    {
+                        float hoverAdj = FindHeelzHoverAdjustment();
+                        currentHoverAdjustment[(int)FullBodyBipedEffector.RightFoot] = hoverAdj;
+                        solver.effectors[(int)FullBodyBipedEffector.RightFoot].target.localPosition += new Vector3(0, currentHoverAdjustment[(int)FullBodyBipedEffector.RightFoot], 0);
+                    }
+                }
+            }
+        }
+
+        private static Type HeelzValueDictTypeV1 = AccessTools.TypeByName("Heels.Values");
+        private static Type HeelzValueDictTypeV2 = AccessTools.TypeByName("Values");
+        private static FieldInfo HeelzValueDictField;
+        private static Type HeelzConfigTypeV1 = AccessTools.TypeByName("Heels.Struct.HeelsConfig");
+        private static Type HeelzConfigTypeV2 = AccessTools.TypeByName("HeelConfig");
+        private static FieldInfo HeelzConfigRootFieldV1;
+        private static FieldInfo HeelzConfigRootFieldV2;
+        private static IDictionary HeelzDict;
+
+        private float FindHeelzHoverAdjustment()
+        {
+            if (HeelzValueDictTypeV1 == null && HeelzValueDictTypeV2 == null)
+                return 0.0f;
+
+            if (HeelzDict == null)
+                FindHeelzDict();
+
+            if (HeelzDict == null)
+            {
+                return 0.0f;
+            }
+            else
+            {
+                if (HeelzDict.Contains(ChaControl.nowCoordinate.clothes.parts[7].id))
+                {
+                    var shoeConfig = HeelzDict[ChaControl.nowCoordinate.clothes.parts[7].id];
+                    if (HeelzConfigRootFieldV1 != null)
+                        return ((Vector3)HeelzConfigRootFieldV1.GetValue(shoeConfig)).y;
+                    else
+                        return ((Vector3)HeelzConfigRootFieldV2.GetValue(shoeConfig)).y;
+                }
+                else
+                {
+                    return 0.0f;
+                }
+            }
+        }
+
+        private void FindHeelzDict()
+        { 
+            if (HeelzValueDictTypeV1 != null && HeelzConfigTypeV1 != null)
+            {
+                if (HeelzValueDictField == null)
+                    HeelzValueDictField = AccessTools.Field(HeelzValueDictTypeV1, "Configs");
+                if (HeelzConfigRootFieldV1 == null)
+                    HeelzConfigRootFieldV1 = AccessTools.Field(HeelzConfigTypeV1, "Root");
+                if (HeelzDict == null)
+                    HeelzDict = (Dictionary<int, object>)HeelzValueDictField.GetValue(null);
+
+            }
+            else if (HeelzValueDictTypeV2 != null && HeelzConfigTypeV2 != null)
+            {
+                if (HeelzValueDictField == null)
+                    HeelzValueDictField = AccessTools.Field(HeelzValueDictTypeV2, "Configs");
+                if (HeelzConfigRootFieldV2 == null)
+                    HeelzConfigRootFieldV2 = AccessTools.Field(HeelzConfigTypeV2, "rootMove");
+                if (HeelzDict == null)
+                {
+                    HeelzDict = (IDictionary)HeelzValueDictField.GetValue(null);
+                }
+            }             
+        }
+
+#endif
 
         public Vector3 FindFKRotation(Transform t)
         {            
