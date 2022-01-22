@@ -197,126 +197,132 @@ namespace AdvIKPlugin
                     heelzLToggle.isOn = advIKController.EnableHeelzHoverLeftFoot;
                     heelzRToggle.isOn = advIKController.EnableHeelzHoverRightFoot;
 
-                    BreathingToggle.isOn = advIKController.BreathingController.Enabled;
-                    intakeSlider.value = advIKController.BreathingController.IntakePause;
-                    holdSlider.value = advIKController.BreathingController.HoldPause;
-                    inhaleSlider.value = advIKController.BreathingController.InhalePercentage;
-                    bpmSlider.value = advIKController.BreathingController.BreathsPerMinute;
-                    shoulderDampSlider.value = advIKController.BreathingController.ShoulderDampeningFactor;
-                    magnitudeSlider.value = advIKController.BreathingController.MagnitudeFactor;
+                    if (advIKController.BreathingController != null)
+                    {
+                        BreathingToggle.isOn = advIKController.BreathingController.Enabled;
+                        intakeSlider.value = advIKController.BreathingController.IntakePause;
+                        holdSlider.value = advIKController.BreathingController.HoldPause;
+                        inhaleSlider.value = advIKController.BreathingController.InhalePercentage;
+                        bpmSlider.value = advIKController.BreathingController.BreathsPerMinute;
+                        shoulderDampSlider.value = advIKController.BreathingController.ShoulderDampeningFactor;
+                        magnitudeSlider.value = advIKController.BreathingController.MagnitudeFactor;
 
-                    breathShapeXSlider.value = advIKController.BreathingController.BreathMagnitude.x;
-                    breathShapeYSlider.value = advIKController.BreathingController.BreathMagnitude.y;
-                    breathShapeZSlider.value = advIKController.BreathingController.BreathMagnitude.z;
+                        breathShapeXSlider.value = advIKController.BreathingController.BreathMagnitude.x;
+                        breathShapeYSlider.value = advIKController.BreathingController.BreathMagnitude.y;
+                        breathShapeZSlider.value = advIKController.BreathingController.BreathMagnitude.z;
 
-                    upperChestShapeXSlider.value = advIKController.BreathingController.UpperChestRelativeScaling.x;
-                    upperChestShapeYSlider.value = advIKController.BreathingController.UpperChestRelativeScaling.y;
-                    upperChestShapeZSlider.value = advIKController.BreathingController.UpperChestRelativeScaling.z;
+                        upperChestShapeXSlider.value = advIKController.BreathingController.UpperChestRelativeScaling.x;
+                        upperChestShapeYSlider.value = advIKController.BreathingController.UpperChestRelativeScaling.y;
+                        upperChestShapeZSlider.value = advIKController.BreathingController.UpperChestRelativeScaling.z;
 
-                    lowerChestShapeXSlider.value = advIKController.BreathingController.LowerChestRelativeScaling.x;
-                    lowerChestShapeYSlider.value = advIKController.BreathingController.LowerChestRelativeScaling.y;
-                    lowerChestShapeZSlider.value = advIKController.BreathingController.LowerChestRelativeScaling.z;
+                        lowerChestShapeXSlider.value = advIKController.BreathingController.LowerChestRelativeScaling.x;
+                        lowerChestShapeYSlider.value = advIKController.BreathingController.LowerChestRelativeScaling.y;
+                        lowerChestShapeZSlider.value = advIKController.BreathingController.LowerChestRelativeScaling.z;
 
-                    abdomenShapeXSlider.value = advIKController.BreathingController.AbdomenRelativeScaling.x;
-                    abdomenShapeYSlider.value = advIKController.BreathingController.AbdomenRelativeScaling.y;
-                    abdomenShapeZSlider.value = advIKController.BreathingController.AbdomenRelativeScaling.z;
+                        abdomenShapeXSlider.value = advIKController.BreathingController.AbdomenRelativeScaling.x;
+                        abdomenShapeYSlider.value = advIKController.BreathingController.AbdomenRelativeScaling.y;
+                        abdomenShapeZSlider.value = advIKController.BreathingController.AbdomenRelativeScaling.z;
 
-                    NeckMotionSlider.value = advIKController.BreathingController.NeckMotionDampeningFactor;
+                        NeckMotionSlider.value = advIKController.BreathingController.NeckMotionDampeningFactor;
+                    }
 
                     updatingResizeCentroidControls = true;
-                    ClearResizeCentroidControls();                    
-                    switch (advIKController.IKResizeController.Centroid)
+                    ClearResizeCentroidControls();
+                    if (advIKController.IKResizeController != null)
                     {
-                        case Algos.IKResizeCentroid.AUTO:
-                            resizeCentroid_Auto.isOn = true;
-                            break;
-                        case Algos.IKResizeCentroid.NONE:
-                            resizeCentroid_None.isOn = true;
-                            break;
-                        case Algos.IKResizeCentroid.BODY:
-                            resizeCentroid_Body.isOn = true;
-                            break;
-                        case Algos.IKResizeCentroid.FEET_CENTER:
-                            resizeCentroid_FeetCenter.isOn = true;
-                            break;
-                        case Algos.IKResizeCentroid.FEET_LEFT:
-                            resizeCentroid_FeetLeft.isOn = true;
-                            break;
-                        case Algos.IKResizeCentroid.FEET_RIGHT:
-                            resizeCentroid_FeetRight.isOn = true;
-                            break;
-                        case Algos.IKResizeCentroid.THIGH_CENTER:
-                            resizeCentroid_ThighCenter.isOn = true;
-                            break;
-                        case Algos.IKResizeCentroid.THIGH_LEFT:
-                            resizeCentroid_ThighLeft.isOn = true;
-                            break;
-                        case Algos.IKResizeCentroid.THIGH_RIGHT:
-                            resizeCentroid_ThighRight.isOn = true;
-                            break;
-                        case Algos.IKResizeCentroid.HAND_CENTER:
-                            resizeCentroid_HandCenter.isOn = true;
-                            break;
-                        case Algos.IKResizeCentroid.HAND_LEFT:
-                            resizeCentroid_HandLeft.isOn = true;
-                            break;
-                        case Algos.IKResizeCentroid.HAND_RIGHT:
-                            resizeCentroid_HandRight.isOn = true;
-                            break;
-                        case Algos.IKResizeCentroid.SHOULDER_CENTER:
-                            resizeCentroid_ShoulderCenter.isOn = true;
-                            break;
-                        case Algos.IKResizeCentroid.SHOULDER_LEFT:
-                            resizeCentroid_ShoulderLeft.isOn = true;
-                            break;
-                        case Algos.IKResizeCentroid.SHOULDER_RIGHT:
-                            resizeCentroid_ShoulderRight.isOn = true;
-                            break;
-                        case Algos.IKResizeCentroid.KNEE_CENTER:
-                            resizeCentroid_KneeCenter.isOn = true;
-                            break;
-                        case Algos.IKResizeCentroid.KNEE_LEFT:
-                            resizeCentroid_KneeLeft.isOn = true;
-                            break;
-                        case Algos.IKResizeCentroid.KNEE_RIGHT:
-                            resizeCentroid_KneeRight.isOn = true;
-                            break;
-                        case Algos.IKResizeCentroid.ELBOW_CENTER:
-                            resizeCentroid_ElbowCenter.isOn = true;
-                            break;
-                        case Algos.IKResizeCentroid.ELBOW_LEFT:
-                            resizeCentroid_ElbowLeft.isOn = true;
-                            break;
-                        case Algos.IKResizeCentroid.ELBOW_RIGHT:
-                            resizeCentroid_ElbowRight.isOn = true;
-                            break;
-                        case Algos.IKResizeCentroid.RESIZE:
-                            resizeCentroid_Resize.isOn = true;
-                            break;
+                        switch (advIKController.IKResizeController.Centroid)
+                        {
+                            case Algos.IKResizeCentroid.AUTO:
+                                resizeCentroid_Auto.isOn = true;
+                                break;
+                            case Algos.IKResizeCentroid.NONE:
+                                resizeCentroid_None.isOn = true;
+                                break;
+                            case Algos.IKResizeCentroid.BODY:
+                                resizeCentroid_Body.isOn = true;
+                                break;
+                            case Algos.IKResizeCentroid.FEET_CENTER:
+                                resizeCentroid_FeetCenter.isOn = true;
+                                break;
+                            case Algos.IKResizeCentroid.FEET_LEFT:
+                                resizeCentroid_FeetLeft.isOn = true;
+                                break;
+                            case Algos.IKResizeCentroid.FEET_RIGHT:
+                                resizeCentroid_FeetRight.isOn = true;
+                                break;
+                            case Algos.IKResizeCentroid.THIGH_CENTER:
+                                resizeCentroid_ThighCenter.isOn = true;
+                                break;
+                            case Algos.IKResizeCentroid.THIGH_LEFT:
+                                resizeCentroid_ThighLeft.isOn = true;
+                                break;
+                            case Algos.IKResizeCentroid.THIGH_RIGHT:
+                                resizeCentroid_ThighRight.isOn = true;
+                                break;
+                            case Algos.IKResizeCentroid.HAND_CENTER:
+                                resizeCentroid_HandCenter.isOn = true;
+                                break;
+                            case Algos.IKResizeCentroid.HAND_LEFT:
+                                resizeCentroid_HandLeft.isOn = true;
+                                break;
+                            case Algos.IKResizeCentroid.HAND_RIGHT:
+                                resizeCentroid_HandRight.isOn = true;
+                                break;
+                            case Algos.IKResizeCentroid.SHOULDER_CENTER:
+                                resizeCentroid_ShoulderCenter.isOn = true;
+                                break;
+                            case Algos.IKResizeCentroid.SHOULDER_LEFT:
+                                resizeCentroid_ShoulderLeft.isOn = true;
+                                break;
+                            case Algos.IKResizeCentroid.SHOULDER_RIGHT:
+                                resizeCentroid_ShoulderRight.isOn = true;
+                                break;
+                            case Algos.IKResizeCentroid.KNEE_CENTER:
+                                resizeCentroid_KneeCenter.isOn = true;
+                                break;
+                            case Algos.IKResizeCentroid.KNEE_LEFT:
+                                resizeCentroid_KneeLeft.isOn = true;
+                                break;
+                            case Algos.IKResizeCentroid.KNEE_RIGHT:
+                                resizeCentroid_KneeRight.isOn = true;
+                                break;
+                            case Algos.IKResizeCentroid.ELBOW_CENTER:
+                                resizeCentroid_ElbowCenter.isOn = true;
+                                break;
+                            case Algos.IKResizeCentroid.ELBOW_LEFT:
+                                resizeCentroid_ElbowLeft.isOn = true;
+                                break;
+                            case Algos.IKResizeCentroid.ELBOW_RIGHT:
+                                resizeCentroid_ElbowRight.isOn = true;
+                                break;
+                            case Algos.IKResizeCentroid.RESIZE:
+                                resizeCentroid_Resize.isOn = true;
+                                break;
 
+                        }
+                        Algos.IKResizeChainAdjustment leftArmAdjustment;
+                        if (!advIKController.IKResizeController.ChainAdjustments.TryGetValue(Algos.IKChain.LEFT_ARM, out leftArmAdjustment))
+                            leftArmAdjustment = Algos.IKResizeChainAdjustment.CHAIN;
+                        Algos.IKResizeChainAdjustment rightArmAdjustment;
+                        if (!advIKController.IKResizeController.ChainAdjustments.TryGetValue(Algos.IKChain.RIGHT_ARM, out rightArmAdjustment))
+                            rightArmAdjustment = Algos.IKResizeChainAdjustment.CHAIN;
+                        Algos.IKResizeChainAdjustment leftLegAdjustment;
+                        if (!advIKController.IKResizeController.ChainAdjustments.TryGetValue(Algos.IKChain.LEFT_LEG, out leftLegAdjustment))
+                            leftLegAdjustment = Algos.IKResizeChainAdjustment.CHAIN;
+                        Algos.IKResizeChainAdjustment rightLegAdjustment;
+                        if (!advIKController.IKResizeController.ChainAdjustments.TryGetValue(Algos.IKChain.RIGHT_LEG, out rightLegAdjustment))
+                            rightLegAdjustment = Algos.IKResizeChainAdjustment.CHAIN;
+
+                        resizeChainMode_LeftArm.isOn = leftArmAdjustment == Algos.IKResizeChainAdjustment.CHAIN;
+                        resizeChainMode_RightArm.isOn = rightArmAdjustment == Algos.IKResizeChainAdjustment.CHAIN;
+                        resizeChainMode_LeftLeg.isOn = leftLegAdjustment == Algos.IKResizeChainAdjustment.CHAIN;
+                        resizeChainMode_RightLeg.isOn = rightLegAdjustment == Algos.IKResizeChainAdjustment.CHAIN;
+
+                        if (advIKController.IKResizeController.AdjustmentApplied)
+                            resizeButtonText.text = "Undo Resize Adjustment";
+                        else
+                            resizeButtonText.text = "Apply Resize Adjustment";
                     }
-                    Algos.IKResizeChainAdjustment leftArmAdjustment;
-                    if (!advIKController.IKResizeController.ChainAdjustments.TryGetValue(Algos.IKChain.LEFT_ARM, out leftArmAdjustment))
-                        leftArmAdjustment = Algos.IKResizeChainAdjustment.CHAIN;
-                    Algos.IKResizeChainAdjustment rightArmAdjustment;
-                    if (!advIKController.IKResizeController.ChainAdjustments.TryGetValue(Algos.IKChain.RIGHT_ARM, out rightArmAdjustment))
-                        rightArmAdjustment = Algos.IKResizeChainAdjustment.CHAIN;
-                    Algos.IKResizeChainAdjustment leftLegAdjustment;
-                    if (!advIKController.IKResizeController.ChainAdjustments.TryGetValue(Algos.IKChain.LEFT_LEG, out leftLegAdjustment))
-                        leftLegAdjustment = Algos.IKResizeChainAdjustment.CHAIN;
-                    Algos.IKResizeChainAdjustment rightLegAdjustment;
-                    if (!advIKController.IKResizeController.ChainAdjustments.TryGetValue(Algos.IKChain.RIGHT_LEG, out rightLegAdjustment))
-                        rightLegAdjustment = Algos.IKResizeChainAdjustment.CHAIN;
-
-                    resizeChainMode_LeftArm.isOn = leftArmAdjustment == Algos.IKResizeChainAdjustment.CHAIN;                                        
-                    resizeChainMode_RightArm.isOn = rightArmAdjustment == Algos.IKResizeChainAdjustment.CHAIN;
-                    resizeChainMode_LeftLeg.isOn = leftLegAdjustment == Algos.IKResizeChainAdjustment.CHAIN;
-                    resizeChainMode_RightLeg.isOn = rightLegAdjustment == Algos.IKResizeChainAdjustment.CHAIN;
-
-                    if (advIKController.IKResizeController.AdjustmentApplied)
-                        resizeButtonText.text = "Undo Resize Adjustment";
-                    else
-                        resizeButtonText.text = "Apply Resize Adjustment";
 
                     updatingResizeCentroidControls = false;
                 }

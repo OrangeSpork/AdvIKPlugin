@@ -470,8 +470,19 @@ namespace AdvIKPlugin
             base.Update();
         }
 
+        private FullBodyBipedIK ik;
         protected void LateUpdate()
         {
+
+            if (AdvIKPlugin.OverrideMakerIKHandling.Value && KKAPI.Maker.MakerAPI.InsideAndLoaded)
+            {
+                if (!ik)
+                    ik = ChaControl.objAnim.GetComponent<FullBodyBipedIK>();
+
+                if (ik && ik.enabled)
+                    ik.enabled = false;
+            }
+
             if (FindSolver() != null && FindSolver().OnPreSolve == null)
             {
 
