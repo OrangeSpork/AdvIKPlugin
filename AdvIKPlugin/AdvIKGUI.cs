@@ -699,6 +699,14 @@ namespace AdvIKPlugin
                     }
                 });
 
+#if KOIKATSU || KKS
+// KK Skeleton does not require neck adjustments for upper chest movement as the upper chest has a different scaling center system.
+
+                neckMotionSliderText.gameObject.SetActive(false);
+                NeckMotionSlider.gameObject.SetActive(false);
+
+#endif
+
                 // Clear controls
                 foreach (Transform child in BreathShapePanel.transform)
                 {

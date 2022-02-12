@@ -177,7 +177,7 @@ namespace AdvIKPlugin.Algos
                 newUpperChestPos.z = ((1 + newUpperChestPos.z) * appliedUpperBreathScale.z) - ((1 + newUpperChestPos.z));
                 newUpperChestPos.y = ((1 + newUpperChestPos.y) * appliedUpperBreathScale.y) - ((1 + newUpperChestPos.y));
 
-                Vector3 newNeckPos = new Vector3(0, newUpperChestPos.y + (newUpperChestPos.y * NeckMotionDampeningFactor), 0);
+                Vector3 newNeckPos = new Vector3(0, (newUpperChestPos.y * NeckMotionDampeningFactor), 0);
 
                 // Same with lower chest
                 Vector3 newLowerChestPos = new Vector3(0, 0, 0);
@@ -285,12 +285,17 @@ namespace AdvIKPlugin.Algos
             }
             else if (bone.Equals(Neck))
             {
+#if KOIKATSU || KKS
+// Upper Chest doesn't move in KK so this isn't needed/useful.
+                return null;
+#else
                 // Looks like applying a 0 position offset to a bone with a length adjustment causes ABMX to incorrectly revert the length adjustment
                 // Work around by supplying a very small position offset instead
                 if (FrameEffects.NeckAdj.y == 0)
                     return UpdateBoneModifier(bone, Vector3.one, new Vector3(0f, 0.001f, 0f));
                 else
                     return UpdateBoneModifier(bone, Vector3.one, FrameEffects.NeckAdj);
+#endif
             }
             else
             {
