@@ -68,7 +68,7 @@ namespace AdvIKPlugin
             StudioAutoApplyResize = Config.Bind("Options", "Studio - Auto Resize on Reload", true, "Automatically Apply Configured IK Adjustment on Reloading Characters");
 
             EnableResizeOnFolder = Config.Bind("Options", "Studio - Enable Resize on Folder Control", true, "Trigger resize with a folder of name -RESIZE:CENTROID_NAME - see readme for list of valid centroid names");
-            OverrideMakerIKHandling = Config.Bind("Options", "Maker - Deactivate Maker IK Handlign", true, "Disables the Maker's IK syncing, allowing for Leg/Arm resize without pose breaking");
+            OverrideMakerIKHandling = Config.Bind("Options", "Maker - Deactivate Maker IK Handling", true, "Disables the Maker's IK syncing, allowing for Leg/Arm resize without pose breaking");
 
             var harmony = Harmony.CreateAndPatchAll(typeof(Hooks));
             harmony.Patch(typeof(MPCharCtrl).GetNestedType("IKInfo", AccessTools.all).GetMethod("Init"), null, new HarmonyMethod(typeof(AdvIKGUI).GetMethod(nameof(AdvIKGUI.InitUI), AccessTools.all)));
