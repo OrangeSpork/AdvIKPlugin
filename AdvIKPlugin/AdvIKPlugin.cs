@@ -54,6 +54,8 @@ namespace AdvIKPlugin
 
             Instance = this;
 
+            var stilettoInstalled = BepInEx.Bootstrap.Chainloader.PluginInfos.Values.Any(x => x.Metadata.GUID == "com.essu.stiletto");
+
             MainGameBreathing = Config.Bind("Options", "Breathe in Main Game", false, new ConfigDescription("Characters in the Main Game will Breathe", null, new ConfigurationManagerAttributes { Order = 9 }));
             MainGameBreathScale = Config.Bind("Options", "Main Game Breath Size Scale", 1.0f, new ConfigDescription("Multiplier applied to default breath sizing", new AcceptableValueRange<float>(.25f, 3f), new ConfigurationManagerAttributes { Order = 8 }));
             MainGameBreathRateScale = Config.Bind("Options", "Main Game Breath Rate Scale", 1.0f, new ConfigDescription("Multiplier applied to default breath rate (BPM)", new AcceptableValueRange<float>(.25f, 3f), new ConfigurationManagerAttributes { Order = 7 }));
@@ -68,7 +70,11 @@ namespace AdvIKPlugin
             StudioAutoApplyResize = Config.Bind("Options", "Studio - Auto Resize on Reload", true, "Automatically Apply Configured IK Adjustment on Reloading Characters");
 
             EnableResizeOnFolder = Config.Bind("Options", "Studio - Enable Resize on Folder Control", true, "Trigger resize with a folder of name -RESIZE:CENTROID_NAME - see readme for list of valid centroid names");
-            OverrideMakerIKHandling = Config.Bind("Options", "Maker - Deactivate Maker IK Handlign", true, "Disables the Maker's IK syncing, allowing for Leg/Arm resize without pose breaking");
+            OverrideMakerIKHandling = Config.Bind("Options", "Maker - Deactivate Maker IK Handling", !stilettoInstalled, "Disables the Maker's IK syncing, allowing for Leg/Arm resize without pose breaking (not compatible with Stiletto; will be reset to false if Stiletto is installed)");
+            if (stilettoInstalled)
+            {
+                OverrideMakerIKHandling.Value = false;
+            }
 
             var harmony = Harmony.CreateAndPatchAll(typeof(Hooks));
             harmony.Patch(typeof(MPCharCtrl).GetNestedType("IKInfo", AccessTools.all).GetMethod("Init"), null, new HarmonyMethod(typeof(AdvIKGUI).GetMethod(nameof(AdvIKGUI.InitUI), AccessTools.all)));
