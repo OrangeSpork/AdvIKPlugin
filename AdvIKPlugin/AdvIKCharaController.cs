@@ -411,7 +411,8 @@ namespace AdvIKPlugin
                 if (AdvIKPlugin.EnableResizeOnFolder.Value)
                 {
                     OCIChar me = StudioObjectExtensions.GetOCIChar(ChaControl);
-                    RecurseForName(me.treeNodeObject);                    
+                    if(me != null)
+                        RecurseForName(me.treeNodeObject);                    
                 }
                 yield return new WaitForSeconds(5);
             }
